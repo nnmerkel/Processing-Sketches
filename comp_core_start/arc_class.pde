@@ -6,11 +6,12 @@ class Arc {
   }
 
   void run() {
-    float x = width/2;
-    float y = height/2;
-    float d = random(10, 400);
-    float bAngle = random(-180, 180);
-    float eAngle = bAngle + random(0, 270);
+    float x = 0;
+    float y = 0;
+    //cast random() variables as int() so you get a whole number
+    float d = int(random(10, 400));
+    float bAngle = int(random(-180, 180));
+    float eAngle = bAngle + int(random(0, 270));
     float randStr = random(0, 10);
     noFill();
     strokeWeight(random(1, 10));
@@ -20,9 +21,10 @@ class Arc {
     } else {
       stroke(0, 255, 0);
     }
+    arc(x, y, d, d, radians(bAngle), radians(eAngle));
     bAngle ++;
     eAngle ++;
-    arc(x, y, d, d, radians(bAngle), radians(eAngle));
+    println(bAngle, eAngle, d);
   }
 }
 
