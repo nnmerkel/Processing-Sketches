@@ -1,6 +1,6 @@
 //look at me im a change
 Arc [] x;
-int total = 10; //number of arcs in the sketch
+int total = 2; //number of arcs in the sketch
 
 void setup() {
   size(800, 800, P2D);
@@ -14,10 +14,12 @@ void setup() {
 void draw() {
   frameRate(10);
   //draw the arcs individually
-  for (int i = 0; i < total; i += 100) {
+  //keep i incremented as i++ so that total 
+  //controls the number of arcs rendered
+  for (int i = 0; i < total; i ++) {
     x[i].run();
   }
-  
+  noLoop();
 }
 
 void keyPressed() {
