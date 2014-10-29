@@ -17,7 +17,7 @@ void draw() {
   for (int i = 0; i < total; i += 100) {
     x[i].run();
   }
-  noLoop();
+  
 }
 
 void keyPressed() {
