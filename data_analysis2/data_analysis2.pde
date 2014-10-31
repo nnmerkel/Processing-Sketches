@@ -5,11 +5,11 @@ PFont type;
 
 //set some global variables; these get used a lot
 //change these if you alter the size() property so the curves dont look absurdly tiny
-int functionHeight = 100;
+int functionHeight = 200;
 int buffer = 20;
 //lgbuffer puts the text under the curve of the correct color, rather than above
 int lgbuffer = 16;
-int cw = 10; //curve width
+int cw = 20; //curve width
 
 
 
