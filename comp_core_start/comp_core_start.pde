@@ -1,18 +1,20 @@
 //look at me im a change
 Arc [] x;
-int total = 50; //number of arcs in the sketch
+CircleString c;
+int total = 20; //number of arcs in the sketch
 
 void setup() {
   size(800, 800, P2D);
   smooth(8);
   x = new Arc[total];
+  c = new CircleString();
   for (int i = 0; i < total; i++) {
     x[i] = new Arc();
   }
 }
 
 void draw() {
-  fill(0, 0, 48);
+  fill(230);
   noStroke();
   rect(0, 0, width, height);
   //draw the arcs individually
@@ -24,6 +26,10 @@ void draw() {
     x[i].run();
     popMatrix();
   }
+  stroke(255, 0, 0);
+  strokeWeight(1);
+  ellipse(width/2, height/2, 200, 200);
+  c.display();
 }
 
 void keyPressed() {

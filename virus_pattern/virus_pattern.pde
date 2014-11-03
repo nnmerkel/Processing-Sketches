@@ -1,13 +1,10 @@
-
+import processing.pdf.*;
 
 void setup() {
-  size(displayWidth, 400);
+  size(displayWidth, 400, PDF, "viruscover1.pdf");
   smooth(8);
   background(0);
 }
-
-
-
 
 void draw() {
   noStroke();
@@ -16,6 +13,9 @@ void draw() {
   noiseCurve();
   curve();
   curve();
+  
+  noLoop();
+  exit();
 }
 
 //draw a curved line end to end
