@@ -1,15 +1,30 @@
 //look at me im a change
-Arc [] x;
+PurpleArc [] x;
+OrangeArc [] t;
+HairlineArc [] h;
+
 CircleString c;
-int total = 20; //number of arcs in the sketch
+int xtotal = 60; //number of purple arcs in the sketch
+int ttotal = 20; //number of orange arcs in the sketch
+int htotal = 80; //number of hairline  arcs in the sketch
 
 void setup() {
   size(800, 800, P2D);
   smooth(8);
-  x = new Arc[total];
-  c = new CircleString();
-  for (int i = 0; i < total; i++) {
-    x[i] = new Arc();
+  x = new PurpleArc[xtotal];
+  t = new OrangeArc[ttotal];
+  h = new HairlineArc[htotal];
+  
+  for (int i = 0; i < xtotal; i++) {
+    x[i] = new PurpleArc();
+  }
+  
+  for (int i = 0; i < ttotal; i++) {
+    t[i] = new OrangeArc();
+  }
+  
+  for (int i = 0; i < htotal; i++) {
+    h[i] = new HairlineArc();
   }
 }
 
@@ -20,16 +35,29 @@ void draw() {
   //draw the arcs individually
   //keep i incremented as i++ so that total 
   //controls the number of arcs rendered
-  for (int i = 0; i < total; i ++) {
+  for (int i = 0; i < xtotal; i ++) {
     pushMatrix();
     translate(width/2, height/2);
     x[i].run();
     popMatrix();
   }
-  stroke(255, 0, 0);
-  strokeWeight(1);
-  ellipse(width/2, height/2, 200, 200);
-  c.display();
+  
+  //run orange arcs
+  for (int i = 0; i < ttotal; i ++) {
+    pushMatrix();
+    translate(width/2, height/2);
+    t[i].run();
+    popMatrix();
+  }
+  
+  //run hairline arcs
+  for (int i = 0; i < htotal; i ++) {
+    pushMatrix();
+    translate(width/2, height/2);
+    h[i].run();
+    popMatrix();
+  }
+  //c.display();
 }
 
 void keyPressed() {

@@ -1,18 +1,17 @@
-class Arc {
+class PurpleArc {
 
   //global variables
   float bAngle = int(random(-180, 180));
   //the shorter eAngle is, the shorter the arcs are
   //the shorter the arcs, the better the performance
-  float eAngle = bAngle + int(random(0, 90));
-  float d = int(random(100, height-100));
-  float randStr = random(0, 10);
+  float eAngle = bAngle + int(random(0, 70));
+  float d = int(random(150, height-200));
   float increment = random(.5, 3);
   float r;
   float directionFunct = random(1, 10);
   float direction;
-  Arc () {
-    r = random(1, 20);
+  PurpleArc () {
+    r = random(3, 8);
     if (directionFunct < 10) {
       direction = 1;
     } else {
@@ -25,11 +24,8 @@ class Arc {
     float y = 0;
     strokeWeight(r);
     strokeCap(SQUARE);
-    if (r < 12) {
-      stroke(179, 49, 136, 190); //purple
-    } else {
-      stroke(234, 137, 38, 180); //orange
-    }
+    stroke(179, 49, 136, 190); //purple
+    //stroke(234, 137, 38, 180); //orange
     
     bAngle += increment * direction;
     eAngle += increment * direction;

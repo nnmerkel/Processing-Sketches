@@ -64,12 +64,9 @@ line(xp1, yp1, xp3, yp3);
 line(xp1, yp1, xp4, yp4);
 line(xp1, yp1, xp5, yp5);
 line(xp1, yp1, xp6, yp6);
-line(xp1, yp1, xp7, yp7);
 //connect 2 to 3
 line(xp2, yp2, xp3, yp3);
 line(xp4, yp4, xp3, yp3);
-line(xp5, yp5, xp3, yp3);
-line(xp6, yp6, xp3, yp3);
 //connect 4 to 2
 line(xp2, yp2, xp4, yp4);
 //connect 5 to 2
