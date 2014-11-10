@@ -4,14 +4,14 @@ class PurpleArc {
   float bAngle = int(random(-180, 180));
   //the shorter eAngle is, the shorter the arcs are
   //the shorter the arcs, the better the performance
-  float eAngle = bAngle + int(random(0, 70));
-  float d = int(random(150, height-200));
+  float eAngle = bAngle + int(random(0, 40));
+  float d = int(random(150, height-400));
   float increment = random(.5, 3);
   float r;
   float directionFunct = random(1, 10);
   float direction;
   PurpleArc () {
-    r = random(3, 8);
+    r = random(8, 16);
     if (directionFunct < 10) {
       direction = 1;
     } else {

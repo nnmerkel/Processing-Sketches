@@ -15,7 +15,7 @@ int cw = 20; //curve width
 
 void setup() {
   //remember, change the global variables accordingly if you change the size()
-  size(displayWidth, displayHeight); //<--------did you remember to change the global variables???
+  size(1400, 3150, PDF, "banner2.pdf"); //<--------did you remember to change the global variables???
 
   smooth(8);
   background(255);
@@ -41,6 +41,7 @@ void draw() {
 
       //'if' statement to change stroke color and letters
       float randNum = random(0, 100);
+      //red
       if (randNum <= 25) {
         stroke(200, 0, 0);
         textFont(type, .75*cw);
@@ -48,13 +49,15 @@ void draw() {
         text("T", x+.5*cw, y+functionHeight+lgbuffer);
       }
 
+      //green
       if (randNum > 25 && randNum <= 50) {
-        stroke(0, 200, 0);
+        stroke(0, 102, 51);
         textFont(type, .75*cw);
-        fill(0, 200, 0);
+        fill(0, 102, 51);
         text("A", x+.5*cw, y+functionHeight+lgbuffer);
       }
 
+      //blue
       if (randNum > 50 && randNum <= 75) {
         stroke(0, 0, 200);
         textFont(type, .75*cw);
@@ -62,6 +65,7 @@ void draw() {
         text("C", x+.5*cw, y+functionHeight+lgbuffer);
       }
 
+      //black
       if (randNum > 75 && randNum <= 100) {
         stroke(0, 0, 0);
         textFont(type, .75*cw);
@@ -76,15 +80,15 @@ void draw() {
       //draw a baseline; letters go under here
       stroke(0);
       strokeWeight(1.5);
-      line(0, functionHeight, width, functionHeight);
+      line(0, functionHeight+2, width, functionHeight+2);
       strokeWeight(1);
       stroke(180);
-      line(0, functionHeight+3, width, functionHeight+3);
+      line(0, functionHeight+5, width, functionHeight+5);
       popMatrix();
     }
   }
-//  println("finished");
-//  exit();
+  println("finished");
+  exit();
 }
 
 void smoothCurve() {

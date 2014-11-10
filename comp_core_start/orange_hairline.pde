@@ -1,4 +1,4 @@
-class HairlineArc {
+class OrangeHairlineArc {
 
   //global variables
   float bAngle = int(random(-180, 180));
@@ -10,8 +10,8 @@ class HairlineArc {
   float r;
   float directionFunct = random(1, 10);
   float direction;
-  HairlineArc () {
-    r = random(1, 3);
+  OrangeHairlineArc () {
+    r = random(3, 8);
     if (directionFunct < 10) {
       direction = 1;
     } else {
@@ -24,8 +24,7 @@ class HairlineArc {
     float y = 0;
     strokeWeight(r);
     strokeCap(SQUARE);
-    stroke(179, 49, 136, 190); //purple
-    //stroke(234, 137, 38, 180); //orange
+    stroke(234, 137, 38, 220);
     
     bAngle += increment * direction;
     eAngle += increment * direction;
