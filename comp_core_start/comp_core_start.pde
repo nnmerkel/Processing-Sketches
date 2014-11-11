@@ -1,6 +1,5 @@
 import processing.pdf.*;
 
-//look at me im a change
 PurpleArc [] x;
 OrangeArc [] t;
 HairlineArc [] h;
