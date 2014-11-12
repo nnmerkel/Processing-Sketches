@@ -12,7 +12,7 @@ class PurpleArc {
   float direction;
   PurpleArc () {
     r = random(8, 16);
-    if (directionFunct < 10) {
+    if (directionFunct < 5) {
       direction = 1;
     } else {
       direction = -1;

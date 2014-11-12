@@ -12,7 +12,7 @@ class OrangeArc {
   float direction;
   OrangeArc () {
     r = random(20, 36);
-    if (directionFunct < 10) {
+    if (directionFunct < 5) {
       direction = 1;
     } else {
       direction = -1;

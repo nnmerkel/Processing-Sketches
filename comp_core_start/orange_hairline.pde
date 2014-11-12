@@ -12,7 +12,7 @@ class OrangeHairlineArc {
   float direction;
   OrangeHairlineArc () {
     r = random(3, 8);
-    if (directionFunct < 10) {
+    if (directionFunct < 5) {
       direction = 1;
     } else {
       direction = -1;

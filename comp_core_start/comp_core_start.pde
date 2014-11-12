@@ -4,35 +4,41 @@ PurpleArc [] x;
 OrangeArc [] t;
 HairlineArc [] h;
 OrangeHairlineArc [] y;
+CircleString [] c;
 
-CircleString c;
 int xtotal = 150; //number of purple arcs in the sketch
 int ttotal = 40; //number of orange arcs in the sketch
-int htotal = 150; //number of purple hairline  arcs in the sketch
-int ytotal = 150; //number of orange hairline  arcs in the sketch
+int htotal = 100; //number of purple hairline  arcs in the sketch
+int ytotal = 75; //number of orange hairline  arcs in the sketch
+int ctotal = 3;
 
 void setup() {
-  size(2000, 2000, PDF, "compcoretest1.pdf");
+  size(800, 800);//PDF, "compcoretest2.pdf");
   smooth(8);
+  c = new CircleString[ctotal];
   x = new PurpleArc[xtotal];
   t = new OrangeArc[ttotal];
   h = new HairlineArc[htotal];
   y = new OrangeHairlineArc[ytotal];
-  
+
   for (int i = 0; i < xtotal; i++) {
     x[i] = new PurpleArc();
   }
-  
+
   for (int i = 0; i < ttotal; i++) {
     t[i] = new OrangeArc();
   }
-  
+
   for (int i = 0; i < htotal; i++) {
     h[i] = new HairlineArc();
   }
-  
+
   for (int i = 0; i < ytotal; i++) {
     y[i] = new OrangeHairlineArc();
+  }
+  
+  for (int i = 0; i < ctotal; i++) {
+    c[i] = new CircleString();
   }
 }
 
@@ -49,7 +55,7 @@ void draw() {
     x[i].run();
     popMatrix();
   }
-  
+
   //run orange arcs
   for (int i = 0; i < ttotal; i ++) {
     pushMatrix();
@@ -57,7 +63,7 @@ void draw() {
     t[i].run();
     popMatrix();
   }
-  
+
   //run hairline arcs
   for (int i = 0; i < htotal; i ++) {
     pushMatrix();
@@ -65,7 +71,7 @@ void draw() {
     h[i].run();
     popMatrix();
   }
-  
+
   //run orange hairline arcs
   for (int i = 0; i < ytotal; i ++) {
     pushMatrix();
@@ -73,9 +79,15 @@ void draw() {
     y[i].run();
     popMatrix();
   }
-  //c.display();
-  println("finished");
-  exit();
+
+  for (int i = 0; i < ctotal; i++) {
+    pushMatrix();
+    translate(width/2, height/2);
+    c[i].display();
+    popMatrix();
+  }
+  //  println("finished");
+  //  exit();
 }
 
 void keyPressed() {
