@@ -24,7 +24,7 @@ class OrangeHairlineArc {
     float y = 0;
     strokeWeight(r);
     strokeCap(SQUARE);
-    stroke(234, 137, 38, 220);
+    stroke(o);
     
     bAngle += increment * direction;
     eAngle += increment * direction;

@@ -24,7 +24,7 @@ class OrangeArc {
     float y = 0;
     strokeWeight(r);
     strokeCap(SQUARE);
-    stroke(234, 137, 38, 220); //orange
+    stroke(o); //orange
     
     bAngle += increment * direction;
     eAngle += increment * direction;
