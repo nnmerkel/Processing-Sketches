@@ -1,6 +1,6 @@
 Strand [] s;
 
-int total = 200; 
+int total = 96; 
 //total and totalCircles are related somehow, namely that if totalCircles is greater than total, the sketch will
 //not run due to an error with iteration total < i*(r+gap). iterations are calculated in multiples of (r+gap)
 float r = 10;
@@ -24,8 +24,9 @@ void draw() {
     s[i].middle();
     popMatrix();
   }
-  
+
   stroke(255, 0, 0);
   line(0, height/2, width, height/2);
   line(width/2, 0, width/2, height);
 }
+
