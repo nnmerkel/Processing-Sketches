@@ -1,11 +1,12 @@
 PImage s;
-int total = 800;
+int total = 1000;
 Point [] p;
 float [] points = new float[total];
 
 void setup() {
-  size(800, 800);
-  s = loadImage("sphere.png");
+  size(1000, 1000);
+  //s = loadImage("sphere.png");
+  s = loadImage("img.jpg");
   s.loadPixels();
   //image(s, 0, 0);
   p = new Point[total];
@@ -15,10 +16,10 @@ void setup() {
 }
 
 void draw() {
-  //background(0);
+  background(255);
   //increments control spacing values
-  float xincrement = 5;
-  float yincrement = 5;
+  float xincrement = 4;
+  float yincrement = 4;
   for (int x = 0; x < total; x += xincrement) {
     for (int y = 0; y < total; y += yincrement) {
       pushMatrix();
@@ -33,6 +34,13 @@ void draw() {
       p[x].display();
       popMatrix();
     }
+  }
+}
+
+void keyPressed() {
+  if (key == 's') {
+    saveFrame();
+    println("frame saved");
   }
 }
 

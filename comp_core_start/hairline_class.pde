@@ -6,7 +6,7 @@ class HairlineArc {
   //the shorter the arcs, the better the performance
   float eAngle = bAngle + int(random(0, 14));
   float d = int(random(300, height-50));
-  float increment = random(.1, 1);
+  float increment = random(.5, 3);
   float r;
   float directionFunct = random(1, 10);
   float direction;
@@ -24,7 +24,7 @@ class HairlineArc {
     float y = 0;
     strokeWeight(r);
     strokeCap(SQUARE);
-    stroke(p);
+    stroke(p, d/4);
     
     bAngle += increment * direction;
     eAngle += increment * direction;
