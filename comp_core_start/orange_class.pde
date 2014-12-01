@@ -5,8 +5,8 @@ class OrangeArc {
   //the shorter eAngle is, the shorter the arcs are
   //the shorter the arcs, the better the performance
   float eAngle = bAngle + int(random(0, 70));
-  float d = int(random(.125*width, .375*width));
-  float increment = random(.5, 3);
+  float d = int(random(.125*width, .4*width));
+  float increment = random(.1, 1);
   float r;
   float directionFunct = random(1, 10);
   float direction;
@@ -24,7 +24,7 @@ class OrangeArc {
     float y = 0;
     strokeWeight(r);
     strokeCap(SQUARE);
-    stroke(o, d/5);
+    stroke(o); //orange
     
     bAngle += increment * direction;
     eAngle += increment * direction;
