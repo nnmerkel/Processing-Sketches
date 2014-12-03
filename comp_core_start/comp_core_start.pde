@@ -22,7 +22,7 @@ color o = color(179, 49, 136, 190);
 color f = color(255);
 
 void setup() {
-  size(1500, 1500, PDF, "compcoretest4.pdf");
+  size(1000, 1000);//, PDF, "compcoretest4.pdf");
   smooth(8);
   c = new CircleString[ctotal];
   x = new PurpleArc[xtotal];
@@ -95,8 +95,8 @@ void draw() {
     c[i].display();
     popMatrix();
   }
-  println("finished");
-  exit();
+  //println("finished");
+  //exit();
 }
 
 void keyPressed() {
