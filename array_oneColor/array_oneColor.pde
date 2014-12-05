@@ -13,8 +13,8 @@ void setup() {
   size(884, 1024);//, PDF, "n1.pdf");
   s = loadImage("n2.jpg");
   background(0);
+  //overlayWide();
   overlay();
-  highlights();
 }
 
 void draw() {
@@ -35,29 +35,9 @@ void overlay() {
       float distance = dist(x[i], y[i], x[j], y[j]);
 
       //target the brightest pixels, but not a white background
-      if (redcc >= redc && b > 80 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc >= redc && b > 100 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(1);
         stroke(255);
-        line(x[i], y[i], x[j], y[j]);
-        strokeWeight(3);
-        point(x[i], y[i]);
-        point(x[j], y[j]);
-      }
-
-      //target the exact midtones
-      if (redcc >= redc && b > 70 && b < 80 && distance > bigLowLimit && distance < bigLimit) {
-        strokeWeight(1);
-        stroke(120);
-        line(x[i], y[i], x[j], y[j]);
-        strokeWeight(3);
-        point(x[i], y[i]);
-        point(x[j], y[j]);
-      }
-
-      //target the darkest pixels, but not the black background
-      if (redcc >= redc && b > 2 && b < 40 && distance > smallLowLimit && distance < smallLimit) {
-        strokeWeight(1);
-        stroke(40);
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(3);
         point(x[i], y[i]);
@@ -67,8 +47,7 @@ void overlay() {
   }
 }
 
-//target the brightest pixels separately so they stand out more
-void highlights() {
+void overlayWide() {
   for (int i = 0; i < total; i++) {
     for (int j = 0; j < total; j++) {
       x[i]=int(random(width));
@@ -79,13 +58,15 @@ void highlights() {
       float redcc = red(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
-      if (redcc >= redc && b > 150 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+
+      //target the brightest pixels, but not a white background
+      if (redcc >= redc && b > 100 && b < 150 && distance > smallLowLimit && distance < bigLimit) {
         strokeWeight(1);
-        stroke(255);
+        stroke(200);
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(3);
-        point(x[i], y[i]);
-        point(x[j], y[j]);
+        //point(x[i], y[i]);
+        //point(x[j], y[j]);
       }
     }
   }
