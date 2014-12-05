@@ -1,7 +1,7 @@
 import processing.pdf.*;
 
 PImage s;
-int total = 8000;
+int total = 20000;
 int [] x = new int[total];
 int [] y = new int[total];
 float bigLimit = 120;
@@ -10,11 +10,13 @@ float smallLowLimit = 2;
 float bigLowLimit = 90;
 
 void setup() {
-  size(884, 1024);//, PDF, "n1.pdf");
-  s = loadImage("n2.jpg");
+  size(2000, 1500, PDF, "dnanew1.pdf");
+  s = loadImage("dnanew.jpg");
   background(0);
-  overlay();
+  //overlay();
   highlights();
+  points();
+  points2();
 }
 
 void draw() {
@@ -79,7 +81,7 @@ void highlights() {
       float redcc = red(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
-      if (redcc >= redc && b > 150 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc >= redc && b > 220 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(1);
         stroke(255);
         line(x[i], y[i], x[j], y[j]);
@@ -87,6 +89,34 @@ void highlights() {
         point(x[i], y[i]);
         point(x[j], y[j]);
       }
+    }
+  }
+}
+
+void points() {
+  for (int i = 0; i < total; i++) {
+    x[i]=int(random(width));
+    y[i]=int(random(height));
+    color c = s.get(int(x[i]), int(y[i]));
+    float b = brightness(c);
+    if (b > 130) {
+      strokeWeight(2);
+      stroke(c);
+      point(x[i], y[i]);
+    }
+  }
+}
+
+void points2() {
+  for (int i = 0; i < total; i++) {
+    x[i]=int(random(width));
+    y[i]=int(random(height));
+    color c = s.get(int(x[i]), int(y[i]));
+    float b = brightness(c);
+    if (b > 230) {
+      strokeWeight(4);
+      stroke(c);
+      point(x[i], y[i]);
     }
   }
 }
