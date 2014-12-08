@@ -1,7 +1,7 @@
 import processing.pdf.*;
 
 PImage s;
-int total = 20000;
+int total = 6000;
 int [] x = new int[total];
 int [] y = new int[total];
 float bigLimit = 120;
@@ -10,13 +10,13 @@ float smallLowLimit = 2;
 float bigLowLimit = 90;
 
 void setup() {
-  size(2000, 1500, PDF, "dnanew1.pdf");
-  s = loadImage("dnanew.jpg");
+  size(884, 1024);//, PDF, "dnanew1.pdf");
+  s = loadImage("n2.jpg");
   background(0);
-  //overlay();
+  overlay();
   highlights();
-  points();
-  points2();
+  //points();
+  //points2();
 }
 
 void draw() {
@@ -47,9 +47,9 @@ void overlay() {
       }
 
       //target the exact midtones
-      if (redcc >= redc && b > 70 && b < 80 && distance > bigLowLimit && distance < bigLimit) {
+      if (redcc >= redc && b > 60 && b < 70 && distance > bigLowLimit && distance < bigLimit) {
         strokeWeight(1);
-        stroke(120);
+        stroke(75);
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(3);
         point(x[i], y[i]);
@@ -81,7 +81,7 @@ void highlights() {
       float redcc = red(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
-      if (redcc >= redc && b > 220 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc >= redc && b > 210 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(1);
         stroke(255);
         line(x[i], y[i], x[j], y[j]);
@@ -99,7 +99,7 @@ void points() {
     y[i]=int(random(height));
     color c = s.get(int(x[i]), int(y[i]));
     float b = brightness(c);
-    if (b > 130) {
+    if (b > 180) {
       strokeWeight(2);
       stroke(c);
       point(x[i], y[i]);
