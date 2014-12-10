@@ -1,7 +1,7 @@
 import processing.pdf.*;
 
 PImage s;
-int total = 6000;
+int total = 12000;
 int [] x = new int[total];
 int [] y = new int[total];
 float bigLimit = 120;
@@ -10,18 +10,20 @@ float smallLowLimit = 2;
 float bigLowLimit = 90;
 
 void setup() {
-  size(884, 1024);//, PDF, "dnanew1.pdf");
-  s = loadImage("n2.jpg");
+  size(1200, 1500);
+  s = loadImage("dnanew.jpg");
+  beginRecord(PDF, "dnatest1.pdf");
   background(0);
-  overlay();
+  //overlay();
   highlights();
-  //points();
-  //points2();
+  points();
+  points2();
 }
 
 void draw() {
   //saveFrame();
-  //exit();
+  endRecord();
+  exit();
 }
 
 void overlay() {
@@ -81,11 +83,11 @@ void highlights() {
       float redcc = red(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
-      if (redcc >= redc && b > 210 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
-        strokeWeight(1);
+      if (redcc >= redc && b > 240 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+        strokeWeight(.5);
         stroke(255);
         line(x[i], y[i], x[j], y[j]);
-        strokeWeight(3);
+        strokeWeight(2);
         point(x[i], y[i]);
         point(x[j], y[j]);
       }
