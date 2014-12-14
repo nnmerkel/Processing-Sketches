@@ -14,11 +14,12 @@ void setup() {
     for (int j = 0; j < height; j+=yincrement) {
       x[i]=int(random(width));
       y[i]=int(random(height));
-      color c = me.get(int(x[i]), int(y[i]), xincrement, yincrement);
-      //color cc = me.get(int(x[j]), int(y[j]), xincrement, yincrement);
-      float redc = red(c);
+      PImage c = me.get(int(x[i]), int(y[i]), xincrement, yincrement);
+      image(c, 0, 0);
+      color cc = me.get(int(x[j]), int(y[j]), xincrement, yincrement);
+      //float redc = red(c);
       //float redcc = red(cc);
-      //float b = brightness(c);
+      float b = brightness(cc);
       pushMatrix();
       translate(i, j);
       fill(b);

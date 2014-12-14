@@ -12,7 +12,7 @@ float bigLowLimit = 90;
 void setup() {
   size(1200, 1500);
   s = loadImage("dnanew.jpg");
-  beginRecord(PDF, "dnatest1.pdf");
+  //beginRecord(PDF, "dnatest1.pdf");
   background(0);
   //overlay();
   highlights();
@@ -22,8 +22,8 @@ void setup() {
 
 void draw() {
   //saveFrame();
-  endRecord();
-  exit();
+  //endRecord();
+  //exit();
 }
 
 void overlay() {
