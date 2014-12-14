@@ -1,20 +1,20 @@
 import processing.pdf.*;
 
 PImage s;
-int total = 12000;
+int total = 15000;
 int [] x = new int[total];
 int [] y = new int[total];
 float bigLimit = 120;
-float smallLimit = 40;
+float smallLimit = 30;
 float smallLowLimit = 2;
-float bigLowLimit = 90;
+float bigLowLimit = 70;
 
 void setup() {
-  size(1200, 1500);
-  s = loadImage("dnanew.jpg");
-  //beginRecord(PDF, "dnatest1.pdf");
+  size(1280, 1024);
+  s = loadImage("virus1.jpg");
+  beginRecord(PDF, "disease1.pdf");
   background(0);
-  //overlay();
+  overlay();
   highlights();
   points();
   points2();
@@ -33,35 +33,35 @@ void overlay() {
       y[i]=int(random(height));
       color c = s.get(int(x[i]), int(y[i]));
       color cc = s.get(int(x[j]), int(y[j]));
-      float redc = red(c);
-      float redcc = red(cc);
+      float redc = green(c);
+      float redcc = green(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
 
-      //target the brightest pixels, but not a white background
-      if (redcc >= redc && b > 80 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
-        strokeWeight(1);
-        stroke(255);
-        line(x[i], y[i], x[j], y[j]);
-        strokeWeight(3);
-        point(x[i], y[i]);
-        point(x[j], y[j]);
-      }
+      //target the darkest pixels, but not the black background
+//      if (redcc >= redc && b > 2 && b < 40 && distance > smallLowLimit && distance < smallLimit) {
+//        strokeWeight(1);
+//        stroke(40);
+//        line(x[i], y[i], x[j], y[j]);
+//        strokeWeight(3);
+//        point(x[i], y[i]);
+//        point(x[j], y[j]);
+//      }
 
       //target the exact midtones
-      if (redcc >= redc && b > 60 && b < 70 && distance > bigLowLimit && distance < bigLimit) {
+      if (redcc >= redc && b > 160 && b < 200 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(1);
-        stroke(75);
+        stroke(c);
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(3);
         point(x[i], y[i]);
         point(x[j], y[j]);
       }
 
-      //target the darkest pixels, but not the black background
-      if (redcc >= redc && b > 2 && b < 40 && distance > smallLowLimit && distance < smallLimit) {
+      //target the brightest pixels, but not a white background
+      if (redcc >= redc && b > 230 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(1);
-        stroke(40);
+        stroke(255);
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(3);
         point(x[i], y[i]);
@@ -79,11 +79,11 @@ void highlights() {
       y[i]=int(random(height));
       color c = s.get(int(x[i]), int(y[i]));
       color cc = s.get(int(x[j]), int(y[j]));
-      float redc = red(c);
-      float redcc = red(cc);
+      float redc = green(c);
+      float redcc = green(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
-      if (redcc >= redc && b > 240 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc >= redc && b > 235 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(.5);
         stroke(255);
         line(x[i], y[i], x[j], y[j]);
@@ -101,7 +101,7 @@ void points() {
     y[i]=int(random(height));
     color c = s.get(int(x[i]), int(y[i]));
     float b = brightness(c);
-    if (b > 180) {
+    if (b > 120) {
       strokeWeight(2);
       stroke(c);
       point(x[i], y[i]);
@@ -115,8 +115,8 @@ void points2() {
     y[i]=int(random(height));
     color c = s.get(int(x[i]), int(y[i]));
     float b = brightness(c);
-    if (b > 230) {
-      strokeWeight(4);
+    if (b > 100 && b < 120) {
+      strokeWeight(random(1, 4));
       stroke(c);
       point(x[i], y[i]);
     }
