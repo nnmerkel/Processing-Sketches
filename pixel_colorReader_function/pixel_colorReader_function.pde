@@ -7,9 +7,9 @@ int xincrement = 10;
 int yincrement = 10;
 
 void setup() {
-  size(2448, 2448);
-  first = loadImage("ap.jpg");
-  second = loadImage("ldc.jpg");
+  size(800, 800);
+  first = loadImage("sphere.png");
+  //second = loadImage("ldc.jpg");
 }
 
 void draw() {
@@ -19,21 +19,6 @@ void draw() {
     for (int y = 0; y < height; y+=yincrement) {
       tile(x, y, xincrement, yincrement);
       btotal = btotal / maxpixel;
-      noStroke();
-      if (ctotal > 130) {
-        fill(btotal);
-      } else {
-        fill(btotal);
-      }
-      //fill(ctotal);
-      rect(x, y, xincrement, yincrement);
-    }
-  }
-  
-  for (int x = 0; x < width; x+=xincrement) {
-    for (int y = 0; y < height; y+=yincrement) {
-      tileApple(x, y, xincrement, yincrement);
-      ctotal = ctotal / maxpixel;
       noStroke();
       if (ctotal > 130) {
         fill(btotal);
