@@ -1,39 +1,66 @@
+import processing.pdf.*;
+
+boolean recordPDF = false;
 PFont font;
-int columnWidth = 12;
-int columnHeight = 12;
-int customSize = 10;
+int columnWidth = 50;
+int columnHeight = 50;
+int customSize = 46;
 String message = "Generative Design Visualize, Program, and Create with Processing ";
 String alphabet = "abcdefghijklmnopqrstuvwxyz";
-char letter;
+String binary = "01";
 int index;
 
 void setup() {
-  size(800, 800);
-  smooth();
+  size(2550, 3450, P2D);//, PDF, "secondTry.pdf");
   font = createFont("Monospaced", customSize, true);
+  //SHAPE works with P2D renderer, otherwise comment out this line
+  textMode(SHAPE);
   textFont(font);
   textAlign(CENTER, CENTER);
+  smooth();
 }
 
 void draw() {
-  for (int y = 0; y < width; y += columnHeight) {
-    for (int x = 0; x < height; x += columnWidth) {
+  fill(205);
+  rect(0, 0, width, height);
+  for (int y = 0; y < height; y += columnHeight) {
+    for (int x = 0; x < width; x += columnWidth) {
       float randomGen = random(0, 2);
       noFill();
-      rect(x, y, columnWidth, columnHeight);
-      fill(0);
-      if(randomGen <= 1) {
+      noStroke();
+      //rect(x, y, columnWidth, columnHeight);
+      //fill(0);
+      if (randomGen <= 1) {
         fill(0);
+        textSize(customSize);
         text(message.charAt(index % message.length()), x+columnWidth/2, y+columnHeight/2);
-      }
-      else {
+      } else {
         fill(255, 0, 0);
-        text(alphabet.charAt(int(random(0, alphabet.length()))), x+columnWidth/2, y+columnHeight/2);
+        textSize(customSize);
+        text(binary.charAt(int(random(0, binary.length()))), x+columnWidth/2, y+columnHeight/2);
       }
       index++;
     }
     //index = 0;
   }
-  noLoop();
+  //noLoop();
+  //println("finished");
+  //exit();
+}
+
+void keyReleased() {
+  if (key =='r' || key =='R') {
+    if (recordPDF == false) {
+      beginRecord(PDF, "frame-####.pdf");
+      println("recording started");
+      recordPDF = true;
+    }
+  } else if (key == 'e' || key =='E') {
+    if (recordPDF) {
+      println("recording stopped");
+      endRecord();
+      recordPDF = false;
+    }
+  }
 }
 
