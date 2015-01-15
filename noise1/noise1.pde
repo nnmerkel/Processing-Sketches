@@ -1,17 +1,20 @@
-float yoff = 0.0;
+float yoff = 0.1;
+int functionCount = 200;
 
 void setup() {
-  size(displayWidth, displayHeight, P2D);
+  size(displayWidth, displayHeight);
 }
 
 void draw() {
   background(0);
-  //trying to slow it down so i can see it better...
-  frameRate(5);
+  frameRate(1);
   //looks bad with fill
   noFill();
-  bigBird();
-  bigBird();
+  for (int i = 0; i < functionCount; i++) {
+    float opacity = map(i, 0, functionCount, (255-functionCount)/1.25, functionCount/1.25);
+    stroke(255, opacity);
+    snufflupagus();
+  }
 }
 
 //create waves
@@ -19,28 +22,18 @@ void snufflupagus() {
   beginShape(); 
   float xoff = yoff;
   // do stuff
-  for (float x = 0; x <= width; x += 20) {
+  for (float x = 0; x <= width; x += 30) {
     // Calculate a y value according to noise, map to 
-    float y = map(noise(xoff, yoff), 0, 1, 300, 700);
+    float y = map(noise(xoff, yoff), 0, 1, 100, height-400);
     vertex(x, y); 
-    //increment x noise
-    xoff += 0.2;
+    //this sets how "spiky" each ribbon appears; .25 for desktopBG, .1-.15 for water
+    xoff += 0.15;
   }
-  // increment y noise
+  // this sets how "tight" each ribbon appears
   yoff += 0.03;
   vertex(width, height);
   vertex(0, height);
   endShape(CLOSE);
-}
-
-//create nested functions so i can tile it?
-void bigBird() {
-  for (int x = 0; x <= width; x+=600) {
-    for (int y = 0; y <= height; y+=100) {
-      stroke(255, x);
-      snufflupagus();
-    }
-  }
 }
 
 //save frame function
