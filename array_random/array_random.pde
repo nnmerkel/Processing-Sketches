@@ -3,11 +3,11 @@ import controlP5.*;
 
 PImage s;
 ControlP5 cp5;
-int total = 1000;
+int total = 10000;
 int [] x = new int[total];
 int [] y = new int[total];
 float bigLimit = 0;
-float smallLimit = 0;
+float smallLimit = 35;
 float smallLowLimit = 2;
 float bigLowLimit = 50;
 float renderSpeed = 4;
@@ -15,26 +15,26 @@ float lineSw = .5;
 float pointSw = 2;
 
 void setup() {
-  size(1920, 1200);
-  s = loadImage("face2.jpg");
-  background(255);
+  size(1280, 1024, PDF, "virustest1.pdf");
+  s = loadImage("vg1.jpg");
+  background(0);
   cp5 = new ControlP5(this);
+  //Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(220).setBackgroundColor(color(0, 60)).setBackgroundHeight(106).setLabel("Menu");
   //cp5.addSlider("total").setPosition(0, 0).setSize(200, 20).setRange(100, 10000).setValue(100);
-  cp5.addSlider("smallLimit").setPosition(0, 22).setSize(200, 20).setRange(4, 500);
-  cp5.addSlider("renderSpeed").setPosition(0, 44).setSize(200, 20).setRange(1, 60);
-  cp5.addSlider("lineSw").setPosition(0, 66).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7);
-  cp5.addSlider("pointSw").setPosition(0, 88).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7);
-  //overlayNorm();
-  //highlights();
-  //points();
-  //points2();
+  //cp5.addSlider("smallLimit").setPosition(0, 0).setSize(200, 20).setRange(4, 500).setGroup(g2);
+  //cp5.addSlider("renderSpeed").setPosition(0, 22).setSize(200, 20).setRange(1, 60).setGroup(g2);
+  //cp5.addSlider("lineSw").setPosition(0, 44).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(g2);
+  //cp5.addSlider("pointSw").setPosition(0, 66).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(g2);
 }
 
 void draw() {
-  frameRate(renderSpeed);
+  //frameRate(renderSpeed);
   overlayNorm();
-  //overlayBW();
-  //beginRecord(PDF, "gdtest-####.pdf");
+  points();
+  points2();
+  println("pdf saved");
+  noLoop();
+  exit();
 }
 
 void overlay() {
@@ -94,9 +94,9 @@ void overlayNorm() {
       float redcc = green(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
-      if (redcc >= redc && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc >= redc && b < 255 && b > 20 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(lineSw);
-        stroke(b);
+        stroke(c);
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(pointSw);
         point(x[i], y[i]);
