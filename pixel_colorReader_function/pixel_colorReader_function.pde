@@ -28,7 +28,9 @@ void setup() {
 
 void draw() {
   noStroke();
-  image(first, 0, 0);
+  //image(first, 0, 0);
+  fill(205);
+  rect(0, 0, width, height);
   float resolution = xincrement*yincrement;
   for (int x = 0; x < width; x += xincrement) {
     for (int y = 0; y < height; y += yincrement) {
@@ -40,7 +42,6 @@ void draw() {
       else totalGreaterThan(x, y);
     }
   }
-  //noLoop();
 }
 
 void tile(int startx, int starty, int tileSizeX, int tileSizeY) {
@@ -83,6 +84,7 @@ void totalLessThan(int startX, int startY) {
   if (btotal < threshold) {
     stroke(255, 0, 0, 40);
     noFill();
+    //firstImageTile(startX, startY);
     rect(startX, startY, xincrement, yincrement);
   }
 }
@@ -91,6 +93,7 @@ void totalGreaterThan(int startX, int startY) {
   if (btotal > threshold) {
     stroke(255, 0, 0, 40);
     noFill();
+    //firstImageTile(startX, startY);
     rect(startX, startY, xincrement, yincrement);
   }
 }
@@ -101,12 +104,15 @@ void saveGrid() {
   //stroke(255, 0, 0, 60);
   //rect(0, 0, width, height);
   noFill();
+  stroke(255, 0, 0, 60);
   for (int x = 0; x < width; x += xincrement) {
     for (int y = 0; y < height; y += yincrement) {
       if (switchStyle==false) totalLessThan(x, y);
+      else totalGreaterThan(x, y);
     }
   }
   endRecord();
+  println("pdf saved");
   exit();
 }
 
@@ -117,6 +123,5 @@ void keyReleased() {
   }
   if (key == 'p' || key == 'P') {
     saveGrid();
-    println("pdf saved");
   }
 }

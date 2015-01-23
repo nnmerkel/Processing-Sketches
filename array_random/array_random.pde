@@ -15,16 +15,16 @@ float lineSw = .5;
 float pointSw = 2;
 
 void setup() {
-  size(1280, 1024, PDF, "virustest1.pdf");
+  size(1280, 1024, PDF, "virustest4.pdf");
   s = loadImage("vg1.jpg");
   background(0);
   cp5 = new ControlP5(this);
-  //Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(220).setBackgroundColor(color(0, 60)).setBackgroundHeight(106).setLabel("Menu");
+  Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(220).setBackgroundColor(color(0, 60)).setBackgroundHeight(106).setLabel("Menu");
   //cp5.addSlider("total").setPosition(0, 0).setSize(200, 20).setRange(100, 10000).setValue(100);
-  //cp5.addSlider("smallLimit").setPosition(0, 0).setSize(200, 20).setRange(4, 500).setGroup(g2);
-  //cp5.addSlider("renderSpeed").setPosition(0, 22).setSize(200, 20).setRange(1, 60).setGroup(g2);
-  //cp5.addSlider("lineSw").setPosition(0, 44).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(g2);
-  //cp5.addSlider("pointSw").setPosition(0, 66).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(g2);
+  cp5.addSlider("smallLimit").setPosition(0, 0).setSize(200, 20).setRange(4, 500).setGroup(g2);
+  cp5.addSlider("renderSpeed").setPosition(0, 22).setSize(200, 20).setRange(1, 60).setGroup(g2);
+  cp5.addSlider("lineSw").setPosition(0, 44).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(g2);
+  cp5.addSlider("pointSw").setPosition(0, 66).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(g2);
 }
 
 void draw() {
