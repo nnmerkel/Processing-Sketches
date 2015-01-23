@@ -15,8 +15,13 @@ float lineSw = .5;
 float pointSw = 2;
 
 void setup() {
+<<<<<<< HEAD
   size(1920, 1020, PDF, "diagram1.pdf");
   s = loadImage("original.jpg");
+=======
+  size(1280, 1024, PDF, "virustest4.pdf");
+  s = loadImage("vg1.jpg");
+>>>>>>> FETCH_HEAD
   background(0);
   cp5 = new ControlP5(this);
   Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(220).setBackgroundColor(color(0, 60)).setBackgroundHeight(106).setLabel("Menu");
