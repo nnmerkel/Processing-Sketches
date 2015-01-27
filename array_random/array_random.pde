@@ -3,11 +3,11 @@ import controlP5.*;
 
 PImage s;
 ControlP5 cp5;
-int total = 12000;
+int total = 9000;
 int [] x = new int[total];
 int [] y = new int[total];
 float bigLimit = 0;
-float smallLimit = 35;
+float smallLimit = 30;
 float smallLowLimit = 2;
 float bigLowLimit = 50;
 float renderSpeed = 4;
@@ -15,13 +15,8 @@ float lineSw = .5;
 float pointSw = 2;
 
 void setup() {
-<<<<<<< HEAD
-  size(1920, 1020, PDF, "diagram1.pdf");
-  s = loadImage("original.jpg");
-=======
-  size(1280, 1024, PDF, "virustest4.pdf");
-  s = loadImage("vg1.jpg");
->>>>>>> FETCH_HEAD
+  size(1280, 1024, PDF, "vp1.pdf");
+  s = loadImage("virus1.jpg");
   background(0);
   cp5 = new ControlP5(this);
   Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(220).setBackgroundColor(color(0, 60)).setBackgroundHeight(106).setLabel("Menu");
@@ -96,11 +91,11 @@ void overlayNorm() {
       y[i]=int(random(height));
       color c = s.get(int(x[i]), int(y[i]));
       color cc = s.get(int(x[j]), int(y[j]));
-      float redc = blue(c);
-      float redcc = blue(cc);
+      float redc = green(c);
+      float redcc = green(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
-      if (redcc >= redc && b < 250 && b > 30 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc >= redc && b < 250 && b > 40 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(lineSw);
         stroke(c);
         line(x[i], y[i], x[j], y[j]);
