@@ -3,11 +3,11 @@ import controlP5.*;
 
 PImage s;
 ControlP5 cp5;
-int total = 9000;
+int total = 10000;
 int [] x = new int[total];
 int [] y = new int[total];
 float bigLimit = 0;
-float smallLimit = 30;
+float smallLimit = 45;
 float smallLowLimit = 2;
 float bigLowLimit = 50;
 float renderSpeed = 4;
@@ -15,8 +15,8 @@ float lineSw = .5;
 float pointSw = 2;
 
 void setup() {
-  size(1280, 1024, PDF, "vp1.pdf");
-  s = loadImage("virus1.jpg");
+  size(2001, 1501, PDF, "neuron3.pdf");
+  s = loadImage("neuron.jpg");
   background(0);
   cp5 = new ControlP5(this);
   Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(220).setBackgroundColor(color(0, 60)).setBackgroundHeight(106).setLabel("Menu");
@@ -31,6 +31,7 @@ void draw() {
   //frameRate(renderSpeed);
   //image(s, 0, 0);
   overlayNorm();
+  //highlights();
   points();
   points2();
   println("pdf saved");
@@ -91,11 +92,11 @@ void overlayNorm() {
       y[i]=int(random(height));
       color c = s.get(int(x[i]), int(y[i]));
       color cc = s.get(int(x[j]), int(y[j]));
-      float redc = green(c);
-      float redcc = green(cc);
+      float redc = blue(c);
+      float redcc = blue(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
-      if (redcc >= redc && b < 250 && b > 40 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc >= redc && b < 230 && b > 110 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(lineSw);
         stroke(c);
         line(x[i], y[i], x[j], y[j]);
@@ -115,13 +116,13 @@ void highlights() {
       y[i]=int(random(height));
       color c = s.get(int(x[i]), int(y[i]));
       color cc = s.get(int(x[j]), int(y[j]));
-      float redc = green(c);
-      float redcc = green(cc);
+      float redc = blue(c);
+      float redcc = blue(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
-      if (redcc >= redc && b > 235 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc >= redc && b > 200 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(.5);
-        stroke(255);
+        stroke(c);
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(2);
         point(x[i], y[i]);
@@ -138,7 +139,7 @@ void points() {
     color c = s.get(int(x[i]), int(y[i]));
     float b = brightness(c);
     if (b > 120) {
-      strokeWeight(2);
+      strokeWeight(3);
       stroke(c);
       point(x[i], y[i]);
     }
@@ -151,8 +152,8 @@ void points2() {
     y[i]=int(random(height));
     color c = s.get(int(x[i]), int(y[i]));
     float b = brightness(c);
-    if (b > 70 && b < 200) {
-      strokeWeight(random(1, 4));
+    if (b > 90 && b < 220) {
+      strokeWeight(random(1, 5));
       stroke(c);
       point(x[i], y[i]);
     }
