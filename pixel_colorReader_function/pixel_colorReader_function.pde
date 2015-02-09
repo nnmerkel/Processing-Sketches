@@ -28,9 +28,10 @@ void setup() {
 
 void draw() {
   noStroke();
-  //image(first, 0, 0);
-  fill(205);
-  rect(0, 0, width, height);
+  //comment/uncomment to see/hide the picture
+  image(first, 0, 0);
+  //fill(205);
+  //rect(0, 0, width, height);
   float resolution = xincrement*yincrement;
   for (int x = 0; x < width; x += xincrement) {
     for (int y = 0; y < height; y += yincrement) {
@@ -44,6 +45,7 @@ void draw() {
   }
 }
 
+//sample the first image
 void tile(int startx, int starty, int tileSizeX, int tileSizeY) {
   btotal = 0;
   int tileX = tileSizeX + startx;
@@ -57,6 +59,7 @@ void tile(int startx, int starty, int tileSizeX, int tileSizeY) {
   }
 }
 
+//sample the second image
 void tile2(int startx, int starty, int tileSizeX, int tileSizeY) {
   ctotal = 0;
   int tileX = tileSizeX + startx;
@@ -70,6 +73,8 @@ void tile2(int startx, int starty, int tileSizeX, int tileSizeY) {
   }
 }
 
+//these two functions should actully tile the images onto one another, but i find them
+//bulky because they generate a new PImage class for each box. maybe thats fine? not sure
 void firstImageTile(int startX, int startY) {
   PImage newFirst = first.get(startX, startY, xincrement, yincrement); 
   image(newFirst, startX, startY);
@@ -80,6 +85,7 @@ void secondImageTile(int startX, int startY) {
   image(newSecond, startX, startY);
 }
 
+//the boolean flips which side of "threshold" the boxes are displayed on
 void totalLessThan(int startX, int startY) {
   if (btotal < threshold) {
     stroke(255, 0, 0, 40);
@@ -89,6 +95,7 @@ void totalLessThan(int startX, int startY) {
   }
 }
 
+//the boolean flips which side of "threshold" the boxes are displayed on
 void totalGreaterThan(int startX, int startY) {
   if (btotal > threshold) {
     stroke(255, 0, 0, 40);
@@ -98,6 +105,8 @@ void totalGreaterThan(int startX, int startY) {
   }
 }
 
+//trying to get the sketch to output a pdf of the onscreen result, even if its
+//just the red grid lines
 void saveGrid() {
   beginRecord(PDF, "grid_####.pdf");
   //fill(255);
