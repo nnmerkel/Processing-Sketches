@@ -2,7 +2,7 @@ float yoff = 0.1;
 int functionCount = 200;
 
 void setup() {
-  size(displayWidth, displayHeight);
+  size(displayWidth*3, displayHeight);
 }
 
 void draw() {
@@ -11,7 +11,7 @@ void draw() {
   //looks bad with fill
   noFill();
   for (int i = 0; i < functionCount; i++) {
-    float opacity = map(i, 0, functionCount, (255-functionCount)/1.25, functionCount/1.25);
+    float opacity = map(i, 0, functionCount, (255-functionCount)/1.5, functionCount/1.5);
     stroke(255, opacity);
     snufflupagus();
   }
@@ -27,7 +27,7 @@ void snufflupagus() {
     float y = map(noise(xoff, yoff), 0, 1, 100, height-400);
     vertex(x, y); 
     //this sets how "spiky" each ribbon appears; .25 for desktopBG, .1-.15 for water
-    xoff += 0.15;
+    xoff += 0.1;
   }
   // this sets how "tight" each ribbon appears
   yoff += 0.03;
