@@ -11,6 +11,7 @@ float ctotal = 0;
 //block size
 int xincrement = 20;
 int yincrement = 20;
+float resolution = xincrement*yincrement;
 float threshold = 120;
 
 void setup() {
@@ -19,7 +20,7 @@ void setup() {
   second = loadImage("apple.jpg");
   cp5 = new ControlP5(this);
   Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(200).setBackgroundColor(color(0, 80)).setBackgroundHeight(106).setLabel("Menu");
-  cp5.addSlider("threshold").setPosition(4, 4).setSize(192, 20).setRange(0, 255).setGroup(g2);
+  cp5.addSlider("threshold").setPosition(4, 4).setSize(192, 20).setRange(0, 255).setGroup(g2).setValue(120);
   //make sure xincrement and yincrement are never set to 0 (a box cannot have 0 width) 
   cp5.addSlider("xincrement").setPosition(4, 28).setSize(192, 20).setRange(1, 200).setGroup(g2);
   cp5.addSlider("yincrement").setPosition(4, 52).setSize(192, 20).setRange(1, 200).setGroup(g2);
@@ -29,10 +30,9 @@ void setup() {
 void draw() {
   noStroke();
   //comment/uncomment to see/hide the picture
-  image(first, 0, 0);
-  //fill(205);
-  //rect(0, 0, width, height);
-  float resolution = xincrement*yincrement;
+  //image(first, 0, 0);
+  fill(205);
+  rect(0, 0, width, height);
   for (int x = 0; x < width; x += xincrement) {
     for (int y = 0; y < height; y += yincrement) {
       tile(x, y, xincrement, yincrement);
@@ -73,8 +73,7 @@ void tile2(int startx, int starty, int tileSizeX, int tileSizeY) {
   }
 }
 
-//these two functions should actully tile the images onto one another, but i find them
-//bulky because they generate a new PImage class for each box. maybe thats fine? not sure
+//these two functions should actully tile the images onto one another
 void firstImageTile(int startX, int startY) {
   PImage newFirst = first.get(startX, startY, xincrement, yincrement); 
   image(newFirst, startX, startY);
@@ -113,9 +112,10 @@ void saveGrid() {
   //stroke(255, 0, 0, 60);
   //rect(0, 0, width, height);
   noFill();
-  stroke(255, 0, 0, 60);
   for (int x = 0; x < width; x += xincrement) {
     for (int y = 0; y < height; y += yincrement) {
+      tile(x, y, xincrement, yincrement);
+      btotal = btotal / resolution;
       if (switchStyle==false) totalLessThan(x, y);
       else totalGreaterThan(x, y);
     }
