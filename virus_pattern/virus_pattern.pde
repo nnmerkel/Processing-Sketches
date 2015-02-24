@@ -1,26 +1,23 @@
 import processing.pdf.*;
 
+float divisor = 15;
+
 void setup() {
   //do not use p2d to render; it makes the bezier curves look steppy
-  size(3000, 1000); //PDF, "viruscover3.pdf");
+  size(1200, 600);//, PDF, "virusexp1.pdf");
   smooth(8);
-  background(0);
+  background(20);
 }
 
 void draw() {
   noStroke();
-  fill(0, 30);
+  fill(20, 30);
   rect(0, 0, width, height);
   noiseCurve();
   noiseCurve();
+  noiseCurve();
   curve();
   curve();
-  curve();
-  
-  //noLoop();
-  //println("finished");
-  //exit();
-  
 }
 
 //draw a curved line end to end
@@ -29,7 +26,7 @@ void curve() {
   float randb = random(0, width);
   float diam = randb-randa;
   noFill();
-  stroke(255);
+  stroke(255, 150);
   strokeWeight(1);
   bezier(randa, 0, randa, height/2, randb, height/2, randb, height);
   //draw solid circles at the endpoints
@@ -39,8 +36,8 @@ void curve() {
   ellipse(randb, height, 6, 6);
   //draw transparent circles, diameter based on length of curve
   fill(255, 70);
-  ellipse(randa, 0, diam/10, diam/10);
-  ellipse(randb, height, diam/10, diam/10);
+  ellipse(randa, 0, diam/divisor, diam/divisor);
+  ellipse(randb, height, diam/divisor, diam/divisor);
 }
 
 //curve using noise rather than random
@@ -54,7 +51,7 @@ void noiseCurve() {
   xoff = xoff + .1;
   x2off = x2off + .25;
   noFill();
-  stroke(255);
+  stroke(255, 150);
   strokeWeight(1);
   bezier(randa, 0, randa, height/2, randb, height/2, randb, height);
   //draw solid circles at the endpoints
@@ -64,14 +61,21 @@ void noiseCurve() {
   ellipse(randb, height, 6, 6);
   //draw transparent circles, diameter based on length of curve
   fill(255, 70);
-  ellipse(randa, 0, diam/10, diam/10);
-  ellipse(randb, height, diam/10, diam/10);
+  ellipse(randa, 0, diam/divisor, diam/divisor);
+  ellipse(randb, height, diam/divisor, diam/divisor);
 }
 
 void keyPressed() {
   if (key=='s') {
     saveFrame();
     println("frame saved");
+  }
+  if (key == 'p'|| key == 'P') {
+    beginRecord(PDF, "virusexp_####.pdf");
+  }
+  if (key == 'e'|| key == 'E') {
+    endRecord();
+    exit();
   }
 }
 
