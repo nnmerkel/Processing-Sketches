@@ -1,5 +1,6 @@
 import processing.pdf.*;
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 float divisor = 8;
 float diam2 = 8;
@@ -14,6 +15,14 @@ void setup() {
   //do not use p2d to render; it makes the bezier curves look steppy
   size(2200, 500);//, PDF, "virusexp1.pdf");
 >>>>>>> origin/master
+=======
+float divisor = 8;
+float smallDiam = 8; //normally 6
+
+void setup() {
+  //do not use p2d to render; it makes the bezier curves look steppy
+  size(1100, 1700);//, PDF, "virusexp1.pdf");
+>>>>>>> Stashed changes
   smooth(8);
   background(255);
 }
@@ -40,9 +49,15 @@ void curve() {
   bezier(randa, 0, randa, height/3, randb, height/1.5, randb, height);
   //draw solid circles at the endpoints
   noStroke();
+<<<<<<< Updated upstream
   fill(29, 99, 175);
   ellipse(randa, 0, diam2, diam2);
   ellipse(randb, height, diam2, diam2);
+=======
+  fill(255);
+  ellipse(randa, 0, smallDiam, smallDiam);
+  ellipse(randb, height, smallDiam, smallDiam);
+>>>>>>> Stashed changes
   //draw transparent circles, diameter based on length of curve
   fill(29, 99, 175, 70);
   ellipse(randa, 0, diam/divisor, diam/divisor);
@@ -68,9 +83,15 @@ void noiseCurve() {
   ellipse(randb, height/1.5, diam2, diam2);
   //draw solid circles at the endpoints
   noStroke();
+<<<<<<< Updated upstream
   fill(29, 99, 175);
   ellipse(randa, 0, diam2, diam2);
   ellipse(randb, height, diam2, diam2);
+=======
+  fill(255);
+  ellipse(randa, 0, smallDiam, smallDiam);
+  ellipse(randb, height, smallDiam, smallDiam);
+>>>>>>> Stashed changes
   //draw transparent circles, diameter based on length of curve
   fill(29, 99, 175, 70);
   ellipse(randa, 0, diam/divisor, diam/divisor);

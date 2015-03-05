@@ -6,23 +6,20 @@ HairlineArc [] h;
 OrangeHairlineArc [] y;
 CircleString [] c;
 
-int xtotal = 200; //number of purple arcs in the sketch
-int ttotal = 60; //number of orange arcs in the sketch
+int xtotal = 120; //number of purple arcs in the sketch
+int ttotal = 30; //number of orange arcs in the sketch
 int htotal = 250; //number of purple hairline  arcs in the sketch
-int ytotal = 250; //number of orange hairline  arcs in the sketch
+int ytotal = 100; //number of orange hairline  arcs in the sketch
 int ctotal = 0;
 
-// 179, 49, 136, 190 magenta
-// 234, 137, 38, 220 orange
-// 67, 164, 227, 180 blue
-color p = color(67, 164, 227, 180);
+color p = color(0, 114, 206, 100);
 // color of the thick strokes
-color o = color(179, 49, 136, 190);
+color o = color(101, 169, 105, 150);
 //background color
 color f = color(255);
 
 void setup() {
-  size(1000, 1000);//, PDF, "compcoretest4.pdf");
+  size(700, 700, PDF, "compcoretest6.pdf");
   smooth(8);
   c = new CircleString[ctotal];
   x = new PurpleArc[xtotal];
@@ -95,8 +92,8 @@ void draw() {
     c[i].display();
     popMatrix();
   }
-  //println("finished");
-  //exit();
+  println("finished");
+  exit();
 }
 
 void keyPressed() {

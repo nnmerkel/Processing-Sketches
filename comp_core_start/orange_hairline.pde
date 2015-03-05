@@ -4,14 +4,14 @@ class OrangeHairlineArc {
   float bAngle = int(random(-180, 180));
   //the shorter eAngle is, the shorter the arcs are
   //the shorter the arcs, the better the performance
-  float eAngle = bAngle + int(random(0, 14));
+  float eAngle = bAngle + int(random(4, 18));
   float d = int(random(300, height-50));
   float increment = random(.1, 1);
   float r;
   float directionFunct = random(1, 10);
   float direction;
   OrangeHairlineArc () {
-    r = random(5, 10);
+    r = random(2, 7);
     if (directionFunct < 5) {
       direction = 1;
     } else {

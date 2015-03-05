@@ -5,7 +5,7 @@ class PurpleArc {
   //the shorter eAngle is, the shorter the arcs are
   //the shorter the arcs, the better the performance
   float eAngle = bAngle + int(random(0, 40));
-  float d = int(random(200, height-400));
+  float d = int(random(200, height-300));
   float increment = random(.5, 3);
   float r;
   float directionFunct = random(1, 10);
@@ -25,7 +25,7 @@ class PurpleArc {
     float y = 0;
     strokeWeight(r);
     strokeCap(SQUARE);
-    stroke(p, d/8);
+    stroke(p);
     
     bAngle += increment * direction;
     eAngle += increment * direction;
