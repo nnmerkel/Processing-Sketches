@@ -11,7 +11,7 @@ String binary = "01";
 int index;
 
 void setup() {
-  size(2550, 3450, P2D);//, PDF, "secondTry.pdf");
+  size(800, 800, P2D);//, PDF, "secondTry.pdf");
   font = createFont("Monospaced", customSize, true);
   //SHAPE works with P2D renderer, otherwise comment out this line
   textMode(SHAPE);

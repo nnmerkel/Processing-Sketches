@@ -2,12 +2,12 @@ float yoff = 0.1;
 int functionCount = 200;
 
 void setup() {
-  size(displayWidth*3, displayHeight);
+  size(displayWidth, displayHeight);
 }
 
 void draw() {
   background(0);
-  frameRate(1);
+  //frameRate(1);
   //looks bad with fill
   noFill();
   for (int i = 0; i < functionCount; i++) {
@@ -27,7 +27,7 @@ void snufflupagus() {
     float y = map(noise(xoff, yoff), 0, 1, 100, height-400);
     vertex(x, y); 
     //this sets how "spiky" each ribbon appears; .25 for desktopBG, .1-.15 for water
-    xoff += 0.1;
+    xoff += 0.2;
   }
   // this sets how "tight" each ribbon appears
   yoff += 0.03;

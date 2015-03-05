@@ -1,11 +1,19 @@
 import processing.pdf.*;
 
+<<<<<<< HEAD
 float divisor = 8;
 float diam2 = 8;
 
 void setup() {
   //do not use p2d to render; it makes the bezier curves look steppy
   size(1100, 1700);//, PDF, "virusexp1.pdf");
+=======
+float divisor = 20;
+
+void setup() {
+  //do not use p2d to render; it makes the bezier curves look steppy
+  size(2200, 500);//, PDF, "virusexp1.pdf");
+>>>>>>> origin/master
   smooth(8);
   background(255);
 }

@@ -28,7 +28,7 @@ void draw() {
   //image(cam, 0, 0);
   //image(goldman, 0, 0);
   float boxWidth = 20;
-  float boxGap = 5; //the bigger the gap, the smaller the squares and the cooler it looks
+  float boxGap = 0; //the bigger the gap, the smaller the squares and the cooler it looks
   loadPixels();
   for (int x = 0; x < width; x += boxWidth) {
     for (int y = 0; y < height; y += boxWidth) {
