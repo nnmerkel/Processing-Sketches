@@ -1,17 +1,18 @@
 import processing.pdf.*;
 
-float divisor = 15;
+float divisor = 8;
+float diam2 = 8;
 
 void setup() {
   //do not use p2d to render; it makes the bezier curves look steppy
-  size(1200, 600);//, PDF, "virusexp1.pdf");
+  size(1100, 1700);//, PDF, "virusexp1.pdf");
   smooth(8);
-  background(20);
+  background(255);
 }
 
 void draw() {
   noStroke();
-  fill(20, 30);
+  fill(255, 30);
   rect(0, 0, width, height);
   noiseCurve();
   noiseCurve();
@@ -26,16 +27,16 @@ void curve() {
   float randb = random(0, width);
   float diam = randb-randa;
   noFill();
-  stroke(255, 150);
+  stroke(29, 99, 175, 150);
   strokeWeight(1);
-  bezier(randa, 0, randa, height/2, randb, height/2, randb, height);
+  bezier(randa, 0, randa, height/3, randb, height/1.5, randb, height);
   //draw solid circles at the endpoints
   noStroke();
-  fill(255);
-  ellipse(randa, 0, 6, 6);
-  ellipse(randb, height, 6, 6);
+  fill(29, 99, 175);
+  ellipse(randa, 0, diam2, diam2);
+  ellipse(randb, height, diam2, diam2);
   //draw transparent circles, diameter based on length of curve
-  fill(255, 70);
+  fill(29, 99, 175, 70);
   ellipse(randa, 0, diam/divisor, diam/divisor);
   ellipse(randb, height, diam/divisor, diam/divisor);
 }
@@ -51,16 +52,19 @@ void noiseCurve() {
   xoff = xoff + .1;
   x2off = x2off + .25;
   noFill();
-  stroke(255, 150);
+  stroke(29, 99, 175, 150);
   strokeWeight(1);
-  bezier(randa, 0, randa, height/2, randb, height/2, randb, height);
+  bezier(randa, 0, randa, height/3, randb, height/1.5, randb, height);
+  fill(29, 99, 175, 150);
+  ellipse(randa, height/3, diam2, diam2);
+  ellipse(randb, height/1.5, diam2, diam2);
   //draw solid circles at the endpoints
   noStroke();
-  fill(255);
-  ellipse(randa, 0, 6, 6);
-  ellipse(randb, height, 6, 6);
+  fill(29, 99, 175);
+  ellipse(randa, 0, diam2, diam2);
+  ellipse(randb, height, diam2, diam2);
   //draw transparent circles, diameter based on length of curve
-  fill(255, 70);
+  fill(29, 99, 175, 70);
   ellipse(randa, 0, diam/divisor, diam/divisor);
   ellipse(randb, height, diam/divisor, diam/divisor);
 }
