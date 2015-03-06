@@ -3,20 +3,20 @@ import controlP5.*;
 
 PImage s;
 ControlP5 cp5;
-int total = 5000;
+int total = 3000;
 int [] x = new int[total];
 int [] y = new int[total];
 float bigLimit = 0;
-float smallLimit = 18;
+float smallLimit = 12;
 float smallLowLimit = 2;
 float bigLowLimit = 50;
 float renderSpeed = 4;
 float lineSw = .5;
-float pointSw = 2;
+float pointSw = 1;
 
 void setup() {
-  size(640, 409, PDF, "ge1.pdf");
-  s = loadImage("ge.png");
+  size(416, 152, PDF, "triangles1.pdf");
+  s = loadImage("triangles.jpg");
   background(255);
   cp5 = new ControlP5(this);
   Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(220).setBackgroundColor(color(0, 60)).setBackgroundHeight(106).setLabel("Menu");
