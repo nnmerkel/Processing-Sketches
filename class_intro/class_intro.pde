@@ -3,7 +3,7 @@ int total = 50;
 
 
 void setup() {
-  size(300, 300);
+  size(800, 800);
   smooth(8);
   b = new Ball[total];
   for (int i = 0; i < total; i++) {

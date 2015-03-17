@@ -19,7 +19,7 @@ color o = color(101, 169, 105, 150);
 color f = color(255);
 
 void setup() {
-  size(700, 700, PDF, "compcoretest6.pdf");
+  size(700, 700);//, PDF, "compcoretest6.pdf");
   smooth(8);
   c = new CircleString[ctotal];
   x = new PurpleArc[xtotal];
@@ -92,8 +92,8 @@ void draw() {
     c[i].display();
     popMatrix();
   }
-  println("finished");
-  exit();
+  //println("finished");
+  //exit();
 }
 
 void keyPressed() {

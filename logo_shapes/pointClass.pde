@@ -1,27 +1,23 @@
 class Point {
   PVector location;
   PVector velocity;
+  PVector wind;
 
   Point () {
-    location = new PVector(x, y);
-    velocity = new PVector(random(-3, 3), random(-3, 3));
-  }
-
-  float getCoordinates(float thisX, float thisY) {
-    thisX = location.x;
-    thisY = location.y;
+    location = new PVector(0, 0);
+    velocity = new PVector(random(-.05, .05), random(-.05, .05));
+    wind = new PVector(random(-.125, .125), random(-.125, .125));
   }
 
   void run() {
     location.add(velocity);
-    if ((location.x > width) || (location.x < 0)) {
+    //velocity.sub(wind);
+    if (location.mag() > radius) {
       velocity.x = velocity.x * -1;
-    }
-    if ((location.y > height) || (location.y < 0)) {
       velocity.y = velocity.y * -1;
     }
-    stroke(0);
-    strokeWeight(5);
+    stroke(30, 131, 216, 100);
+    strokeWeight(strokeWeight);
     point(location.x, location.y);
   }
 }
