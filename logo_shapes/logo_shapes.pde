@@ -1,8 +1,9 @@
 import processing.pdf.*;
+import java.util.Calendar;
 
 boolean record;
 
-int totalPoints = 20;
+int shapeSides = 10;
 int innerPoints = 30;
 int mappedPoints;
 float radius = 300;
@@ -23,7 +24,7 @@ void setup() {
 }
 
 void draw() {
-  if (record) beginRecord(PDF, "logo_####.pdf");
+  if (record) beginRecord(PDF, timestamp() + ".pdf");
 
   //redraw background
   noStroke();
@@ -39,7 +40,7 @@ void draw() {
   for (int i = 0; i < innerPoints; i++) {
     for (int j = 0; j < innerPoints; j++) {
       p[i].run();
-      p[j].run();
+      //p[j].run();
       float d = dist(p[i].location.x, p[i].location.y, p[j].location.x, p[j].location.y);
       if (d <= lineDistance) {
         float opacityMap = map(d, 0, lineDistance, 255, 0);
@@ -63,7 +64,7 @@ void dynamicShape() {
   angle = 0;
   angleStep = 360/mappedPoints;
   beginShape(TRIANGLE_STRIP);
-  for (int i = 0; i < totalPoints; i++) {
+  for (int i = 0; i < shapeSides; i++) {
     float px = cos(radians(angle)) * radius;
     float py = sin(radians(angle)) * radius;
     vertex(px, py);
@@ -73,11 +74,12 @@ void dynamicShape() {
 }
 
 //stationary shape that will contain the points and be triangulated
+//the first point is ALWAYS (r, 0)
 void staticShape() {
   noFill();
-  angleStep = 360/totalPoints;
+  angleStep = 360/shapeSides;
   beginShape();
-  for (int i = 0; i < totalPoints; i++) {
+  for (int i = 0; i < shapeSides; i++) {
     float px = cos(radians(angle)) * radius;
     float py = sin(radians(angle)) * radius;
     vertex(px, py);
@@ -94,5 +96,11 @@ void keyReleased() {
   if (key == 'p'|| key == 'P') {
     record = true;
   }
+}
+
+// timestamp
+String timestamp() {
+  Calendar now = Calendar.getInstance();
+  return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", now);
 }
 

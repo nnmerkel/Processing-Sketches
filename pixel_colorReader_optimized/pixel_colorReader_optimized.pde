@@ -57,6 +57,7 @@ void draw()
   {
     savePDF = false;
     endRecord();
+    println("pdf saved");
     exit();
   }
 }
@@ -114,6 +115,7 @@ void dissect()
   if (dir.isDirectory()) 
   {
     String[] contents = dir.list();
+    println(contents.length + "images detected" + "\n");
     images = new PImage[contents.length]; 
     imageNames = new String[contents.length]; 
     for (int i = 0; i < contents.length; i++) 
@@ -126,7 +128,7 @@ void dissect()
         File childFile = new File(dir, contents[i]);        
         images[imageCount] = loadImage(childFile.getPath());
         imageNames[imageCount] = childFile.getName();
-        println(imageCount + " " + contents[i] + " " + childFile.getPath());
+        println("\n" + imageCount + " " + contents[i] + " " + childFile.getPath());
       }
       //removed else condition; we need the file loaded anyway (above), and if it is also the master,
       //do the work now 
@@ -215,7 +217,7 @@ void dissectMaster(PImage image)
     }
   }
   printArray(mValues);
-  findBestMatch(mValues, bValues);
+  //findBestMatch(mValues, bValues);
 }
 
 //this function compares each value in the mValues array to every other value in the bValues array
