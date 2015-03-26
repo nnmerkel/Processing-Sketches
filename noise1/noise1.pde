@@ -1,13 +1,13 @@
 import processing.pdf.*;
 import java.util.Calendar;
 
-float yoff = 0.1;
-int functionCount = 100;
+float yoff = 0.15;
+int functionCount = 130;
 
 boolean record;
 
 void setup() {
-  size(displayWidth, displayHeight);
+  size(displayWidth*2, displayHeight);
 }
 
 void draw() {
@@ -34,7 +34,7 @@ void snufflupagus() {
   // do stuff
   for (float x = 0; x <= width; x += 30) {
     // Calculate a y value according to noise, map to 
-    float y = map(noise(xoff, yoff), 0, 1, 1000, height-1000);
+    float y = map(noise(xoff, yoff), 0, 1, 1100, height-1000);
     vertex(x, y); 
     //this sets how "spiky" each ribbon appears; .25 for desktopBG, .1-.15 for water
     xoff += 0.07;
