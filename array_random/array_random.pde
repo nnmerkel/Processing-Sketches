@@ -3,21 +3,22 @@ import controlP5.*;
 
 PImage s;
 ControlP5 cp5;
-int total = 5000;
+int total = 6000;
 int [] x = new int[total];
 int [] y = new int[total];
-float bigLimit = 0;
-float smallLimit = 13;
-float smallLowLimit = 4;
+float bigLimit = 35;
+float smallLimit = 25;
+float smallLowLimit = 5;
 float bigLowLimit = 50;
 float renderSpeed = 4;
 float lineSw = .5;
 float pointSw;
+boolean record = false;
 
 void setup() {
-  size(1440, 1440);//, "triangles1.pdf");
-  s = loadImage("baskerville-specimen.jpg");
-  background(255);
+  size(2000, 1500);//, "triangles1.pdf");
+  s = loadImage("dnanew.jpg");
+  background(0);
   //cp5 = new ControlP5(this);
   //Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(220).setBackgroundColor(color(0, 60)).setBackgroundHeight(106).setLabel("Menu");
   //cp5.addSlider("total").setPosition(0, 0).setSize(200, 20).setRange(100, 10000).setValue(100);
@@ -28,15 +29,18 @@ void setup() {
 }
 
 void draw() {
+  if (record) beginRecord(PDF, "bg-test1.pdf");
   //frameRate(renderSpeed);
   //image(s, 0, 0);
-  overlayNorm();
+  overlay();
   //highlights();
   //points();
-  //points2();
-  //println("pdf saved");
-  //noLoop();
-  //exit();
+  points2();
+  if (record) {
+    println("pdf saved");
+    endRecord();
+    exit();
+  }
 }
 
 void overlay() {
@@ -46,35 +50,35 @@ void overlay() {
       y[i]=int(random(height));
       color c = s.get(int(x[i]), int(y[i]));
       color cc = s.get(int(x[j]), int(y[j]));
-      float redc = green(c);
-      float redcc = green(cc);
+      float redc = blue(c);
+      float redcc = blue(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
 
       //target the darkest pixels, but not the black background
-      if (redcc >= redc && b > 0 && b < 60 && distance > smallLowLimit && distance < smallLimit) {
-        strokeWeight(1);
-        stroke(20);
-        line(x[i], y[i], x[j], y[j]);
-        strokeWeight(3);
-        point(x[i], y[i]);
-        point(x[j], y[j]);
-      }
+      /*if (redcc >= redc && b > 0 && b < 60 && distance > smallLowLimit && distance < smallLimit) {
+       strokeWeight(1);
+       stroke(20);
+       line(x[i], y[i], x[j], y[j]);
+       strokeWeight(3);
+       point(x[i], y[i]);
+       point(x[j], y[j]);
+       }*/
 
-      //target the exact midtones
-      if (redcc >= redc && b > 60 && b < 180 && distance > smallLowLimit && distance < smallLimit) {
-        strokeWeight(1);
-        stroke(120);
+      //target the exact midtones, thinner lines
+      if (redcc > redc && b > 180 && b < 220 && distance > smallLowLimit && distance < bigLimit) {
+        strokeWeight(.5);
+        stroke(c);
         line(x[i], y[i], x[j], y[j]);
-        strokeWeight(3);
+        strokeWeight(2);
         point(x[i], y[i]);
         point(x[j], y[j]);
       }
 
       //target the brightest pixels, but not a white background
-      if (redcc >= redc && b > 200 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc > redc && b > 220 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(1);
-        stroke(255);
+        stroke(c);
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(3);
         point(x[i], y[i]);
@@ -153,7 +157,7 @@ void points2() {
     y[i]=int(random(height));
     color c = s.get(int(x[i]), int(y[i]));
     float b = brightness(c);
-    if (b > 40 && b < 180) {
+    if (b > 175 && b < 220) {
       strokeWeight(random(1, 5));
       stroke(c);
       point(x[i], y[i]);
@@ -169,7 +173,7 @@ void keyPressed() {
 
   if (key=='b'||key=='B')
   {
-    beginRecord(PDF, "typetest9.pdf");
+    beginRecord(PDF, "dna-new6.pdf");
     println("recording...");
   }
   //End Record
@@ -178,6 +182,9 @@ void keyPressed() {
     println("pdf saved");
     endRecord();
     exit();
+  }
+  if (key == 'p' || key == 'P') {
+    record = true;
   }
 }
 
