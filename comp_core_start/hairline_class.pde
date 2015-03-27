@@ -4,7 +4,7 @@ class HairlineArc {
   float bAngle = int(random(-180, 180));
   //the shorter eAngle is, the shorter the arcs are
   //the shorter the arcs, the better the performance
-  float eAngle = bAngle + int(random(0, 14));
+  float eAngle = bAngle + int(random(0, 34));
   float d = int(random(300, height-50));
   float increment = random(.5, 3);
   float r;
