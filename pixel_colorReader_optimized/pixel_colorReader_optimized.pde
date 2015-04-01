@@ -10,17 +10,18 @@ int imageCount = 1;
 
 boolean switchStyle = false;
 boolean savePDF = false;
+boolean reconstruct = false;
 float bTotal = 0;
 float mTotal = 0;
 float[] bValues;
 float[] mValues;
-float[] newValues;
+int[] newValues;
 
 //block size
-int xIncrement = 200;
-int yIncrement = 200;
+int xIncrement;
+int yIncrement;
 int tileCount;
-float resolution = xIncrement*yIncrement;
+float resolution;
 float threshold = 120;
 
 void setup() 
@@ -31,16 +32,34 @@ void setup()
 
   //control GUI
   cp5 = new ControlP5(this);
-  Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(200).setBackgroundColor(color(0, 80)).setBackgroundHeight(106).setLabel("Menu");
+  Group g2 = cp5
+    .addGroup("g2")
+    .setPosition(10, 20)
+    .setWidth(200)
+    .setBackgroundColor(color(0, 80))
+    .setBackgroundHeight(106)
+    .setLabel("Menu");
   //cp5.addSlider("threshold").setPosition(4, 4).setSize(192, 20).setRange(0, 255).setGroup(g2).setValue(120);
   //make sure xIncrement and yIncrement are never set to 0 (a box cannot have 0 width) 
-  cp5.addSlider("xIncrement").setPosition(4, 28).setSize(192, 20).setRange(1, 200).setGroup(g2);
-  cp5.addSlider("yIncrement").setPosition(4, 52).setSize(192, 20).setRange(1, 200).setGroup(g2);
+  cp5.addSlider("xIncrement")
+    .setPosition(4, 28)
+    .setSize(192, 20)
+    .setRange(1, 200)
+    .setGroup(g2)
+    .setValue(100);
+  cp5.addSlider("yIncrement")
+    .setPosition(4, 52)
+    .setSize(192, 20)
+    .setRange(1, 200)
+    .setGroup(g2)
+    .setValue(100);
   //cp5.addToggle("switchStyle").setPosition(4, 76).setSize(16, 16).setCaptionLabel("greater than").setGroup(g2);
 }
 
-void draw() 
+void draw()
 {
+  //resolution must be defined for each frame
+  resolution = xIncrement*yIncrement;
   if (savePDF) beginRecord(PDF, "grid_####.pdf");
   noStroke();
   //image(master, 0, 0);
@@ -139,9 +158,10 @@ void dissect()
         imageCount++;
       }
     }
-    //after we take care of the files, reconstruct the image
-    PImage sampleTile = images[1].get(200, 200, xIncrement, yIncrement);
-    image(sampleTile, 200, 200);
+    if (reconstruct)
+    {
+      //reconstruct(images[1], );
+    }
   }
 }
 
@@ -156,8 +176,21 @@ void dissectImage(PImage image)
   int yDim = image.height / yIncrement;
 
   //this test determines if there is a smaller grid leftover, in which case you still need to compute a bValue for it
-  if (image.width % xIncrement != 0) xDim++;
-  if (image.height % yIncrement != 0) yDim++;
+  int xLeftover = image.width % xIncrement;
+  int yLeftover = image.width % yIncrement;
+  
+  if (xLeftover != 0)
+  {
+    xDim++;
+    xIncrement = xIncrement - xLeftover;
+    println(xIncrement);
+  }
+  if (yLeftover != 0)
+  {
+    yIncrement = yIncrement - xLeftover;
+    yDim++;
+    println(yIncrement);
+  }
 
   //each tile gets its own bValue
   bValues = new float[xDim * yDim];
@@ -192,8 +225,10 @@ void dissectMaster(PImage image)
   //this will get your cut-and-dry grid count along x and y
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
-  
+
   //tileCount will be used later to reconstruct the collage, maybe?
+  //should be used to calculate the size of the recontruction array
+  //or i could just use mValues.length
   tileCount = xDim * yDim;
 
   //this test determines if there is a smaller grid leftover, in which case you still need to compute an mValue for it
@@ -245,11 +280,26 @@ void findBestMatch(float masterArray[], float brightnessArray[], int tileCount, 
     }
 
     //make a new array here to store each bestIndex, then extract those values in a different function and display them
-    newValues = new float[masterArray.length];
+    newValues = new int[masterArray.length];
     newValues[valueCounter] = bestIndex;
     valueCounter++;
   }
+  printArray(newValues);
   println(bestIndex, mValues[bestIndex], bValues[bestIndex]);
+}
+
+//after we take care of the files, reconstruct the images
+void reconstruct(PImage theImage, int tileIndex, int imageIndex, float startX, float startY) 
+{
+  for (int i = 0; i < mValues.length; i++)
+  {
+    //startX and startY should be multiples of i so that each tile can shift left or down accordingly
+    //startX = x * i;
+    //startY = y * i;
+    
+    //PImage sampleTile = theImage[imageIndex].get(startX, startY, xIncrement, yIncrement);
+    //image(sampleTile, startX, startY);
+  }
 }
 
 //trying to get the sketch to output a pdf of the onscreen result, even if its - UNUSED, see draw()
@@ -284,6 +334,9 @@ void keyReleased() {
   }
   if (key == 'd' || key == 'D') {
     dissect();
+  }
+  if (key == 'f' || key == 'F') {
+    //reconstruct();
   }
 }
 

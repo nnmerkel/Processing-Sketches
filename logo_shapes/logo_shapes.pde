@@ -4,8 +4,9 @@ import java.util.Calendar;
 boolean record;
 
 int shapeSides = 10;
-int innerPoints = 30;
+int innerPoints = 40;
 int mappedPoints;
+int frameCounter;
 float radius = 300;
 float angle;
 int angleStep;
@@ -32,7 +33,7 @@ void draw() {
   rect(0, 0, width, height);
 
   //draw the shape and render the points
-  stroke(30, 131, 216, 100);
+  stroke(30, 131, 216, 180);
   strokeWeight(1);
   pushMatrix();
   translate(width/2, height/2);
@@ -51,6 +52,10 @@ void draw() {
     }
   }
   popMatrix();
+  saveFrame("animation_####.tif");
+  println("frame saved");
+  frameCounter++;
+  if (frameCounter == 300) exit();
   if (record) {
     endRecord();
     record = false;
