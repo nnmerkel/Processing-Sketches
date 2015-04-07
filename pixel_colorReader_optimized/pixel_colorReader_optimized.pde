@@ -35,25 +35,26 @@ void setup()
   Group g2 = cp5
     .addGroup("g2")
     .setPosition(10, 20)
-    .setWidth(200)
-    .setBackgroundColor(color(0, 80))
-    .setBackgroundHeight(106)
-    .setLabel("Menu");
+      .setWidth(200)
+        .setBackgroundColor(color(0, 80))
+          .setBackgroundHeight(106)
+            .setLabel("Menu");
   //cp5.addSlider("threshold").setPosition(4, 4).setSize(192, 20).setRange(0, 255).setGroup(g2).setValue(120);
   //make sure xIncrement and yIncrement are never set to 0 (a box cannot have 0 width) 
   cp5.addSlider("xIncrement")
     .setPosition(4, 28)
-    .setSize(192, 20)
-    .setRange(1, 200)
-    .setGroup(g2)
-    .setValue(100);
+      .setSize(192, 20)
+        .setRange(1, 200)
+          .setGroup(g2)
+            .setValue(100);
   cp5.addSlider("yIncrement")
     .setPosition(4, 52)
-    .setSize(192, 20)
-    .setRange(1, 200)
-    .setGroup(g2)
-    .setValue(100);
+      .setSize(192, 20)
+        .setRange(1, 200)
+          .setGroup(g2)
+            .setValue(100);
   //cp5.addToggle("switchStyle").setPosition(4, 76).setSize(16, 16).setCaptionLabel("greater than").setGroup(g2);
+  //selectFolder("Select a folder to process:", "folderSelected");
 }
 
 void draw()
@@ -126,6 +127,14 @@ void totalGreaterThan(int startX, int startY) {
   }
 }
 
+void folderSelected(File selection) {
+  if (selection == null) {
+    println("Window was closed or the user hit cancel.");
+  } else {
+    println("User selected " + selection.getAbsolutePath());
+  }
+}
+
 //cut apart each image in the folder
 void dissect() 
 {
@@ -134,13 +143,13 @@ void dissect()
   if (dir.isDirectory()) 
   {
     String[] contents = dir.list();
-    println(contents.length + "images detected" + "\n");
+    println(contents.length, "images detected" + ":", dir.list()); //PROBLEM LINE <-----------------includes DS_Store in file counting
     images = new PImage[contents.length]; 
     imageNames = new String[contents.length]; 
     for (int i = 0; i < contents.length; i++) 
     {
 
-      // skip hidden files and folders starting with a dot, load .png files only
+      // skip hidden files and folders starting with a dot
       if (contents[i].charAt(0) == '.') continue;
       else
       {
@@ -149,18 +158,14 @@ void dissect()
         imageNames[imageCount] = childFile.getName();
         println(imageCount + " " + contents[i] + " " + childFile.getPath());
       } 
-      if (contents[i].toLowerCase().equals("master.png") || contents[i].toLowerCase().equals("master.jpg")) 
+      if (contents[i].toLowerCase().startsWith("master")) 
       {
         dissectMaster(images[imageCount]);
       } else
       {
         dissectImage(images[imageCount]);
-        imageCount++;
       }
-    }
-    if (reconstruct)
-    {
-      //reconstruct(images[1], );
+      imageCount++;
     }
   }
 }
@@ -178,7 +183,7 @@ void dissectImage(PImage image)
   //this test determines if there is a smaller grid leftover, in which case you still need to compute a bValue for it
   int xLeftover = image.width % xIncrement;
   int yLeftover = image.width % yIncrement;
-  
+
   if (xLeftover != 0)
   {
     xDim++;
@@ -187,13 +192,16 @@ void dissectImage(PImage image)
   }
   if (yLeftover != 0)
   {
-    yIncrement = yIncrement - xLeftover;
+    yIncrement = yIncrement - yLeftover;
     yDim++;
     println(yIncrement);
   }
 
+  //now we can define the grid size
+  tileCount = xDim * yDim;
+
   //each tile gets its own bValue
-  bValues = new float[xDim * yDim];
+  bValues = new float[tileCount];
   println("the array is", xDim, "by", yDim);
 
   //run the dissection itself
@@ -226,17 +234,28 @@ void dissectMaster(PImage image)
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
 
-  //tileCount will be used later to reconstruct the collage, maybe?
-  //should be used to calculate the size of the recontruction array
-  //or i could just use mValues.length
+  //this test determines if there is a smaller grid leftover, in which case you still need to compute a bValue for it
+  int xLeftover = image.width % xIncrement;
+  int yLeftover = image.width % yIncrement;
+
+  if (xLeftover != 0)
+  {
+    xDim++;
+    xIncrement = xIncrement - xLeftover;
+    println(xIncrement);
+  }
+  if (yLeftover != 0)
+  {
+    yIncrement = yIncrement - yLeftover;
+    yDim++;
+    println(yIncrement);
+  }
+
+  //now we can define the grid size
   tileCount = xDim * yDim;
 
-  //this test determines if there is a smaller grid leftover, in which case you still need to compute an mValue for it
-  if (image.width % xIncrement != 0) xDim++;
-  if (image.height % yIncrement != 0) yDim++;
-
   //each tile gets its own mValue
-  mValues = new float[xDim * yDim];
+  mValues = new float[tileCount];
 
   //run dissection on the master
   for (int x = 0; x < image.width; x += xIncrement) 
@@ -255,16 +274,18 @@ void dissectMaster(PImage image)
       tileIndex++;
     }
   }
-  printArray(mValues);
-  findBestMatch(mValues, bValues, tileCount, image);
+  //printArray(mValues);
+  findBestMatch(mValues, bValues);
+  reconstruct(images[1], 47, 0, 0, tileCount);
 }
 
 //this function compares each value in the mValues array to every other value in the bValues array
 //to find the closest possible match, then test display the tile image
-void findBestMatch(float masterArray[], float brightnessArray[], int tileCount, PImage image)
+void findBestMatch(float masterArray[], float brightnessArray[])
 {
   int bestIndex = 0;
   int valueCounter = 0;
+  newValues = new int[masterArray.length];
   for (int i = 0; i < masterArray.length; i++)
   {
     float bestDiff = abs(masterArray[i] - brightnessArray[0]);
@@ -276,12 +297,11 @@ void findBestMatch(float masterArray[], float brightnessArray[], int tileCount, 
         //here’s a potential match; don’t stop now as there could be a better match later
         bestIndex = j;
         bestDiff = diff;
+        //println(bestIndex, bestDiff, masterArray[i], brightnessArray[j]);
       }
+      //make a new array here to store each bestIndex, then extract those values in a different function and display them
+      newValues[valueCounter] = bestIndex;
     }
-
-    //make a new array here to store each bestIndex, then extract those values in a different function and display them
-    newValues = new int[masterArray.length];
-    newValues[valueCounter] = bestIndex;
     valueCounter++;
   }
   printArray(newValues);
@@ -289,17 +309,18 @@ void findBestMatch(float masterArray[], float brightnessArray[], int tileCount, 
 }
 
 //after we take care of the files, reconstruct the images
-void reconstruct(PImage theImage, int tileIndex, int imageIndex, float startX, float startY) 
+void reconstruct(PImage theImage, int tileIndex, int startX, int startY, int tileCount) 
 {
-  for (int i = 0; i < mValues.length; i++)
+  for (int x = 0; x < width; x += xIncrement)
   {
-    //startX and startY should be multiples of i so that each tile can shift left or down accordingly
-    //startX = x * i;
-    //startY = y * i;
-    
-    //PImage sampleTile = theImage[imageIndex].get(startX, startY, xIncrement, yIncrement);
-    //image(sampleTile, startX, startY);
+    for (int y = 0; y < height; y += yIncrement)
+    {
+      //PImage [] sampleTile = new PImage[tileCount];
+      PImage sampleTile = theImage.get(x, y, xIncrement, yIncrement);
+      image(sampleTile, x, y);
+    }
   }
+  println("it worked");
 }
 
 //trying to get the sketch to output a pdf of the onscreen result, even if its - UNUSED, see draw()
@@ -336,7 +357,9 @@ void keyReleased() {
     dissect();
   }
   if (key == 'f' || key == 'F') {
-    //reconstruct();
+    reconstruct = true;
+    //reconstruct(images[1], 47, startX, startY, tileCount);
+    //reconstruct(images[], bestIndex[i], x, y);
   }
 }
 
