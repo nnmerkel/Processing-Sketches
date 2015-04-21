@@ -3,7 +3,7 @@ import java.util.Calendar;
 
 boolean record;
 
-int shapeSides = 10;
+int shapeSides = 3;
 int innerPoints = 40;
 int mappedPoints;
 int frameCounter;
@@ -52,10 +52,10 @@ void draw() {
     }
   }
   popMatrix();
-  saveFrame("animation_####.tif");
-  println("frame saved");
-  frameCounter++;
-  if (frameCounter == 300) exit();
+  //saveFrame("animation_####.tif");
+  //println("frame saved");
+  //frameCounter++;
+  //if (frameCounter == 300) exit();
   if (record) {
     endRecord();
     record = false;

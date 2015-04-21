@@ -1,46 +1,61 @@
+/**
+ * explore different combinations of drawing methods 
+ *
+ * KEYS
+ * s                   : save timestamped png
+ * p                   : save single-frame pdf
+ * b/e                 : begin/end recording multiple-frame pdf
+ * backspace           : clear background
+ */
+
 import processing.pdf.*;
 import controlP5.*;
+import java.util.Calendar;
 
 PImage s;
 ControlP5 cp5;
 int total = 6000;
 int [] x = new int[total];
 int [] y = new int[total];
-float bigLimit = 20;
 float smallLimit = 12;
 float smallLowLimit = 4;
-float bigLowLimit = 50;
-float renderSpeed = 4;
 float lineSw = .5;
-float pointSw;
+float pointSw = 1;
 boolean record = false;
+boolean clear = false;
+
+//coloring options
+boolean falseColor = false;
+float saturationValue = 80;
+float brightnessValue = 0;
+color falseSwatch = color(HSB, 360, 100, 100);
+
 
 void setup() {
-  size(1200, 610);//, "triangles1.pdf");
-  s = loadImage("dna-long.png");
-  background(255);
-  //cp5 = new ControlP5(this);
-  //Group g2 = cp5.addGroup("g2").setPosition(10, 20).setWidth(220).setBackgroundColor(color(0, 60)).setBackgroundHeight(106).setLabel("Menu");
-  //cp5.addSlider("total").setPosition(0, 0).setSize(200, 20).setRange(100, 10000).setValue(100);
-  //cp5.addSlider("smallLimit").setPosition(0, 0).setSize(200, 20).setRange(4, 500).setGroup(g2);
-  //cp5.addSlider("renderSpeed").setPosition(0, 22).setSize(200, 20).setRange(1, 60).setGroup(g2);
-  //cp5.addSlider("lineSw").setPosition(0, 44).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(g2);
-  //cp5.addSlider("pointSw").setPosition(0, 66).setSize(200, 20).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(g2);
+  size(884, 1024);
+  s = loadImage("n2.jpg");
+  //background(0);
+  setupGUI();
 }
 
 void draw() {
-  if (record) beginRecord(PDF, "dna-long1.pdf");
-  //frameRate(renderSpeed);
-  //image(s, 0, 0);
+  if (record) beginRecord(PDF, timestamp() + ".pdf");
   overlay();
   //highlights();
   //points();
-  points2();
+  //points2();
+  if (clear) {
+    fill(0);
+    noStroke();
+    rect(0, 0, width, height);
+    clear = false;
+  }
   if (record) {
     println("pdf saved");
     endRecord();
     exit();
   }
+  drawGUI();
 }
 
 void overlay() {
@@ -54,11 +69,16 @@ void overlay() {
       float redcc = blue(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
+      float opacityMap = map(distance, 0, smallLimit, 0, 255);
 
       //target the darkest pixels, but not the black background
-      /*if (redcc >= redc && b > 0 && b < 60 && distance > smallLowLimit && distance < smallLimit) {
+      /*if (redcc > redc && b > 0 && b < 60 && distance > smallLowLimit && distance < smallLimit) {
        strokeWeight(1);
-       stroke(20);
+       if (falseColor) {
+       stroke(falseSwatch, opacityMap);
+       } else {
+       stroke(c);
+       }
        line(x[i], y[i], x[j], y[j]);
        strokeWeight(3);
        point(x[i], y[i]);
@@ -66,9 +86,14 @@ void overlay() {
        }*/
 
       //target the exact midtones, thinner lines
-      if (redcc < redc && b > 180 && b < 220 && distance > smallLowLimit && distance < bigLimit) {
+      if (redcc > redc && b > 180 && b < 220 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(.5);
-        stroke(c);
+        if (falseColor) {
+          colorMode(HSB);
+          stroke(h, saturationValue, b, opacityMap);
+        } else {
+          stroke(c);
+        }
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(2);
         point(x[i], y[i]);
@@ -76,9 +101,13 @@ void overlay() {
       }
 
       //target the brightest pixels, but not a white background
-      if (redcc < redc && b > 220 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+      if (redcc > redc && b > 220 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(1);
-        stroke(c);
+        if (falseColor) {
+          stroke(falseSwatch, opacityMap);
+        } else {
+          stroke(c);
+        }
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(3);
         point(x[i], y[i]);
@@ -100,10 +129,15 @@ void overlayNorm() {
       float redcc = blue(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
+      float opacityMap = map(distance, 0, smallLimit, 0, 255);
       pointSw = random(.5, 2);
       if (redcc < redc && b < 240 && b > 20 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(lineSw);
-        stroke(c);
+        if (falseColor) {
+          stroke(falseSwatch, opacityMap);
+        } else {
+          stroke(c);
+        }
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(pointSw);
         point(x[i], y[i]);
@@ -125,9 +159,14 @@ void highlights() {
       float redcc = blue(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
+      float opacityMap = map(distance, 0, smallLimit, 0, 255);
       if (redcc >= redc && b > 200 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
         strokeWeight(.5);
-        stroke(c);
+        if (falseColor) {
+          stroke(falseSwatch, opacityMap);
+        } else {
+          stroke(c);
+        }
         line(x[i], y[i], x[j], y[j]);
         strokeWeight(pointSw);
         point(x[i], y[i]);
@@ -145,7 +184,11 @@ void points() {
     float b = brightness(c);
     if (b > 120) {
       strokeWeight(3);
-      stroke(c);
+      if (falseColor) {
+        stroke(falseSwatch);
+      } else {
+        stroke(c);
+      }
       point(x[i], y[i]);
     }
   }
@@ -159,7 +202,11 @@ void points2() {
     float b = brightness(c);
     if (b > 175 && b < 220) {
       strokeWeight(random(1, 5));
-      stroke(c);
+      if (falseColor) {
+        stroke(falseSwatch);
+      } else {
+        stroke(c);
+      }
       point(x[i], y[i]);
     }
   }
@@ -167,13 +214,12 @@ void points2() {
 
 void keyPressed() {
   if (key == 's') {
-    saveFrame();
+    saveFrame(timestamp() + ".png");
     println("frame saved");
   }
-
   if (key=='b'||key=='B')
   {
-    beginRecord(PDF, "dna-adduct2.pdf");
+    beginRecord(PDF, timestamp() + ".pdf");
     println("recording...");
   }
   //End Record
@@ -186,5 +232,12 @@ void keyPressed() {
   if (key == 'p' || key == 'P') {
     record = true;
   }
+  if (key == BACKSPACE) {
+    clear = true;
+  }
+}
+
+String timestamp() {
+  return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", Calendar.getInstance());
 }
 

@@ -143,7 +143,7 @@ void dissect()
   if (dir.isDirectory()) 
   {
     String[] contents = dir.list();
-    println(contents.length, "images detected" + ":", dir.list()); //PROBLEM LINE <-----------------includes DS_Store in file counting
+    println(contents.length, "images detected:", dir.list()); //PROBLEM LINE <-----------------includes DS_Store in file counting
     images = new PImage[contents.length]; 
     imageNames = new String[contents.length]; 
     for (int i = 0; i < contents.length; i++) 
@@ -188,13 +188,13 @@ void dissectImage(PImage image)
   {
     xDim++;
     xIncrement = xIncrement - xLeftover;
-    println(xIncrement);
+    println("xIncrement =", xIncrement, xLeftover);
   }
   if (yLeftover != 0)
   {
     yIncrement = yIncrement - yLeftover;
     yDim++;
-    println(yIncrement);
+    println("yIncrement =", yIncrement, yLeftover);
   }
 
   //now we can define the grid size
@@ -216,7 +216,7 @@ void dissectImage(PImage image)
       bTotal = bTotal / resolution;
 
       //store average brightness for this tile in a master array
-      bValues[tileIndex] = bTotal;
+      bValues[tileIndex] = bTotal; //PROBLEM LINE <----------------------------ArrayIndexOutOfBoundsException: [num]
       println(tileIndex, "image #" + imageCount, imageNames[imageCount], x, y, bTotal);
       tileIndex++;
     }
