@@ -58,38 +58,3 @@ void drawGUI() {
   cp5.draw();
 }
 
-void updateColors(boolean stat) {
-  ControllerGroup ctrl = cp5.getGroup("menu");
-
-  for (int i = 0; i < sliders.length; i++) {
-    if (sliders[i] == null) break;
-    if (stat == false) {
-      sliders[i].setColorLabel(color(50));
-      sliders[i].captionLabel().setColorBackground(0x99ffffff);
-    } else {
-      sliders[i].setColorLabel(color(200));
-      sliders[i].captionLabel().setColorBackground(0x99000000);
-    }
-  }
-  for (int i = 0; i < ranges.length; i++) {
-    if (ranges[i] == null) break;
-    if (stat == false) {
-      ranges[i].setColorLabel(color(50));
-      ranges[i].captionLabel().setColorBackground(0x99ffffff);
-    } else {
-      ranges[i].setColorLabel(color(200));
-      ranges[i].captionLabel().setColorBackground(0x99000000);
-    }
-  }
-  for (int i = 0; i < toggles.length; i++) {
-    if (toggles[i] == null) break;
-    if (stat == false) {
-      toggles[i].setColorLabel(color(50));
-      toggles[i].captionLabel().setColorBackground(0x99ffffff);
-    } else {
-      toggles[i].setColorLabel(color(200));
-      toggles[i].captionLabel().setColorBackground(0x99000000);
-    }
-  }
-}
-
