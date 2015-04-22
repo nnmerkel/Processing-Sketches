@@ -42,7 +42,7 @@ float shadowLineSw = .5;
 float shadowPointSw = 1;
 
 //midtones
-boolean useMidtones = true;
+boolean useMidtones = false;
 boolean midtonesFalseColor = false;
 float midtonesSaturation = 80;
 float midtonesBrightness = 80;
@@ -53,20 +53,20 @@ float midtonesLineSw = .5;
 float midtonesPointSw = 1;
 
 //highlights
-boolean useHighlights = false;
+boolean useHighlights = true;
 boolean highlightsFalseColor = false;
 float highlightsSaturation = 80;
 float highlightsBrightness = 80;
 float highlightsHue = 40;
-float lowHighlights = 220;
+float lowHighlights = 200;
 float highHighlights = 255;
-float highlightsLineSw = .5;
-float highlightsPointSw = 1;
+float highlightsLineSw = 1;
+float highlightsPointSw = 1.5;
 
 
 void setup() {
-  size(640+guiOffset, 640);
-  s = loadImage("eam.jpg");
+  size(884+guiOffset, 1024, P2D);
+  s = loadImage("n2.jpg");
   background(0);
   fill(60);
   rect(0, 0, guiOffset, height);
@@ -95,7 +95,7 @@ void draw() {
     exit();
   }
   popMatrix();
-  drawGUI();
+  //drawGUI();
 }
 
 void overlay() {
