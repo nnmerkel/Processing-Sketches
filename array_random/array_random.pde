@@ -65,8 +65,8 @@ float highlightsPointSw = 1;
 
 
 void setup() {
-  size(884+guiOffset, 1024);
-  s = loadImage("n2.jpg");
+  size(640+guiOffset, 640);
+  s = loadImage("eam.jpg");
   background(0);
   fill(60);
   rect(0, 0, guiOffset, height);
