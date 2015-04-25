@@ -58,18 +58,14 @@ boolean highlightsFalseColor = false;
 float highlightsSaturation = 80;
 float highlightsBrightness = 80;
 float highlightsHue = 40;
-float lowHighlights = 185;
 float highHighlights = 255;
 float highlightsLineSw = 1;
 float highlightsPointSw = 2;
 
 
 void setup() {
-  size(884, 1024);
-  //textMode(SHAPE);
-  //hint(ENABLE_NATIVE_FONTS);
-  s = loadImage("n2-burn.jpg");
-  beginRecord(PDF, timestamp() + ".pdf");
+  size(1768+guiOffset, 2048);
+  s = loadImage("n2-4.jpg");
   background(0);
   //fill(60);
   //rect(0, 0, guiOffset, height);
