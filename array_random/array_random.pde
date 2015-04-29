@@ -21,10 +21,10 @@ Toggle[] toggles;
 int guiOffset = 300;
 
 PImage s;
-int total = 30000;
+int total = 10000;
 int [] x = new int[total];
 int [] y = new int[total];
-float smallLimit = 35;
+float smallLimit = 25;
 float smallLowLimit = 4;
 boolean record = false;
 boolean clear = false;
@@ -58,17 +58,19 @@ boolean highlightsFalseColor = false;
 float highlightsSaturation = 80;
 float highlightsBrightness = 80;
 float highlightsHue = 40;
+float lowHighlights = 215;
 float highHighlights = 255;
 float highlightsLineSw = 1;
 float highlightsPointSw = 2;
 
 
 void setup() {
-  size(1768+guiOffset, 2048);
-  s = loadImage("n2-4.jpg");
-  background(0);
+  size(884, 1024);
+  s = loadImage("n2-burn.jpg");
   //fill(60);
   //rect(0, 0, guiOffset, height);
+  beginRecord(PDF, timestamp() + ".pdf");
+  background(0);
   //setupGUI();
 }
 
@@ -93,11 +95,11 @@ void draw() {
     endRecord();
     exit();
   }
-  println("pdf saved");
-    endRecord();
-    exit();
   //popMatrix();
   //drawGUI();
+  println("pdf saved");
+  endRecord();
+  exit();
 }
 
 void overlay() {
@@ -174,15 +176,15 @@ void points() {
     color c = s.get(int(x[i]), int(y[i]));
     float b = brightness(c);
     /*if (b > 120) {
-      strokeWeight(pointSw);
-      if (falseColor) {
-        colorMode(HSB, 360, 100, 100, 255);
-        stroke(h, saturationValue, brightnessValue);
-      } else {
-        stroke(c);
-      }
-      point(x[i], y[i]);
-    }*/
+     strokeWeight(pointSw);
+     if (falseColor) {
+     colorMode(HSB, 360, 100, 100, 255);
+     stroke(h, saturationValue, brightnessValue);
+     } else {
+     stroke(c);
+     }
+     point(x[i], y[i]);
+     }*/
   }
 }
 
@@ -193,15 +195,15 @@ void points2() {
     color c = s.get(int(x[i]), int(y[i]));
     float b = brightness(c);
     /*if (b > 175 && b < 220) {
-      strokeWeight(random(1, 5));
-      if (falseColor) {
-        colorMode(HSB, 360, 100, 100, 255);
-        stroke(h, saturationValue, brightnessValue);
-      } else {
-        stroke(c);
-      }
-      point(x[i], y[i]);
-    }*/
+     strokeWeight(random(1, 5));
+     if (falseColor) {
+     colorMode(HSB, 360, 100, 100, 255);
+     stroke(h, saturationValue, brightnessValue);
+     } else {
+     stroke(c);
+     }
+     point(x[i], y[i]);
+     }*/
   }
 }
 
