@@ -21,7 +21,7 @@ Toggle[] toggles;
 int guiOffset = 300;
 
 PImage s;
-int total = 10000;
+int total = 1000;
 int [] x = new int[total];
 int [] y = new int[total];
 float smallLimit = 25;
@@ -65,18 +65,18 @@ float highlightsPointSw = 2;
 
 
 void setup() {
-  size(884, 1024);
+  size(884+guiOffset, 1024);
   s = loadImage("n2-burn.jpg");
-  //fill(60);
-  //rect(0, 0, guiOffset, height);
-  beginRecord(PDF, timestamp() + ".pdf");
   background(0);
-  //setupGUI();
+  fill(60);
+  rect(0, 0, guiOffset, height);
+  //beginRecord(PDF, timestamp() + ".pdf");
+  setupGUI();
 }
 
 void draw() {
-  //pushMatrix();
-  //translate(guiOffset, 0);
+  pushMatrix();
+  translate(guiOffset, 0);
   noFill();
   colorMode(RGB, 255, 255, 255, 255);
   if (record) beginRecord(PDF, timestamp() + ".pdf");
@@ -95,11 +95,11 @@ void draw() {
     endRecord();
     exit();
   }
-  //popMatrix();
+  popMatrix();
   //drawGUI();
-  println("pdf saved");
-  endRecord();
-  exit();
+  //println("pdf saved");
+  //endRecord();
+  //exit();
 }
 
 void overlay() {
