@@ -20,12 +20,12 @@ int[] newValues;
 //block size
 int xIncrement;
 int yIncrement;
+int newX, newY;
 int tileCount;
 float resolution;
 float threshold = 120;
 
-void setup() 
-{
+void setup() {
   size(800, 800);
   //load master image to be collaged
   //master = loadImage("master.jpg");
@@ -57,24 +57,20 @@ void setup()
   //selectFolder("Select a folder to process:", "folderSelected");
 }
 
-void draw()
-{
+void draw() {
   //resolution must be defined for each frame
   resolution = xIncrement*yIncrement;
   if (savePDF) beginRecord(PDF, "grid_####.pdf");
   noStroke();
   //image(master, 0, 0);
-  for (int x = 0; x < width; x += xIncrement) 
-  {
-    for (int y = 0; y < height; y += yIncrement) 
-    {
+  for (int x = 0; x < width; x += xIncrement) {
+    for (int y = 0; y < height; y += yIncrement) {
       stroke(255, 0, 0, 40);
       noFill();
       rect(x, y, xIncrement, yIncrement);
     }
   }
-  if (savePDF) 
-  {
+  if (savePDF) {
     savePDF = false;
     endRecord();
     println("pdf saved");
@@ -82,17 +78,29 @@ void draw()
   }
 }
 
+//function to return value of x- and yIncrement
+void controlEvent(ControlEvent theControlEvent) {
+  if (theControlEvent.isController()) {
+    if (theControlEvent.controller().name().equals("xIncrement")) {
+      newX = (int)theControlEvent.controller().getValue();
+      xIncrement = newX;
+    }
+    if (theControlEvent.controller().name().equals("yIncrement")) {
+      newY = (int)theControlEvent.controller().getValue();
+      yIncrement = newY;
+    }
+  }
+}
+
 //sample the master image
-void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY) 
-{
+void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY) {
+  resolution = tileSizeX * tileSizeY;
   bTotal = 0;
   mTotal = 0;
   int tileX = tileSizeX + startX;
   int tileY = tileSizeY + startY;
-  for (int x = startX; x < tileX; x++) 
-  {
-    for (int y = startY; y < tileY; y++) 
-    {
+  for (int x = startX; x < tileX; x++) {
+    for (int y = startY; y < tileY; y++) {
       color c1 = theImage.get(x, y);
       float b1 = brightness(c1);
       bTotal = bTotal + b1;
@@ -136,33 +144,33 @@ void folderSelected(File selection) {
 }
 
 //cut apart each image in the folder
-void dissect() 
-{
+void dissect() {
   //find directory of sample images NOTE: it doesn't work well if the folder is in "data"
   File dir = new File(sketchPath, "../samples");
-  if (dir.isDirectory()) 
-  {
+  if (dir.isDirectory()) {
     String[] contents = dir.list();
-    println(contents.length, "images detected:", dir.list()); //PROBLEM LINE <-----------------includes DS_Store in file counting
-    images = new PImage[contents.length]; 
-    imageNames = new String[contents.length]; 
-    for (int i = 0; i < contents.length; i++) 
-    {
+    printArray(contents);
 
-      // skip hidden files and folders starting with a dot
+    //check for hidden files here so that the loop runs for the appropriate length
+    int directoryLength = contents.length;
+    if (contents[0].equals(".DS_Store")) //directoryLength--;
+      println("directoryLength =", directoryLength);
+
+    images = new PImage[directoryLength]; 
+    imageNames = new String[directoryLength]; 
+    for (int i = 0; i < directoryLength; i++) {
+      // skip hidden files, especially .DS_Store
       if (contents[i].charAt(0) == '.') continue;
-      else
-      {
-        File childFile = new File(dir, contents[i]);        
-        images[imageCount] = loadImage(childFile.getPath()); //PROBLEM LINE <-----------------ArrayIndexOutOfBoundsException: 3
+      else {
+        File childFile = new File(dir, contents[i]);
+        //this next line is also a problem in that if you try to run dissection twice without quitting, you will get the same error
+        images[imageCount] = loadImage(childFile.getPath()); //PROBLEM LINE <---------ArrayIndexOutOfBoundsException: 3
         imageNames[imageCount] = childFile.getName();
-        println(imageCount + " " + contents[i] + " " + childFile.getPath());
+        println(imageCount, contents[i], childFile.getPath());
       } 
-      if (contents[i].toLowerCase().startsWith("master")) 
-      {
+      if (contents[i].toLowerCase().startsWith("master")) {
         dissectMaster(images[imageCount]);
-      } else
-      {
+      } else {
         dissectImage(images[imageCount]);
       }
       imageCount++;
@@ -170,9 +178,10 @@ void dissect()
   }
 }
 
+
+
 //cut apart all the sample images
-void dissectImage(PImage image)
-{
+void dissectImage(PImage image) {
   println("dissecting", imageNames[imageCount], "now");
   int tileIndex = 0;
 
@@ -183,18 +192,11 @@ void dissectImage(PImage image)
   //this test determines if there is a smaller grid leftover, in which case you still need to compute a bValue for it
   int xLeftover = image.width % xIncrement;
   int yLeftover = image.width % yIncrement;
-
-  if (xLeftover != 0)
-  {
+  if (xLeftover != 0) {
     xDim++;
-    xIncrement = xIncrement - xLeftover;
-    println("xIncrement =", xIncrement, xLeftover);
   }
-  if (yLeftover != 0)
-  {
-    yIncrement = yIncrement - yLeftover;
+  if (yLeftover != 0) {
     yDim++;
-    println("yIncrement =", yIncrement, yLeftover);
   }
 
   //now we can define the grid size
@@ -204,29 +206,45 @@ void dissectImage(PImage image)
   bValues = new float[tileCount];
   println("the array is", xDim, "by", yDim);
 
-  //run the dissection itself
-  for (int x = 0; x < image.width; x += xIncrement) 
-  {
-    for (int y = 0; y < image.height; y += yIncrement) 
-    {
-      bTotal = 0;
-
-      //count each tile
-      tile(image, x, y, xIncrement, yIncrement);
-      bTotal = bTotal / resolution;
-
-      //store average brightness for this tile in a master array
-      bValues[tileIndex] = bTotal; //PROBLEM LINE <----------------------------ArrayIndexOutOfBoundsException: [num]
-      println(tileIndex, "image #" + imageCount, imageNames[imageCount], x, y, bTotal);
-      tileIndex++;
+  //run the test again but with correct tileCount to limit the loop
+  for (int i = 0; i < tileCount; i++) {
+    if (xLeftover != 0) {
+      xIncrement = xLeftover;
+      println("xIncrement =", xIncrement);
+    } else {
+      xIncrement = newX;
     }
+    if (yLeftover != 0) {
+      yIncrement = yLeftover;
+      println("yIncrement =", yIncrement);
+    } else {
+      yIncrement = newY;
+    }
+
+    int x, y;
+    //get the coordinates of the top-left corner of every tile
+    x = (i % xDim) * xIncrement;
+    y = int(i / xDim) * yIncrement;
+
+    //run the dissection itself
+    bTotal = 0;
+
+    //count each tile
+    tile(image, x, y, xIncrement, yIncrement);
+    bTotal = bTotal / resolution;
+
+    //store average brightness for this tile in a master array
+    bValues[tileIndex] = bTotal; //PROBLEM LINE <----------------------------ArrayIndexOutOfBoundsException: [num]
+    println(tileIndex, "image #" + imageCount, imageNames[imageCount], x, y, bTotal);
+    tileIndex++;
   }
 }
 
+
+
 //run the dissection on the master. identical to dissectImage except the values
 //get put into a separate array for comparison later
-void dissectMaster(PImage image)
-{
+void dissectMaster(PImage image) {
   println("dissecting the master now");
   int tileIndex = 0;
 
@@ -237,63 +255,71 @@ void dissectMaster(PImage image)
   //this test determines if there is a smaller grid leftover, in which case you still need to compute a bValue for it
   int xLeftover = image.width % xIncrement;
   int yLeftover = image.width % yIncrement;
-
-  if (xLeftover != 0)
-  {
+  if (xLeftover != 0) {
     xDim++;
-    xIncrement = xIncrement - xLeftover;
-    println(xIncrement);
   }
-  if (yLeftover != 0)
-  {
-    yIncrement = yIncrement - yLeftover;
+  if (yLeftover != 0) {
     yDim++;
-    println(yIncrement);
   }
 
   //now we can define the grid size
   tileCount = xDim * yDim;
 
-  //each tile gets its own mValue
+  //each tile gets its own bValue
   mValues = new float[tileCount];
+  println("the array is", xDim, "by", yDim);
 
-  //run dissection on the master
-  for (int x = 0; x < image.width; x += xIncrement) 
-  {
-    for (int y = 0; y < image.height; y += yIncrement) 
-    {
-      mTotal = 0;
-
-      //count each tile
-      tile(image, x, y, xIncrement, yIncrement);
-      mTotal = mTotal / resolution;
-
-      //store average brightness for this tile in a master array
-      mValues[tileIndex] = mTotal;
-      println(tileIndex, "master" + imageCount, imageNames[imageCount], x, y, mTotal);
-      tileIndex++;
+  //run the test again but with correct tileCount to limit the loop
+  for (int i = 0; i < tileCount; i++) {
+    if (xLeftover != 0) {
+      xIncrement = xLeftover;
+      println("xIncrement =", xIncrement);
+    } else {
+      xIncrement = newX;
     }
+    if (yLeftover != 0) {
+      yIncrement = yLeftover;
+      println("yIncrement =", yIncrement);
+    } else {
+      yIncrement = newY;
+    }
+
+    int x, y;
+    //get the coordinates of the top-left corner of every tile
+    x = (i % xDim) * xIncrement;
+    y = int(i / xDim) * yIncrement;
+
+    //run the dissection itself
+    mTotal = 0;
+
+    //count each tile
+    tile(image, x, y, xIncrement, yIncrement);
+    mTotal = mTotal / resolution;
+
+    //store average brightness for this tile in a master array
+    mValues[tileIndex] = mTotal; //PROBLEM LINE <----------------------------ArrayIndexOutOfBoundsException: [num]
+    println(tileIndex, "image #" + imageCount, imageNames[imageCount], x, y, mTotal);
+    tileIndex++;
   }
   //printArray(mValues);
   findBestMatch(mValues, bValues);
-  reconstruct(images[1], 47, 0, 0, tileCount);
+  reconstruct(images[1], tileIndex, xDim, yDim, tileCount);
+  println(images[1], tileIndex, xDim, yDim, tileCount);
 }
+
+
 
 //this function compares each value in the mValues array to every other value in the bValues array
 //to find the closest possible match, then test display the tile image
-void findBestMatch(float masterArray[], float brightnessArray[])
-{
+void findBestMatch(float masterArray[], float brightnessArray[]) {
   int bestIndex = 0;
   int valueCounter = 0;
   newValues = new int[masterArray.length];
-  for (int i = 0; i < masterArray.length; i++)
-  {
+  for (int i = 0; i < masterArray.length; i++) {
     float bestDiff = abs(masterArray[i] - brightnessArray[0]);
-    for (int j = 0; j < brightnessArray.length; j++)
-    {
+    for (int j = 0; j < brightnessArray.length; j++) {
       float diff = abs(masterArray[i] - brightnessArray[j]);
-      if (diff <= bestDiff) //check back here on the less than/equal to tiebreaker
-      {
+      if (diff <= bestDiff) {//check back here on the less than/equal to tiebreaker
         //here’s a potential match; don’t stop now as there could be a better match later
         bestIndex = j;
         bestDiff = diff;
@@ -305,23 +331,27 @@ void findBestMatch(float masterArray[], float brightnessArray[])
     valueCounter++;
   }
   printArray(newValues);
-  println(bestIndex, mValues[bestIndex], bValues[bestIndex]);
+  //println(bestIndex, mValues[bestIndex], bValues[bestIndex]);
 }
 
+
+
 //after we take care of the files, reconstruct the images
-void reconstruct(PImage theImage, int tileIndex, int startX, int startY, int tileCount) 
-{
-  for (int x = 0; x < width; x += xIncrement)
-  {
-    for (int y = 0; y < height; y += yIncrement)
-    {
-      //PImage [] sampleTile = new PImage[tileCount];
-      PImage sampleTile = theImage.get(x, y, xIncrement, yIncrement);
-      image(sampleTile, x, y);
-    }
+void reconstruct(PImage theImage, int tileIndex, int xDim, int yDim, int tileCount) {  
+  //actual loop
+  int x, y;
+  for (int i = 0; i < tileCount; i++) {
+    //get the coordinates of the top-left corner of every tile
+    x = (i % xDim) * xIncrement;
+    y = int(i / xDim) * yIncrement;
+    PImage sampleTile = theImage.get(x, y, xIncrement, yIncrement);
+    line(x, y, xIncrement, yIncrement);
+    image(sampleTile, x, y);
+    println(x, y);
   }
-  println("it worked");
 }
+
+
 
 //trying to get the sketch to output a pdf of the onscreen result, even if its - UNUSED, see draw()
 //just the red grid lines
@@ -340,6 +370,8 @@ void saveGrid() {
   println("pdf saved");
   exit();
 }
+
+
 
 void keyReleased() {
   if (key == 's' || key == 'S') {
