@@ -59,6 +59,9 @@ void setup() {
 
 void draw() {
   //resolution must be defined for each frame
+  //fill(205);
+  //rect(0, 0, width, height);
+  noFill();
   resolution = xIncrement*yIncrement;
   if (savePDF) beginRecord(PDF, "grid_####.pdf");
   noStroke();
