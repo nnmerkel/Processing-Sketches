@@ -3,15 +3,15 @@ import java.util.Calendar;
 
 boolean record;
 
-int shapeSides = 3;
-int innerPoints = 40;
+int shapeSides = 1;
+int innerPoints = 70;
 int mappedPoints;
 int frameCounter;
 float radius = 300;
 float angle;
 int angleStep;
-float lineDistance = 200;
-float strokeWeight = 5;
+float lineDistance = 140;
+float strokeWeight = 2;
 
 Point [] p;
 
@@ -36,7 +36,7 @@ void draw() {
   stroke(30, 131, 216, 180);
   strokeWeight(1);
   pushMatrix();
-  translate(width/2, height/2);
+  //translate(width/2, height/2);
   staticShape();
   for (int i = 0; i < innerPoints; i++) {
     for (int j = 0; j < innerPoints; j++) {
@@ -48,6 +48,9 @@ void draw() {
         stroke(30, 131, 216, opacityMap);
         strokeWeight(1);
         line(p[i].location.x, p[i].location.y, p[j].location.x, p[j].location.y);
+        stroke(30, 131, 216, 30);
+        line(p[i].location.x, 0, p[i].location.x, height);
+        line(0, p[i].location.y, width, p[i].location.y);
       }
     }
   }
