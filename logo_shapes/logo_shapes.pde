@@ -4,7 +4,7 @@ import java.util.Calendar;
 boolean record;
 
 int shapeSides = 1;
-int innerPoints = 70;
+int innerPoints = 100;
 int mappedPoints;
 int frameCounter;
 float radius = 300;
@@ -33,7 +33,7 @@ void draw() {
   rect(0, 0, width, height);
 
   //draw the shape and render the points
-  stroke(30, 131, 216, 180);
+  //stroke(30, 131, 216, 180);
   strokeWeight(1);
   pushMatrix();
   //translate(width/2, height/2);
@@ -45,12 +45,13 @@ void draw() {
       float d = dist(p[i].location.x, p[i].location.y, p[j].location.x, p[j].location.y);
       if (d <= lineDistance) {
         float opacityMap = map(d, 0, lineDistance, 255, 0);
-        stroke(30, 131, 216, opacityMap);
+        stroke(240, 240, 240, opacityMap);
+        //stroke(30, 131, 216, opacityMap);
         strokeWeight(1);
         line(p[i].location.x, p[i].location.y, p[j].location.x, p[j].location.y);
-        stroke(30, 131, 216, 30);
-        line(p[i].location.x, 0, p[i].location.x, height);
-        line(0, p[i].location.y, width, p[i].location.y);
+        stroke(30, 131216, 30);
+        //line(p[i].location.x, 0, p[i].location. height);
+        //line(0, p[i].location.y, width, p[i].location.y);
       }
     }
   }

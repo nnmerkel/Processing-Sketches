@@ -59,8 +59,8 @@ void setup() {
 
 void draw() {
   //resolution must be defined for each frame
-  //fill(205);
-  //rect(0, 0, width, height);
+  fill(205);
+  rect(0, 0, width, height);
   noFill();
   resolution = xIncrement*yIncrement;
   if (savePDF) beginRecord(PDF, "grid_####.pdf");
@@ -348,7 +348,7 @@ void reconstruct(PImage theImage, int tileIndex, int xDim, int yDim, int tileCou
     x = (i % xDim) * xIncrement;
     y = int(i / xDim) * yIncrement;
     PImage sampleTile = theImage.get(x, y, xIncrement, yIncrement);
-    line(x, y, xIncrement, yIncrement);
+    //line(x, y, xIncrement, yIncrement);
     image(sampleTile, x, y);
     println(x, y);
   }
