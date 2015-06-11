@@ -1,28 +1,34 @@
 import processing.pdf.*;
-
+import java.util.Calendar;
+boolean record = false;
 PImage s;
-int total = 80000;
+int total = 8000;
 int maxArea, offset;
 int [] x = new int[total];
 int [] y = new int[total];
 
 void setup() {
-  size(1600, 900);//, PDF, "ae3.pdf");
+  size(1201, 798);//, PDF, "ae3.pdf");
   maxArea = height * width;
-  s = loadImage("ae.jpg");
+  s = loadImage("pig.jpg");
   //image(s, 0, 0);
 }
 
 void draw() {
-  background(0); 
+  if (record) beginRecord(PDF, timestamp() + ".pdf");
+  noStroke();
+  background(0);
   //alternate function that will grab the color of each pixel, this is necessary for all
   //of my image editing ideas; before all else, i need to tell processing how to read the
   //image pixel by pixel
-  //gridDraw(5, 5);
+  gridDraw(17, 17);
   //gridDraw2(12, 12);
   //gridDraw2(17, 17);
-  //println("finished");
-  //exit();  
+  if (record) {
+    endRecord();
+    record = false;
+    println("pdf saved");
+  }
 }
 
 //each of these functions may repeat a lot of code, but they must be separate so that 
@@ -32,13 +38,19 @@ void gridDraw(int xincrement, int yincrement) {
     for (int y = 0; y < height; y+=yincrement) {
       color c = s.pixels[y*width+x];
       float b = brightness(c);
-      if (b > 40) {
-        stroke(b);
-        strokeWeight(2);
-        point(x, y);
-        strokeWeight(.5);
-        line(x, y, x+xincrement, y);
-        line(x, y, x, y+yincrement);
+      if (b > 100) {
+        //stroke(c);
+        //strokeWeight(random(2, 5));
+        //point(x, y);
+        //strokeWeight(.5);
+        //line(x, y, x+xincrement, y);
+        //line(x, y, x, y+yincrement);
+        //rectMode(CENTER);
+        ellipseMode(CENTER);
+        fill(c);
+        int r = (int)random(10, 22);
+        ellipse(x, y, r, r);
+        //rect(x, y, r, r);
       }
     }
   }
@@ -93,5 +105,22 @@ void gridDraw4(int xincrement, int yincrement) {
       }
     }
   }
+}
+
+void keyReleased() {
+  if (key == 's') {
+    saveFrame();
+    println("frame saved");
+  }
+
+  if (key == 'p') {
+    record = true;
+  }
+}
+
+// timestamp
+String timestamp() {
+  Calendar now = Calendar.getInstance();
+  return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", now);
 }
 

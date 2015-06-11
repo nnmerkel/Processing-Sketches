@@ -3,20 +3,20 @@ import java.util.Calendar;
 
 boolean record;
 
-int shapeSides = 1;
-int innerPoints = 100;
+int shapeSides = 6;
+int innerPoints = 90;
 int mappedPoints;
 int frameCounter;
 float radius = 300;
 float angle;
 int angleStep;
-float lineDistance = 140;
-float strokeWeight = 2;
+float lineDistance = 180;
+float strokeWeight;
 
 Point [] p;
 
 void setup() {
-  size(800, 800);
+  size(850, 1100);
   //initialize points
   p = new Point[innerPoints];
   for (int i = 0; i < innerPoints; i++) {
@@ -34,23 +34,25 @@ void draw() {
 
   //draw the shape and render the points
   //stroke(30, 131, 216, 180);
+  stroke(242, 118, 48, 180);
   strokeWeight(1);
   pushMatrix();
-  //translate(width/2, height/2);
+  translate(width/2, height/2);
   staticShape();
   for (int i = 0; i < innerPoints; i++) {
+    p[i].run();
     for (int j = 0; j < innerPoints; j++) {
-      p[i].run();
-      //p[j].run();
+      strokeWeight = random(2, 6);
+      
       float d = dist(p[i].location.x, p[i].location.y, p[j].location.x, p[j].location.y);
       if (d <= lineDistance) {
         float opacityMap = map(d, 0, lineDistance, 255, 0);
-        stroke(240, 240, 240, opacityMap);
+        stroke(242, 118, 48, opacityMap);
         //stroke(30, 131, 216, opacityMap);
         strokeWeight(1);
         line(p[i].location.x, p[i].location.y, p[j].location.x, p[j].location.y);
-        stroke(30, 131216, 30);
-        //line(p[i].location.x, 0, p[i].location. height);
+        //stroke(63, 83, 170, 20);
+        //line(p[i].location.x, 0, p[i].location.x, height);
         //line(0, p[i].location.y, width, p[i].location.y);
       }
     }
