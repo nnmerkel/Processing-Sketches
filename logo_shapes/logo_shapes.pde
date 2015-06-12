@@ -3,6 +3,7 @@ import java.util.Calendar;
 
 boolean record;
 
+PImage s;
 int shapeSides = 6;
 int innerPoints = 90;
 int mappedPoints;
@@ -16,7 +17,8 @@ float strokeWeight;
 Point [] p;
 
 void setup() {
-  size(850, 1100);
+  size(765, 984);
+  s = loadImage("ss-pig.png");
   //initialize points
   p = new Point[innerPoints];
   for (int i = 0; i < innerPoints; i++) {
@@ -29,21 +31,21 @@ void draw() {
 
   //redraw background
   noStroke();
-  fill(0);
-  rect(0, 0, width, height);
+  //fill(0);
+  //rect(0, 0, width, height);
+  image(s, 0, 0);
 
   //draw the shape and render the points
   //stroke(30, 131, 216, 180);
   stroke(242, 118, 48, 180);
   strokeWeight(1);
   pushMatrix();
-  translate(width/2, height/2);
-  staticShape();
+  //translate(width/2, height/2);
+  //staticShape();
   for (int i = 0; i < innerPoints; i++) {
     p[i].run();
     for (int j = 0; j < innerPoints; j++) {
       strokeWeight = random(2, 6);
-      
       float d = dist(p[i].location.x, p[i].location.y, p[j].location.x, p[j].location.y);
       if (d <= lineDistance) {
         float opacityMap = map(d, 0, lineDistance, 255, 0);

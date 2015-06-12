@@ -2,7 +2,7 @@ import processing.pdf.*;
 import java.util.Calendar;
 
 float yoff = 0.15;
-int functionCount = 130;
+int functionCount = 255;
 
 boolean record;
 
@@ -17,7 +17,7 @@ void draw() {
   //looks bad with fill
   noFill();
   for (int i = 0; i < functionCount; i++) {
-    float opacity = map(i, 0, functionCount, (255-functionCount)/1.5, functionCount/1.5);
+    float opacity = map(i, 0, 255, 50, functionCount);
     stroke(0, opacity);
     snufflupagus();
   }
@@ -37,7 +37,7 @@ void snufflupagus() {
     float y = map(noise(xoff, yoff), 0, 1, 1100, height-1000);
     vertex(x, y); 
     //this sets how "spiky" each ribbon appears; .25 for desktopBG, .1-.15 for water
-    xoff += 0.07;
+    xoff += 0.035;
   }
   // this sets how "tight" each ribbon appears
   yoff += 0.03;
