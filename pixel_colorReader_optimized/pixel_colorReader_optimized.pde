@@ -26,7 +26,7 @@ float resolution;
 float threshold = 120;
 
 void setup() {
-  size(800, 800);
+  size(929, 1331);
   //load master image to be collaged
   //master = loadImage("master.jpg");
 
@@ -59,8 +59,8 @@ void setup() {
 
 void draw() {
   //resolution must be defined for each frame
-  fill(205);
-  rect(0, 0, width, height);
+  //fill(205);
+  //rect(0, 0, width, height);
   noFill();
   resolution = xIncrement*yIncrement;
   if (savePDF) beginRecord(PDF, "grid_####.pdf");
