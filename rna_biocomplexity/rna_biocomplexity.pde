@@ -1,5 +1,5 @@
 float yoff = 0.0;
-int increment = 10;
+int increment = 20;
 color from = color(94, 138, 180, 100);
 color to = color(232, 119, 34, 255);
 PImage p;
@@ -39,7 +39,7 @@ void draw() {
     noFill();
     strokeWeight(1);
     stroke(255);
-    xoff += 0.05;
+    xoff += 0.5;
   }
   // increment y dimension for noise
   yoff += 0.01;
