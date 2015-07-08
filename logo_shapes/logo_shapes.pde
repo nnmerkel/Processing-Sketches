@@ -18,7 +18,7 @@ Point [] p;
 
 void setup() {
   size(765, 984);
-  s = loadImage("ss-pig.png");
+  //s = loadImage("ss-pig.png");
   //initialize points
   p = new Point[innerPoints];
   for (int i = 0; i < innerPoints; i++) {
@@ -31,9 +31,9 @@ void draw() {
 
   //redraw background
   noStroke();
-  //fill(0);
-  //rect(0, 0, width, height);
-  image(s, 0, 0);
+  fill(0, 100);
+  rect(0, 0, width, height);
+  //image(s, 0, 0);
 
   //draw the shape and render the points
   //stroke(30, 131, 216, 180);

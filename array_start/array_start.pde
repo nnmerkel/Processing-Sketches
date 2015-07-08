@@ -10,7 +10,7 @@ int [] y = new int[total];
 void setup() {
   size(1201, 798);//, PDF, "ae3.pdf");
   maxArea = height * width;
-  s = loadImage("pig.jpg");
+  s = loadImage("fractal1.jpg");
   //image(s, 0, 0);
 }
 

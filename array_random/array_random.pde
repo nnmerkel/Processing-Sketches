@@ -65,8 +65,8 @@ float highlightsPointSw = 2;
 
 
 void setup() {
-  size(884+guiOffset, 1024);
-  s = loadImage("n2-burn.jpg");
+  size(1699+guiOffset, 1024);
+  s = loadImage("fractal1.jpg");
   background(0);
   fill(60);
   rect(0, 0, guiOffset, height);
@@ -81,9 +81,6 @@ void draw() {
   colorMode(RGB, 255, 255, 255, 255);
   if (record) beginRecord(PDF, timestamp() + ".pdf");
   overlay();
-  //highlights();
-  //points();
-  //points2();
   if (clear) {
     fill(0);
     noStroke();
@@ -96,7 +93,7 @@ void draw() {
     exit();
   }
   popMatrix();
-  //drawGUI();
+  drawGUI();
   //println("pdf saved");
   //endRecord();
   //exit();
@@ -107,6 +104,9 @@ void overlay() {
     for (int j = 0; j < total; j++) {
       x[i]=int(random(width));
       y[i]=int(random(height));
+      x[j]=int(random(width));
+      y[j]=int(random(height));
+      println(width, height);
       color c = s.get(int(x[i]), int(y[i]));
       color cc = s.get(int(x[j]), int(y[j]));
       float redc = blue(c);
@@ -163,6 +163,7 @@ void overlay() {
           strokeWeight(highlightsPointSw);
           point(x[i], y[i]);
           point(x[j], y[j]);
+          println("regeryjerjyjgwebekebetbh");
         }
       }
     }

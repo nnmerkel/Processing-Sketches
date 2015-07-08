@@ -25,7 +25,7 @@ class Point {
     //stroke(30, 131, 216, 100); //original blue
     stroke(242, 118, 48, 100); //NIMML orange
     strokeWeight(strokeWeight);
-    for (int x = 0; x < width; x++) {
+    /*for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
         color c = s.get((int)location.x, (int)location.y);
         float b = brightness(c);
@@ -34,7 +34,7 @@ class Point {
         }
       }
     }
-    println(velocity);
+    println(velocity);*/
     point(location.x, location.y);
   }
 }
