@@ -21,10 +21,10 @@ Toggle[] toggles;
 int guiOffset = 300;
 
 PImage s;
-int total = 1000;
+int total = 20000;
 int [] x = new int[total];
 int [] y = new int[total];
-float smallLimit = 25;
+float smallLimit = 20;
 float smallLowLimit = 4;
 boolean record = false;
 boolean clear = false;
@@ -36,10 +36,10 @@ boolean useShadows = false;
 float shadowSaturation = 80;
 float shadowBrightness = 80;
 float shadowHue = 40;
-float lowShadows = 10;
-float highShadows = 60;
+float lowShadows = 60;
+float highShadows = 100;
 float shadowLineSw = .5;
-float shadowPointSw = 1;
+float shadowPointSw = 1.5;
 
 //midtones
 boolean useMidtones = false;
@@ -48,7 +48,7 @@ float midtonesSaturation = 80;
 float midtonesBrightness = 80;
 float midtonesHue = 40;
 float lowMidtones = 100;
-float highMidtones = 150;
+float highMidtones = 190;
 float midtonesLineSw = .5;
 float midtonesPointSw = 1;
 
@@ -58,28 +58,30 @@ boolean highlightsFalseColor = false;
 float highlightsSaturation = 80;
 float highlightsBrightness = 80;
 float highlightsHue = 40;
-float lowHighlights = 215;
+float lowHighlights = 238;
 float highHighlights = 255;
-float highlightsLineSw = 1;
-float highlightsPointSw = 2;
+float highlightsLineSw = .5;
+float highlightsPointSw = 1.5;
 
 
 void setup() {
-  size(1699+guiOffset, 1024);
+  size(1500, 904, PDF, timestamp() + ".pdf");
   s = loadImage("fractal1.jpg");
-  background(0);
-  fill(60);
-  rect(0, 0, guiOffset, height);
   //beginRecord(PDF, timestamp() + ".pdf");
-  setupGUI();
+  background(0);
+  //fill(60);
+  //rect(0, 0, guiOffset, height);
+  //setupGUI();
 }
 
 void draw() {
-  pushMatrix();
-  translate(guiOffset, 0);
+  //pushMatrix();
+  //translate(guiOffset, 0);
+  println("recording...");
   noFill();
+  //image(s, 0, 0, width, height);
   colorMode(RGB, 255, 255, 255, 255);
-  if (record) beginRecord(PDF, timestamp() + ".pdf");
+  //if (record) beginRecord(PDF, timestamp() + ".pdf");
   overlay();
   if (clear) {
     fill(0);
@@ -87,16 +89,13 @@ void draw() {
     rect(0, 0, width, height);
     clear = false;
   }
-  if (record) {
+  //if (record) {
     println("pdf saved");
-    endRecord();
+    //endRecord();
     exit();
-  }
-  popMatrix();
-  drawGUI();
-  //println("pdf saved");
-  //endRecord();
-  //exit();
+  //}
+  //popMatrix();
+  //drawGUI();
 }
 
 void overlay() {
@@ -106,7 +105,6 @@ void overlay() {
       y[i]=int(random(height));
       x[j]=int(random(width));
       y[j]=int(random(height));
-      println(width, height);
       color c = s.get(int(x[i]), int(y[i]));
       color cc = s.get(int(x[j]), int(y[j]));
       float redc = blue(c);
@@ -163,7 +161,6 @@ void overlay() {
           strokeWeight(highlightsPointSw);
           point(x[i], y[i]);
           point(x[j], y[j]);
-          println("regeryjerjyjgwebekebetbh");
         }
       }
     }
