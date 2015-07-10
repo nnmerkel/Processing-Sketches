@@ -21,10 +21,10 @@ Toggle[] toggles;
 int guiOffset = 300;
 
 PImage s;
-int total = 20000;
+int total = 2000;
 int [] x = new int[total];
 int [] y = new int[total];
-float smallLimit = 20;
+float smallLimit = 50;
 float smallLowLimit = 4;
 boolean record = false;
 boolean clear = false;
@@ -42,18 +42,18 @@ float shadowLineSw = .5;
 float shadowPointSw = 1.5;
 
 //midtones
-boolean useMidtones = false;
+boolean useMidtones = true;
 boolean midtonesFalseColor = false;
 float midtonesSaturation = 80;
 float midtonesBrightness = 80;
 float midtonesHue = 40;
-float lowMidtones = 100;
-float highMidtones = 190;
-float midtonesLineSw = .5;
-float midtonesPointSw = 1;
+float lowMidtones = 140;
+float highMidtones = 170;
+float midtonesLineSw = 1;
+float midtonesPointSw = 2;
 
 //highlights
-boolean useHighlights = true;
+boolean useHighlights = false;
 boolean highlightsFalseColor = false;
 float highlightsSaturation = 80;
 float highlightsBrightness = 80;
