@@ -21,10 +21,10 @@ Toggle[] toggles;
 int guiOffset = 300;
 
 PImage s;
-int total = 2000;
+int total = 100;
 int [] x = new int[total];
 int [] y = new int[total];
-float smallLimit = 50;
+float smallLimit = 35;
 float smallLowLimit = 4;
 boolean record = false;
 boolean clear = false;
@@ -32,17 +32,17 @@ boolean clear = false;
 //drawing methods
 //shadows
 boolean shadowFalseColor = false;
-boolean useShadows = false;
+boolean useShadows = true;
 float shadowSaturation = 80;
 float shadowBrightness = 80;
 float shadowHue = 40;
-float lowShadows = 60;
-float highShadows = 100;
+float lowShadows = 0;
+float highShadows = 50;
 float shadowLineSw = .5;
-float shadowPointSw = 1.5;
+float shadowPointSw = 2;
 
 //midtones
-boolean useMidtones = true;
+boolean useMidtones = false;
 boolean midtonesFalseColor = false;
 float midtonesSaturation = 80;
 float midtonesBrightness = 80;
@@ -65,35 +65,39 @@ float highlightsPointSw = 1.5;
 
 
 void setup() {
-  size(1500, 904, PDF, timestamp() + ".pdf");
-  s = loadImage("fractal1.jpg");
-  //beginRecord(PDF, timestamp() + ".pdf");
-  background(0);
-  //fill(60);
+  size(1000, 550);
+  s = loadImage("cinet-alt.jpg");
+  background(255);
+  noStroke();
+  //fill(160);
   //rect(0, 0, guiOffset, height);
+  //pushMatrix();
+  //translate(guiOffset, 0);
+  //image(s, 0, 0, 1000, 550);
+  //popMatrix();
   //setupGUI();
+  beginRecord(PDF, timestamp() + ".pdf");
 }
 
 void draw() {
   //pushMatrix();
   //translate(guiOffset, 0);
-  println("recording...");
+  //println("recording...");
   noFill();
-  //image(s, 0, 0, width, height);
   colorMode(RGB, 255, 255, 255, 255);
   //if (record) beginRecord(PDF, timestamp() + ".pdf");
   overlay();
   if (clear) {
-    fill(0);
+    fill(255);
     noStroke();
     rect(0, 0, width, height);
     clear = false;
   }
-  //if (record) {
+  if (record) {
     println("pdf saved");
-    //endRecord();
+    endRecord();
     exit();
-  //}
+  }
   //popMatrix();
   //drawGUI();
 }
@@ -103,25 +107,24 @@ void overlay() {
     for (int j = 0; j < total; j++) {
       x[i]=int(random(width));
       y[i]=int(random(height));
-      x[j]=int(random(width));
-      y[j]=int(random(height));
+
       color c = s.get(int(x[i]), int(y[i]));
       color cc = s.get(int(x[j]), int(y[j]));
-      float redc = blue(c);
-      float redcc = blue(cc);
+      float redc = red(c);
+      float redcc = red(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
       float opacityMap = map(distance, 0, smallLimit, 0, 255);
 
       if (useShadows) {
         //target the darkest pixels, but not the black background
-        if (redcc > redc && b > lowShadows && b < highShadows && distance > smallLowLimit && distance < smallLimit) {
+        if (redcc <= redc && b >= lowShadows && b < highShadows && distance > smallLowLimit && distance < smallLimit) {
           strokeWeight(shadowLineSw);
           if (shadowFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
             stroke(shadowHue, shadowSaturation, shadowBrightness, opacityMap);
           } else {
-            stroke(c, opacityMap);
+            stroke(c);
           }
           line(x[i], y[i], x[j], y[j]);
           strokeWeight(shadowPointSw);
@@ -132,7 +135,7 @@ void overlay() {
 
       if (useMidtones) {
         //target the exact midtones, thinner lines
-        if (redcc > redc && b > lowMidtones && b < highMidtones && distance > smallLowLimit && distance < smallLimit) {
+        if (redcc < redc && b > lowMidtones && b < highMidtones && distance > smallLowLimit && distance < smallLimit) {
           strokeWeight(midtonesLineSw);
           if (midtonesFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
@@ -149,7 +152,7 @@ void overlay() {
 
       if (useHighlights) {
         //target the brightest pixels, but not a white background
-        if (redcc > redc && b > lowHighlights && b < highHighlights && distance > smallLowLimit && distance < smallLimit) {
+        if (redcc < redc && b > lowHighlights && b < highHighlights && distance > smallLowLimit && distance < smallLimit) {
           strokeWeight(highlightsLineSw);
           if (highlightsFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
