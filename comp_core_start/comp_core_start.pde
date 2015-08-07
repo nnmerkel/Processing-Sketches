@@ -1,4 +1,12 @@
+/**
+ *
+ * KEYS
+ * s                   : save timestamped png
+ * p                   : record single-frame pdf
+ */
+
 import processing.pdf.*;
+import java.util.Calendar;
 
 PurpleArc [] x;
 OrangeArc [] t;
@@ -6,21 +14,30 @@ HairlineArc [] h;
 OrangeHairlineArc [] y;
 CircleString [] c;
 
-int xtotal = 80; //number of purple arcs in the sketch
-int ttotal = 25; //number of orange arcs in the sketch
-int htotal = 170; //number of purple hairline  arcs in the sketch
-int ytotal = 80; //number of orange hairline  arcs in the sketch
+/**============================================
+ Change totals to any number you want. denotes the number of arcs
+ of each type that will be generated
+ NUMBER ONLY, DO NOT APPEND UNITS
+ =============================================*/
+int xtotal = 30; //number of purple arcs in the sketch
+int ttotal = 60; //number of orange arcs in the sketch
+int htotal = 0; //number of purple hairline  arcs in the sketch
+int ytotal = 0; //number of orange hairline  arcs in the sketch
 int ctotal = 0;
 
+/**============================================
+ Change p, o, and f to any colors you want. p is color number 1, o is color
+ number 2, and f is the background color
+ R, G, B, opacity
+ =============================================*/
 color p = color(58, 132, 182, 180);
 color o = color(58, 132, 182, 180);
-// color of the thick strokes
-//color o = color(93, 173, 103, 200);
-//background color
 color f = color(255);
 
+boolean record = false;
+
 void setup() {
-  size(700, 700, PDF, "compcoretest7.pdf");
+  size(700, 700);
   smooth(8);
   c = new CircleString[ctotal];
   x = new PurpleArc[xtotal];
@@ -50,12 +67,13 @@ void setup() {
 }
 
 void draw() {
+  if (record) {
+    beginRecord(PDF, timestamp() + ".pdf");
+    println("recording...");
+  }
   fill(f);
   noStroke();
   rect(0, 0, width, height);
-  //draw the arcs individually
-  //keep i incremented as i++ so that total 
-  //controls the number of arcs rendered
   for (int i = 0; i < xtotal; i ++) {
     pushMatrix();
     translate(width/2, height/2);
@@ -93,14 +111,25 @@ void draw() {
     c[i].display();
     popMatrix();
   }
-  println("finished");
-  exit();
+
+  if (record) {
+    endRecord();
+    println("finished");
+    exit();
+  }
 }
 
 void keyPressed() {
   if (key == 's') {
-    saveFrame();
+    saveFrame(timestamp() + ".png");
     println("frame saved");
   }
+  if (key == 'p' || key == 'P') {
+    record = true;
+  }
+}
+
+String timestamp() {
+  return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", Calendar.getInstance());
 }
 

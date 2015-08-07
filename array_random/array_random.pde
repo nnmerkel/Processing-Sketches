@@ -3,9 +3,12 @@
  *
  * KEYS
  * s                   : save timestamped png
- * p                   : save single-frame pdf
  * b/e                 : begin/end recording multiple-frame pdf
  * backspace           : clear background
+ 
+ REMEMBER: you can use the GUI to check out a live preview of your options, but as of now
+ there is a bug with loadFont in the pdf export library. make sure you disable the GUI by
+ commenting out the appropriate lines below (they are marked). DO NOT edit the GUI tab
  */
 
 import processing.pdf.*;
@@ -21,27 +24,49 @@ Toggle[] toggles;
 int guiOffset = 300;
 
 PImage s;
-int total = 100;
+
+/**============================================
+ Change total to any number you want. denotes the number of points
+ laid down each pass. The larger the number the longer it takes to generate.
+ NUMBER ONLY, DO NOT APPEND UNITS
+ =============================================*/
+int total = 1000;
+
 int [] x = new int[total];
 int [] y = new int[total];
-float smallLimit = 35;
+
+/**============================================
+ Change smallLimit to any number you want. denotes the maximum distance 
+ between two points to be connected with a line. Smaller values create finer
+ detail but larger values look more "network-y"
+ NUMBER ONLY, DO NOT APPEND UNITS
+ =============================================*/
+float smallLimit = 40;
+
 float smallLowLimit = 4;
 boolean record = false;
-boolean clear = false;
 
 //drawing methods
 //shadows
-boolean shadowFalseColor = false;
-boolean useShadows = true;
-float shadowSaturation = 80;
-float shadowBrightness = 80;
-float shadowHue = 40;
-float lowShadows = 0;
-float highShadows = 50;
-float shadowLineSw = .5;
-float shadowPointSw = 2;
+/**============================================
+ Change the following variables ONLY if you are recording a pdf with
+ the GUI disabled. There is no need to change these variables if you have
+ it enabled as the sliders and toggles will live-update
+ BOOLEAN: TRUE/FALSE ONLY
+ ALL ELSE: NUMBER ONLY, DO NOT APPEND UNITS
+ =============================================*/
+boolean shadowFalseColor = false; //if you want to make these values appear in false color
+boolean useShadows = false; //if you want to use shadows
+float shadowSaturation = 80; //'s' value in HSV color
+float shadowBrightness = 80; //'v' value in HSV color
+float shadowHue = 40; //'h' value in HSV color
+float lowShadows = 0; //lower color limit, 0=black
+float highShadows = 50; //upper color limit
+float shadowLineSw = .5; //line strokeweight
+float shadowPointSw = 2; //dot strokeweight
 
 //midtones
+//same variables as for shadows, but this time target the midtones
 boolean useMidtones = false;
 boolean midtonesFalseColor = false;
 float midtonesSaturation = 80;
@@ -53,7 +78,8 @@ float midtonesLineSw = 1;
 float midtonesPointSw = 2;
 
 //highlights
-boolean useHighlights = false;
+//same variables as shadows and midtones, but this time target the highlights
+boolean useHighlights = true;
 boolean highlightsFalseColor = false;
 float highlightsSaturation = 80;
 float highlightsBrightness = 80;
@@ -65,27 +91,46 @@ float highlightsPointSw = 1.5;
 
 
 void setup() {
-  size(1000, 550);
-  s = loadImage("cinet-alt.jpg");
-  background(255);
+  /**============================================
+   if recording a pdf, delete the "+guiOffset" statement in the size funtion,
+   otherwise, change the numbers to the exact dimensions of your image
+   =============================================*/
+  size(1000+guiOffset, 1400);
+
+  /**============================================
+   Change this to the exact name of your image, extension included
+   =============================================*/
+  s = loadImage("n2-burn.jpg");
+
+  /**============================================
+   Change this to the background color you want the result to be
+   R, G, B, opacity
+   =============================================*/
+  background(0);
+
   noStroke();
-  //fill(160);
-  //rect(0, 0, guiOffset, height);
-  //pushMatrix();
-  //translate(guiOffset, 0);
-  //image(s, 0, 0, 1000, 550);
-  //popMatrix();
-  //setupGUI();
-  beginRecord(PDF, timestamp() + ".pdf");
+
+  /**============================================
+   Comment out the following 6 lines to disable the GUI
+   =============================================*/
+  fill(160);
+  rect(0, 0, guiOffset, height);
+  pushMatrix();
+  translate(guiOffset, 0);
+  popMatrix();
+  setupGUI();
 }
 
 void draw() {
-  //pushMatrix();
-  //translate(guiOffset, 0);
-  //println("recording...");
+
+  /**============================================
+   Comment out the following 2 lines if GUI is disabled
+   =============================================*/
+  pushMatrix();
+  translate(guiOffset, 0);
+
   noFill();
   colorMode(RGB, 255, 255, 255, 255);
-  //if (record) beginRecord(PDF, timestamp() + ".pdf");
   overlay();
   if (clear) {
     fill(255);
@@ -93,13 +138,11 @@ void draw() {
     rect(0, 0, width, height);
     clear = false;
   }
-  if (record) {
-    println("pdf saved");
-    endRecord();
-    exit();
-  }
-  //popMatrix();
-  //drawGUI();
+
+  /**============================================
+   Comment out the following line if GUI is disabled
+   =============================================*/
+  popMatrix();
 }
 
 void overlay() {
@@ -118,7 +161,12 @@ void overlay() {
 
       if (useShadows) {
         //target the darkest pixels, but not the black background
-        if (redcc <= redc && b >= lowShadows && b < highShadows && distance > smallLowLimit && distance < smallLimit) {
+        /**============================================
+         Depending on your background color, you may need to change
+         the "redcc >= redc" statement to a less than statment to get
+         the right effect. Same applies to the same statements in midtones and highlights
+         =============================================*/
+        if (redcc >= redc && b >= lowShadows && b < highShadows && distance > smallLowLimit && distance < smallLimit) {
           strokeWeight(shadowLineSw);
           if (shadowFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
@@ -126,6 +174,7 @@ void overlay() {
           } else {
             stroke(c);
           }
+          noFill();
           line(x[i], y[i], x[j], y[j]);
           strokeWeight(shadowPointSw);
           point(x[i], y[i]);
@@ -152,7 +201,7 @@ void overlay() {
 
       if (useHighlights) {
         //target the brightest pixels, but not a white background
-        if (redcc < redc && b > lowHighlights && b < highHighlights && distance > smallLowLimit && distance < smallLimit) {
+        if (redcc > redc && b > lowHighlights && b < highHighlights && distance > smallLowLimit && distance < smallLimit) {
           strokeWeight(highlightsLineSw);
           if (highlightsFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
@@ -224,9 +273,6 @@ void keyPressed() {
     println("pdf saved");
     endRecord();
     exit();
-  }
-  if (key == 'p' || key == 'P') {
-    record = true;
   }
   if (key == BACKSPACE) {
     clear = true;
