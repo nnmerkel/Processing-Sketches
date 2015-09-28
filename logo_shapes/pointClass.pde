@@ -6,7 +6,7 @@ class Point {
   Point () {
     //location = new PVector(random(width), random(height));
     location = new PVector(0, 0);
-    velocity = new PVector(random(-10, 10), random(-10, 10));
+    velocity = new PVector(random(-1, 1), random(-1, 1));
     wind = new PVector(random(-.015, .005), random(-.005, .015));
   }
 
@@ -38,4 +38,3 @@ class Point {
     point(location.x, location.y);
   }
 }
-

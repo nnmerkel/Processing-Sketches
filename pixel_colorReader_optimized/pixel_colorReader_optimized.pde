@@ -6,7 +6,7 @@ ControlP5 cp5;
 PImage master;
 PImage[] images;
 String[] imageNames;
-int imageCount = 1;
+int imageCount;
 
 boolean switchStyle = false;
 boolean savePDF = false;
@@ -18,9 +18,9 @@ float[] mValues;
 int[] newValues;
 
 //block size
-int xIncrement;
-int yIncrement;
-int newX, newY;
+int xIncrement = 90;
+int yIncrement = 90;
+int resetX, resetY;
 int tileCount;
 float resolution;
 float threshold = 120;
@@ -28,7 +28,7 @@ float threshold = 120;
 void setup() {
   size(929, 1331);
   //load master image to be collaged
-  //master = loadImage("master.jpg");
+  master = loadImage("master.jpg");
 
   //control GUI
   cp5 = new ControlP5(this);
@@ -63,9 +63,10 @@ void draw() {
   //rect(0, 0, width, height);
   noFill();
   resolution = xIncrement*yIncrement;
+  resetX = xIncrement;
+  resetY = yIncrement;
   if (savePDF) beginRecord(PDF, "grid_####.pdf");
   noStroke();
-  //image(master, 0, 0);
   for (int x = 0; x < width; x += xIncrement) {
     for (int y = 0; y < height; y += yIncrement) {
       stroke(255, 0, 0, 40);
@@ -78,20 +79,6 @@ void draw() {
     endRecord();
     println("pdf saved");
     exit();
-  }
-}
-
-//function to return value of x- and yIncrement
-void controlEvent(ControlEvent theControlEvent) {
-  if (theControlEvent.isController()) {
-    if (theControlEvent.controller().name().equals("xIncrement")) {
-      newX = (int)theControlEvent.controller().getValue();
-      xIncrement = newX;
-    }
-    if (theControlEvent.controller().name().equals("yIncrement")) {
-      newY = (int)theControlEvent.controller().getValue();
-      yIncrement = newY;
-    }
   }
 }
 
@@ -149,7 +136,7 @@ void folderSelected(File selection) {
 //cut apart each image in the folder
 void dissect() {
   //find directory of sample images NOTE: it doesn't work well if the folder is in "data"
-  File dir = new File(sketchPath, "../samples");
+  File dir = new File("/Users/EAM/GitHub/Processing-Sketches/samples2");
   if (dir.isDirectory()) {
     String[] contents = dir.list();
     printArray(contents);
@@ -170,7 +157,7 @@ void dissect() {
         images[imageCount] = loadImage(childFile.getPath()); //PROBLEM LINE <---------ArrayIndexOutOfBoundsException: 3
         imageNames[imageCount] = childFile.getName();
         println(imageCount, contents[i], childFile.getPath());
-      } 
+      }
       if (contents[i].toLowerCase().startsWith("master")) {
         dissectMaster(images[imageCount]);
       } else {
@@ -208,21 +195,22 @@ void dissectImage(PImage image) {
   //each tile gets its own bValue
   bValues = new float[tileCount];
   println("the array is", xDim, "by", yDim);
-
+println("newX" + resetX);
   //run the test again but with correct tileCount to limit the loop
   for (int i = 0; i < tileCount; i++) {
     if (xLeftover != 0) {
       xIncrement = xLeftover;
       println("xIncrement =", xIncrement);
     } else {
-      xIncrement = newX;
+      xIncrement = resetX;
     }
     if (yLeftover != 0) {
       yIncrement = yLeftover;
       println("yIncrement =", yIncrement);
     } else {
-      yIncrement = newY;
+      yIncrement = resetY;
     }
+    println(xIncrement);
 
     int x, y;
     //get the coordinates of the top-left corner of every tile
@@ -244,13 +232,12 @@ void dissectImage(PImage image) {
 }
 
 
-
 //run the dissection on the master. identical to dissectImage except the values
 //get put into a separate array for comparison later
 void dissectMaster(PImage image) {
   println("dissecting the master now");
   int tileIndex = 0;
-
+  
   //this will get your cut-and-dry grid count along x and y
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
@@ -278,13 +265,13 @@ void dissectMaster(PImage image) {
       xIncrement = xLeftover;
       println("xIncrement =", xIncrement);
     } else {
-      xIncrement = newX;
+      xIncrement = resetX;
     }
     if (yLeftover != 0) {
       yIncrement = yLeftover;
       println("yIncrement =", yIncrement);
     } else {
-      yIncrement = newY;
+      yIncrement = resetY;
     }
 
     int x, y;
@@ -348,13 +335,9 @@ void reconstruct(PImage theImage, int tileIndex, int xDim, int yDim, int tileCou
     x = (i % xDim) * xIncrement;
     y = int(i / xDim) * yIncrement;
     PImage sampleTile = theImage.get(x, y, xIncrement, yIncrement);
-    //line(x, y, xIncrement, yIncrement);
     image(sampleTile, x, y);
-    println(x, y);
   }
 }
-
-
 
 //trying to get the sketch to output a pdf of the onscreen result, even if its - UNUSED, see draw()
 //just the red grid lines
@@ -397,4 +380,3 @@ void keyReleased() {
     //reconstruct(images[], bestIndex[i], x, y);
   }
 }
-

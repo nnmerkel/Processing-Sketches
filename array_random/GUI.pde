@@ -43,18 +43,9 @@ void setupGUI() {
   sliders[si++] = cp5.addSlider("highlightsBrightnessValue", 0, 100, 0, 99, 200, 15).setGroup(highlights);
   sliders[si++] = cp5.addSlider("highlightsLineSw").setPosition(0, 118).setSize(200, 15).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(highlights);
   sliders[si++] = cp5.addSlider("highlightsPointSw").setPosition(0, 137).setSize(200, 15).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(highlights);
-  
-  for (int i = 0; i < ti; i++) {
-    toggles[i].captionLabel().style().padding(4, 3, 1, 3);
-    toggles[i].captionLabel().style().marginTop = -19;
-    toggles[i].captionLabel().style().marginLeft = 18;
-    toggles[i].captionLabel().style().marginRight = 5;
-    //toggles[i].captionLabel().setColorBackground(0x99ffffff);
-  }
 }
 
 void drawGUI() {
   cp5.show();
   cp5.draw();
 }
-

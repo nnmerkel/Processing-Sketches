@@ -25,6 +25,10 @@ int guiOffset = 300;
 
 PImage s;
 
+//drawing modes
+boolean orthogonal = false;
+boolean random = true;
+
 /**============================================
  Change total to any number you want. denotes the number of points
  laid down each pass. The larger the number the longer it takes to generate.
@@ -44,7 +48,7 @@ int [] y = new int[total];
 float smallLimit = 40;
 
 float smallLowLimit = 4;
-boolean record = false;
+boolean clear = false;
 
 //drawing methods
 //shadows
@@ -95,7 +99,8 @@ void setup() {
    if recording a pdf, delete the "+guiOffset" statement in the size funtion,
    otherwise, change the numbers to the exact dimensions of your image
    =============================================*/
-  size(1000+guiOffset, 1400);
+  size(1300, 1400);
+  pixelDensity(2);
 
   /**============================================
    Change this to the exact name of your image, extension included
@@ -161,11 +166,6 @@ void overlay() {
 
       if (useShadows) {
         //target the darkest pixels, but not the black background
-        /**============================================
-         Depending on your background color, you may need to change
-         the "redcc >= redc" statement to a less than statment to get
-         the right effect. Same applies to the same statements in midtones and highlights
-         =============================================*/
         if (redcc >= redc && b >= lowShadows && b < highShadows && distance > smallLowLimit && distance < smallLimit) {
           strokeWeight(shadowLineSw);
           if (shadowFalseColor) {
@@ -184,7 +184,7 @@ void overlay() {
 
       if (useMidtones) {
         //target the exact midtones, thinner lines
-        if (redcc < redc && b > lowMidtones && b < highMidtones && distance > smallLowLimit && distance < smallLimit) {
+        if (redcc > redc && b > lowMidtones && b < highMidtones && distance > smallLowLimit && distance < smallLimit) {
           strokeWeight(midtonesLineSw);
           if (midtonesFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
@@ -219,44 +219,6 @@ void overlay() {
   }
 }
 
-void points() {
-  for (int i = 0; i < total; i++) {
-    x[i]=int(random(width));
-    y[i]=int(random(height));
-    color c = s.get(int(x[i]), int(y[i]));
-    float b = brightness(c);
-    /*if (b > 120) {
-     strokeWeight(pointSw);
-     if (falseColor) {
-     colorMode(HSB, 360, 100, 100, 255);
-     stroke(h, saturationValue, brightnessValue);
-     } else {
-     stroke(c);
-     }
-     point(x[i], y[i]);
-     }*/
-  }
-}
-
-void points2() {
-  for (int i = 0; i < total; i++) {
-    x[i]=int(random(width));
-    y[i]=int(random(height));
-    color c = s.get(int(x[i]), int(y[i]));
-    float b = brightness(c);
-    /*if (b > 175 && b < 220) {
-     strokeWeight(random(1, 5));
-     if (falseColor) {
-     colorMode(HSB, 360, 100, 100, 255);
-     stroke(h, saturationValue, brightnessValue);
-     } else {
-     stroke(c);
-     }
-     point(x[i], y[i]);
-     }*/
-  }
-}
-
 void keyPressed() {
   if (key == 's') {
     saveFrame(timestamp() + ".png");
@@ -282,4 +244,3 @@ void keyPressed() {
 String timestamp() {
   return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", Calendar.getInstance());
 }
-
