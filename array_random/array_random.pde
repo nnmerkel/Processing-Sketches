@@ -99,7 +99,7 @@ void setup() {
    if recording a pdf, delete the "+guiOffset" statement in the size funtion,
    otherwise, change the numbers to the exact dimensions of your image
    =============================================*/
-  size(1300, 1400);
+  size(1920, 1080);
   pixelDensity(2);
 
   /**============================================

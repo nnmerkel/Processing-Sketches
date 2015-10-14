@@ -1,54 +1,78 @@
 class DataColumns {
   //global data
-  float sx, sy, bx, by, average;
-  //constructor; "setup"
+  float sx, sy, average;
+  
   DataColumns () {
   }
 
-  //render some data
-  //columnX is the beginning position for each column, set by elementWidth*i
-  //initialY should probably always equal 0, might not even need it to be a variable
-  //itemWidth = elementWidth
-  //amount[][] is a double array tracking itemCount and the designated entry
-  void displayCartesian(float itemWidth, float amount[][]) {
+  void displayCartesian(float itemWidth, float amount[][], float theScale) {
     sx = 0;
     for (int i = 0; i < rowTotal; i++) {
-      sx = elementWidth * i;
+      sx = itemWidth * i;
       sy = 0;
-      for (int j = 0; j < itemCount; j++) {
-        colorMode(HSB, 360, 100, 100);
-        //fill(sy % 360, 90, 90);
-        rect(sx, sy, itemWidth, amount[i][j]/scaleFactor);
-        sy += amount[i][j]/scaleFactor;
-      }
+      //for (int j = 0; j < itemCount; j++) {
+        //colorMode(HSB, 360, 100, 100);
+        strokeWeight(1);
+        rect(sx, sy, itemWidth, amount[i][0]/theScale);
+        sy += amount[i][0]/theScale;
+      //}
     }
   }
 
-  void displayPolar(float itemWidth, float amount[][], float ax, float ay) {
-    noFill();
+  void displayPolar(float itemWidth, float amount[][], float cx, float cy, float theScale) {
     sx = 0;
     for (int i = 0; i < rowTotal; i++) {
       sx = itemWidth * i;
       sy = 0;
       for (int j = 0; j < itemCount; j++) {
-        //by = amount[i][j]/scaleFactor;
-        fill(100, 100);
-        arc(ax, ay, sy, sy, sx, sx+radians(itemWidth));
-        //println("by", by, "bx", bx, bx + itemWidth);
-        sy += amount[i][j]/scaleFactor;
+        fill(j*70, 0, 0, 100);
+        arc(cx, cy, sy, sy, sx, sx+radians(itemWidth));
+        //scaleFactor = pow(2, j * 2);
+        //println(scaleFactor);
+        sy += amount[i][j]/theScale;
       }
     }
   }
 
-  void displayBezier(float itemWidth, float amount[][]) {
+  void displayPolarSingleItem(float itemWidth, float amount[][], float cx, float cy, int theIndex, float theScale) {
     sx = 0;
+    sy = 0;
     for (int i = 0; i < rowTotal; i++) {
       sx = itemWidth * i;
-      sy = 0;
-      for (int j = 0; j < itemCount; j++) {
-        bezier(sx, sy, itemWidth, sy, sx, amount[i][j]/scaleFactor, sx + (itemWidth/2), amount[i][j]/scaleFactor);
-        sy += amount[i][j]/scaleFactor;
+      fill(i*10, 0, 0, 100);
+      arc(cx, cy, sy, sy, sx, sx+radians(itemWidth));
+      sy += amount[i][theIndex]/theScale;
+    }
+  }
+
+  void displayBezier(float itemWidth, float amount[][], float theScale) {
+    sx = 0;
+    float thisY = 0, nextY = 0;
+    int counter = 0;
+    for (int i = 0; i < itemCount; i++) {
+      nextY = thisY;
+      
+      //bezier properties
+      colorMode(HSB, 360, 100, 100);
+      stroke(i * 50, 80, 80);
+      
+      //begin drawing
+      beginShape();
+      vertex(sx, amount[0][i]/theScale);
+      
+      //reset the j count
+      counter = 0;
+      for (int j = counter; j < rowTotal-1; j++) {
+        sx = itemWidth * j;
+        thisY = amount[j][i]/theScale;
+        nextY = amount[j+1][i]/theScale;
+        bezierVertex(sx += itemWidth/2, thisY, sx, nextY, sx += itemWidth/2, nextY);
+        strokeWeight(5);
+        point(sx, amount[j][i]/theScale);
+        strokeWeight(1);
+        counter++;
       }
+      endShape();
     }
   }
 
