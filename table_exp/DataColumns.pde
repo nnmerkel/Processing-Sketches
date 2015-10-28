@@ -1,7 +1,7 @@
 class DataColumns {
   //global data
-  float sx, sy, average;
-  
+  float sx, sy, average, theScale;
+
   DataColumns () {
   }
 
@@ -10,26 +10,28 @@ class DataColumns {
     for (int i = 0; i < rowTotal; i++) {
       sx = itemWidth * i;
       sy = 0;
-      //for (int j = 0; j < itemCount; j++) {
-        //colorMode(HSB, 360, 100, 100);
+      for (int j = 0; j < itemCount; j++) {
+        fill(fillHue, fillSaturation, fillBrightness, 100);
         strokeWeight(1);
-        rect(sx, sy, itemWidth, amount[i][0]/theScale);
-        sy += amount[i][0]/theScale;
-      //}
+        rect(sx, sy, itemWidth, log2(amount[i][j], logK) * theScale);
+        if (normalize) sy += log2(amount[i][j], logK) * theScale;
+        else sy += amount[i][j]/theScale;
+      }
     }
   }
 
   void displayPolar(float itemWidth, float amount[][], float cx, float cy, float theScale) {
     sx = 0;
     for (int i = 0; i < rowTotal; i++) {
-      sx = itemWidth * i;
-      sy = 0;
+      sx = sx + radians(itemWidth);
+      if (normalize) sy = log2(amount[i][0], logK) * theScale;
+      else sy = amount[i][0]/theScale;
       for (int j = 0; j < itemCount; j++) {
-        fill(j*70, 0, 0, 100);
-        arc(cx, cy, sy, sy, sx, sx+radians(itemWidth));
-        //scaleFactor = pow(2, j * 2);
-        //println(scaleFactor);
-        sy += amount[i][j]/theScale;
+        fill(fillHue, fillSaturation, fillBrightness * differential, 100);
+        arc(cx, cy, sy, sy, sx, sx + radians(itemWidth));
+        if (normalize) 
+        sy = sy + log2(amount[i][j], logK) * theScale;
+        else sy += amount[i][j]/theScale;
       }
     }
   }
@@ -51,15 +53,14 @@ class DataColumns {
     int counter = 0;
     for (int i = 0; i < itemCount; i++) {
       nextY = thisY;
-      
+
       //bezier properties
-      colorMode(HSB, 360, 100, 100);
-      stroke(i * 50, 80, 80);
-      
+      stroke(strokeHue, strokeSaturation, strokeBrightness, 100);
+
       //begin drawing
       beginShape();
       vertex(sx, amount[0][i]/theScale);
-      
+
       //reset the j count
       counter = 0;
       for (int j = counter; j < rowTotal-1; j++) {
@@ -87,6 +88,11 @@ class DataColumns {
     }
     average = average / rowTotal;
     //println(average);
+    line(0, average, width, average);
     return average;
+  }
+
+  float log2 (float x, float k) {
+    return log(x) / log(k);
   }
 }

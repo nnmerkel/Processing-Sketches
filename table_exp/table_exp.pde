@@ -1,11 +1,11 @@
 /**
-
-Keys:    a              show/hide axes
-         s              save PNG frame
-         p              save PDF
-         - / _          zoom out
-         + / =          zoom in
-*/
+ 
+ Keys:    a              show/hide axes
+ s              save PNG frame
+ p              save PDF
+ - / _          zoom out
+ + / =          zoom in
+ */
 
 //libraries
 import controlP5.*;
@@ -17,15 +17,20 @@ Table table;
 ControlP5 cp5;
 DataColumns draw;
 
+//Cp5 variables
+Slider[] sliders;
+Range[] ranges;
+Toggle[] toggles;
+RadioButton radio;
+
 //global variables
-boolean record = false;
-boolean axes = false;
+boolean record, axes, usePolar, useCartesian, useBezier, useRadialGrid, useGrid, average, normalize;
 int rowTotal;
 int [] metersList; //straight meters array
 float [] splitTimes, ergTimes; //times arrays converted from the string arrays
-float [][] data;
+float [][] data, testArray;
 String [] timesList, paceList, dateList; //original list arrays from .csv
-float elementWidth, polarWidth;
+float elementWidth, polarWidth, logK;
 float scaleFactor = 30;
 float stepNumber = 50; //speed at which data rectangles grow
 //itemCount calculates how many attributes of data each column needs to have. for erg pieces, we need time, pace, and distance
@@ -35,6 +40,7 @@ int itemCount = 3;
 color background = color(205);
 color gridLines = color(37, 176, 191);
 color mouse = color(40);
+float fillHue, fillSaturation, fillBrightness, differential, strokeHue, strokeBrightness, strokeSaturation;
 
 void setup() {
   //initialize objects
@@ -45,10 +51,9 @@ void setup() {
   //skecth properties
   size(1200, 800);
   pixelDensity(2);
-  strokeCap(SQUARE);
 
   int rowCounter = 0;
-  for (TableRow row : table.rows()) {
+  for (int t = 0; t < table.getRowCount(); t++) {
     rowCounter++;
   }
   rowTotal = rowCounter;
@@ -63,6 +68,7 @@ void setup() {
 
   //double array that contains all other arrays
   data = new float[rowTotal][itemCount];
+  testArray = new float[rowTotal][itemCount];
 
   for (int i = 0; i < rowTotal; i++) {
     //create arrays of each column of data
@@ -91,40 +97,66 @@ void setup() {
     data[i][0] = metersList[i];
     data[i][1] = ergTimes[i];
     data[i][2] = splitTimes[i];
+
+    testArray[i][0] = 100;
+    testArray[i][1] = 100;
+    testArray[i][2] = 100;
   }
 
   //make sure all data entries fit on the canvas
   elementWidth = (float)width / rowTotal;
   polarWidth = 360.0 / rowTotal;
+  //println(polarWidth, radians(polarWidth));
+  
+  //default value for scaling
+  logK = 2;
+  setupGUI();
 }
 
 void draw() {
-  noStroke();
-  noFill();
-  background(background);
-  pushMatrix();
-  rotate(radians(180));
-  translate(-width, -height);
   if (record) {
     beginRecord(PDF, timestamp() + ".pdf");
   }
+  noStroke();
+  noFill();
+  strokeCap(SQUARE);
+  colorMode(HSB, 360, 100, 100);
+  background(background);
   if (axes) {
     pushMatrix();
     translate(elementWidth, elementWidth);
     axes();
   }
+  
   //grid attributes & methods
-  grid();
-  //radialGrid();
-
+  if (useGrid) {
+    grid();
+  }
+  if (useRadialGrid) {
+    radialGrid();
+  }
+  
+  strokeCap(SQUARE);
+  stroke(gridLines, 200);
   //display methods
-  fill(100, 100);
-  //draw.displayCartesian(elementWidth, data, scaleFactor);
-  //draw.displayPolar(polarWidth, data, width/2, height/2, scaleFactor);
+  if (useCartesian) {
+    draw.displayCartesian(elementWidth, data, scaleFactor);
+  }
+  if (usePolar) {
+    draw.displayPolar(polarWidth, data, width/2, height/2, scaleFactor);
+  }
   //draw.displayPolarSingleItem(polarWidth, data, width/2, height/2, 0, scaleFactor);
+  
   noFill();
-  //stroke(200, 0, 0);
-  draw.displayBezier(elementWidth, data, scaleFactor);
+  if (useBezier) {
+    draw.displayBezier(elementWidth, data, scaleFactor);
+  }
+  
+  if (useCartesian && average) {
+    stroke(255, 0, 0);
+    draw.getAverage(data);
+  }
+  
   //draw.getAverage(data);
 
   cursor(CROSS);
@@ -137,7 +169,6 @@ void draw() {
   if (axes) {
     popMatrix();
   }
-  popMatrix();
   //noLoop();
 }
 
@@ -213,10 +244,10 @@ void keyReleased () {
 
 void keyPressed () {
   if (key == '-' || key == '_') {
-    scaleFactor += scaleFactor/10;
+    scaleFactor -= scaleFactor/10;
   }
   if (key == '=' || key == '+') {
-    scaleFactor -= scaleFactor/10;
+    scaleFactor += scaleFactor/10;
   }
 }
 
