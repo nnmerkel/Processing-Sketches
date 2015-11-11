@@ -23,6 +23,8 @@ void setupGUI() {
   style("average");
   toggles[ti++] = cp5.addToggle("normalize").setPosition(142, 61).setSize(15, 15).setGroup(options);
   style("normalize");
+  toggles[ti++] = cp5.addToggle("hollow").setPosition(142, 80).setSize(15, 15).setGroup(options);
+  style("hollow");
   /*radio = cp5.addRadioButton("radiobutton").setPosition(4,4).setSize(15, 15).setItemsPerRow(1).setSpacingRow(4)
          .addItem("usePolar", 1)
          .addItem("useCartesian", 2)
