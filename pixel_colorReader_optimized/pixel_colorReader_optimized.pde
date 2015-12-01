@@ -35,38 +35,42 @@ void setup() {
   Group g2 = cp5
     .addGroup("g2")
     .setPosition(10, 20)
-      .setWidth(200)
-        .setBackgroundColor(color(0, 80))
-          .setBackgroundHeight(106)
-            .setLabel("Menu");
+    .setWidth(200)
+    .setBackgroundColor(color(0, 80))
+    .setBackgroundHeight(106)
+    .setLabel("Menu");
   //cp5.addSlider("threshold").setPosition(4, 4).setSize(192, 20).setRange(0, 255).setGroup(g2).setValue(120);
   //make sure xIncrement and yIncrement are never set to 0 (a box cannot have 0 width) 
   cp5.addSlider("xIncrement")
     .setPosition(4, 28)
-      .setSize(192, 20)
-        .setRange(1, 200)
-          .setGroup(g2)
-            .setValue(100);
+    .setSize(192, 20)
+    .setRange(1, 200)
+    .setGroup(g2)
+    .setValue(100);
   cp5.addSlider("yIncrement")
     .setPosition(4, 52)
-      .setSize(192, 20)
-        .setRange(1, 200)
-          .setGroup(g2)
-            .setValue(100);
+    .setSize(192, 20)
+    .setRange(1, 200)
+    .setGroup(g2)
+    .setValue(100);
   //cp5.addToggle("switchStyle").setPosition(4, 76).setSize(16, 16).setCaptionLabel("greater than").setGroup(g2);
   //selectFolder("Select a folder to process:", "folderSelected");
 }
 
 void draw() {
-  //resolution must be defined for each frame
   //fill(205);
   //rect(0, 0, width, height);
   noFill();
+  
+  //resolution must be defined for each frame
   resolution = xIncrement*yIncrement;
+  
+  //preserve initial increment values
   resetX = xIncrement;
   resetY = yIncrement;
+  
   if (savePDF) beginRecord(PDF, "grid_####.pdf");
-  noStroke();
+  
   for (int x = 0; x < width; x += xIncrement) {
     for (int y = 0; y < height; y += yIncrement) {
       stroke(255, 0, 0, 40);
@@ -74,6 +78,7 @@ void draw() {
       rect(x, y, xIncrement, yIncrement);
     }
   }
+  
   if (savePDF) {
     savePDF = false;
     endRecord();
@@ -135,6 +140,9 @@ void folderSelected(File selection) {
 
 //cut apart each image in the folder
 void dissect() {
+  //reset the array so it can run more than once
+  imageCount = 0;
+  
   //find directory of sample images NOTE: it doesn't work well if the folder is in "data"
   File dir = new File("/Users/EAM/GitHub/Processing-Sketches/samples2");
   if (dir.isDirectory()) {
@@ -149,11 +157,11 @@ void dissect() {
     images = new PImage[directoryLength]; 
     imageNames = new String[directoryLength]; 
     for (int i = 0; i < directoryLength; i++) {
+      
       // skip hidden files, especially .DS_Store
       if (contents[i].charAt(0) == '.') continue;
       else {
         File childFile = new File(dir, contents[i]);
-        //this next line is also a problem in that if you try to run dissection twice without quitting, you will get the same error
         images[imageCount] = loadImage(childFile.getPath()); //PROBLEM LINE <---------ArrayIndexOutOfBoundsException: 3
         imageNames[imageCount] = childFile.getName();
         println(imageCount, contents[i], childFile.getPath());
@@ -195,22 +203,21 @@ void dissectImage(PImage image) {
   //each tile gets its own bValue
   bValues = new float[tileCount];
   println("the array is", xDim, "by", yDim);
-println("newX" + resetX);
+  println("newX" + resetX);
   //run the test again but with correct tileCount to limit the loop
   for (int i = 0; i < tileCount; i++) {
     if (xLeftover != 0) {
       xIncrement = xLeftover;
-      println("xIncrement =", xIncrement);
+      //println("xIncrement =", xIncrement);
     } else {
-      xIncrement = resetX;
+      //xIncrement = resetX;
     }
     if (yLeftover != 0) {
       yIncrement = yLeftover;
-      println("yIncrement =", yIncrement);
+      //println("yIncrement =", yIncrement);
     } else {
-      yIncrement = resetY;
+      //yIncrement = resetY;
     }
-    println(xIncrement);
 
     int x, y;
     //get the coordinates of the top-left corner of every tile
@@ -226,7 +233,7 @@ println("newX" + resetX);
 
     //store average brightness for this tile in a master array
     bValues[tileIndex] = bTotal; //PROBLEM LINE <----------------------------ArrayIndexOutOfBoundsException: [num]
-    println(tileIndex, "image #" + imageCount, imageNames[imageCount], x, y, bTotal);
+    println(tileIndex, imageNames[imageCount], bTotal);
     tileIndex++;
   }
 }
@@ -237,7 +244,7 @@ println("newX" + resetX);
 void dissectMaster(PImage image) {
   println("dissecting the master now");
   int tileIndex = 0;
-  
+
   //this will get your cut-and-dry grid count along x and y
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
@@ -262,16 +269,16 @@ void dissectMaster(PImage image) {
   //run the test again but with correct tileCount to limit the loop
   for (int i = 0; i < tileCount; i++) {
     if (xLeftover != 0) {
-      xIncrement = xLeftover;
-      println("xIncrement =", xIncrement);
+      //xIncrement = xLeftover;
+      //println("xIncrement =", xIncrement);
     } else {
-      xIncrement = resetX;
+      //xIncrement = resetX;
     }
     if (yLeftover != 0) {
-      yIncrement = yLeftover;
-      println("yIncrement =", yIncrement);
+      //yIncrement = yLeftover;
+      //println("yIncrement =", yIncrement);
     } else {
-      yIncrement = resetY;
+      //yIncrement = resetY;
     }
 
     int x, y;
@@ -323,8 +330,6 @@ void findBestMatch(float masterArray[], float brightnessArray[]) {
   printArray(newValues);
   //println(bestIndex, mValues[bestIndex], bValues[bestIndex]);
 }
-
-
 
 //after we take care of the files, reconstruct the images
 void reconstruct(PImage theImage, int tileIndex, int xDim, int yDim, int tileCount) {  

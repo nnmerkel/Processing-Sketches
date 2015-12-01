@@ -40,7 +40,7 @@ void setup() {
 
   //load data into arrays
   for (int i = 0; i < rowTotal; i++) {
-    String joinedDate = table.getRow(i).getString("month") + " " + table.getRow(i).getInt("year");
+    String joinedDate = " " + table.getRow(i).getInt("year");
     month[i] = joinedDate;
     
     velocityWRT[i] = table.getRow(i).getFloat("velocity wrt sun");
@@ -86,7 +86,7 @@ void draw() {
   }
 
   //pu-238 decay
-  if (counter % 40 == 0) {
+  if (counter % 36 == 0) {
     noFill();
     strokeWeight(d);
     stroke(50);
