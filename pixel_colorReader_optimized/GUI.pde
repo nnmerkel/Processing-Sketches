@@ -1,0 +1,61 @@
+int guiWidth = 220;
+int pad = 10;
+int itemHeight = 25;
+color col = color(127, 200, 22);
+color bgActive = color(0, 94, 33);
+color fgActive = color(0, 187, 66);
+
+void setupGUI() {
+  Group g2 = cp5
+    .addGroup("g2")
+    .setPosition(0, 0)
+    .setWidth(guiWidth)
+    .setBackgroundColor(color(120))
+    .setBackgroundHeight(height)
+    .setLabel("Menu");
+
+  cp5.addButton("selectMaster")
+    .setLabel("Choose master")
+    .setPosition(pad, pad)
+    .setSize(guiWidth-pad*2, itemHeight)
+    .setColorBackground(bgActive)
+    .setColorForeground(fgActive)
+    .setColorActive(col);
+
+  cp5.addButton("selectSamples")
+    .setLabel("Choose Samples")
+    .setPosition(pad, itemHeight+pad*2)
+    .setSize(guiWidth-pad*2, itemHeight);
+
+  cp5.addSlider("xIncrement")
+    .setPosition(pad, itemHeight*2+pad*3)
+    .setSize(guiWidth-pad*2, itemHeight)
+    .setRange(1, 200)
+    .setGroup(g2)
+    .setValue(100);
+
+  cp5.addSlider("yIncrement")
+    .setPosition(pad, itemHeight*3+pad*4)
+    .setSize(guiWidth-pad*2, itemHeight)
+    .setRange(1, 200)
+    .setGroup(g2)
+    .setValue(100);
+  //selectFolder("Select a folder to process:", "folderSelected");
+
+  setLock(cp5.getController("selectSamples"), true);
+  setLock(cp5.getController("xIncrement"), true);
+  setLock(cp5.getController("yIncrement"), true);
+}
+
+void setLock(Controller theController, boolean theValue) {
+  if (theValue) {
+    theController.setLock(theValue);
+    theController.setColorBackground(color(170));
+    theController.setColorForeground(color(50));
+  } else {
+    theController.setLock(theValue);
+    theController.setColorBackground(bgActive);
+    theController.setColorForeground(fgActive);
+    theController.setColorActive(col);
+  }
+}

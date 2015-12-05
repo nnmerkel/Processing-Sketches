@@ -4,73 +4,81 @@ import controlP5.*;
 ControlP5 cp5;
 
 PImage master;
+PImage loading;
 PImage[] images;
 String[] imageNames;
 int imageCount;
 
-boolean switchStyle = false;
 boolean savePDF = false;
 boolean reconstruct = false;
+boolean inProgress = false;
+boolean selectSamples = false;
+boolean selectMaster = false;
 float bTotal = 0;
 float mTotal = 0;
 float[] bValues;
 float[] mValues;
 int[] newValues;
+String masterImageObject;
 
 //block size
-int xIncrement = 90;
-int yIncrement = 90;
+int xIncrement = 100;
+int yIncrement = 100;
 int resetX, resetY;
 int tileCount;
 float resolution;
-float threshold = 120;
 
 void setup() {
-  size(929, 1331);
+  fullScreen();
+  pixelDensity(2);
   //load master image to be collaged
   master = loadImage("master.jpg");
-
-  //control GUI
+  loading = loadImage("loading-gif.gif");
   cp5 = new ControlP5(this);
-  Group g2 = cp5
-    .addGroup("g2")
-    .setPosition(10, 20)
-    .setWidth(200)
-    .setBackgroundColor(color(0, 80))
-    .setBackgroundHeight(106)
-    .setLabel("Menu");
-  //cp5.addSlider("threshold").setPosition(4, 4).setSize(192, 20).setRange(0, 255).setGroup(g2).setValue(120);
-  //make sure xIncrement and yIncrement are never set to 0 (a box cannot have 0 width) 
-  cp5.addSlider("xIncrement")
-    .setPosition(4, 28)
-    .setSize(192, 20)
-    .setRange(1, 200)
-    .setGroup(g2)
-    .setValue(100);
-  cp5.addSlider("yIncrement")
-    .setPosition(4, 52)
-    .setSize(192, 20)
-    .setRange(1, 200)
-    .setGroup(g2)
-    .setValue(100);
-  //cp5.addToggle("switchStyle").setPosition(4, 76).setSize(16, 16).setCaptionLabel("greater than").setGroup(g2);
-  //selectFolder("Select a folder to process:", "folderSelected");
+
+  setupGUI();
 }
 
+
 void draw() {
-  //fill(205);
-  //rect(0, 0, width, height);
+  //maintain the workflow, select files first
+  //THE WORK MUST FLOW
+  if (selectMaster) {
+    selectInput("Select a master image:", "masterSelected");
+    selectMaster = false;
+  }
+  if (selectSamples) {
+    selectFolder("Select a folder of sample images to process:", "folderSelected");
+    selectSamples = false;
+  }
+
+  //offset the workspace
+  pushMatrix();
+  translate(guiWidth, 0);
+
+  if (savePDF) beginRecord(PDF, "grid_####.pdf");
+
+  fill(205);
+  rect(0, 0, width, height);
   noFill();
-  
+
+  //once a master image is chosen, display it every frame
+  if (masterImageObject != null) {
+    PImage master = loadImage(masterImageObject);
+    imageMode(CENTER);
+    image(master, (width-guiWidth)/2, height/2);
+  }
+  //reset the image drawing mode
+  imageMode(CORNER);
+
   //resolution must be defined for each frame
   resolution = xIncrement*yIncrement;
-  
+
   //preserve initial increment values
   resetX = xIncrement;
   resetY = yIncrement;
-  
-  if (savePDF) beginRecord(PDF, "grid_####.pdf");
-  
+
+  //draw the tiling grid
   for (int x = 0; x < width; x += xIncrement) {
     for (int y = 0; y < height; y += yIncrement) {
       stroke(255, 0, 0, 40);
@@ -78,16 +86,25 @@ void draw() {
       rect(x, y, xIncrement, yIncrement);
     }
   }
-  
+
+  int loadingSize = 75;
+  //display the proper box size and the loading gif
+  if (inProgress) {
+    image(loading, (width+guiWidth-loadingSize)/2, (height-loadingSize)/2, loadingSize, loadingSize);
+  }
+
   if (savePDF) {
     savePDF = false;
     endRecord();
     println("pdf saved");
     exit();
   }
+
+  popMatrix();
 }
 
-//sample the master image
+
+//the actual counting function
 void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY) {
   resolution = tileSizeX * tileSizeY;
   bTotal = 0;
@@ -104,45 +121,38 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
   }
 }
 
-//these two functions should actually tile the images onto one another - UNUSED
-void firstImageTile(int startX, int startY) {
-  PImage newFirst = master.get(startX, startY, xIncrement, yIncrement); 
-  image(newFirst, startX, startY);
-}
 
-//the boolean flips which side of "threshold" the boxes are displayed on - UNUSED
-void totalLessThan(int startX, int startY) {
-  if (bTotal < threshold) {
-    stroke(255, 0, 0, 40);
-    noFill();
-    //firstImageTile(startX, startY);
-    rect(startX, startY, xIncrement, yIncrement);
-  }
-}
-
-//the boolean flips which side of "threshold" the boxes are displayed on - UNUSED
-void totalGreaterThan(int startX, int startY) {
-  if (bTotal > threshold) {
-    stroke(255, 0, 0, 40);
-    noFill();
-    //firstImageTile(startX, startY);
-    rect(startX, startY, xIncrement, yIncrement);
-  }
-}
-
+//callback function for the samples
 void folderSelected(File selection) {
   if (selection == null) {
     println("Window was closed or the user hit cancel.");
   } else {
+    //unlock the rest of the buttons
+    setLock(cp5.getController("xIncrement"), false);
+    setLock(cp5.getController("yIncrement"), false);
     println("User selected " + selection.getAbsolutePath());
   }
 }
 
+
+//callback function for the master image selection
+void masterSelected(File selection) {
+  if (selection == null) {
+    println("Window was closed or the user hit cancel.");
+  } else {
+    //unlock the sample selection
+    setLock(cp5.getController("selectSamples"), false);
+    masterImageObject = selection.getAbsolutePath();
+  }
+}
+
+
 //cut apart each image in the folder
 void dissect() {
+
   //reset the array so it can run more than once
   imageCount = 0;
-  
+
   //find directory of sample images NOTE: it doesn't work well if the folder is in "data"
   File dir = new File("/Users/EAM/GitHub/Processing-Sketches/samples2");
   if (dir.isDirectory()) {
@@ -151,31 +161,25 @@ void dissect() {
 
     //check for hidden files here so that the loop runs for the appropriate length
     int directoryLength = contents.length;
-    if (contents[0].equals(".DS_Store")) //directoryLength--;
-      println("directoryLength =", directoryLength);
 
     images = new PImage[directoryLength]; 
     imageNames = new String[directoryLength]; 
     for (int i = 0; i < directoryLength; i++) {
-      
+
       // skip hidden files, especially .DS_Store
       if (contents[i].charAt(0) == '.') continue;
       else {
         File childFile = new File(dir, contents[i]);
-        images[imageCount] = loadImage(childFile.getPath()); //PROBLEM LINE <---------ArrayIndexOutOfBoundsException: 3
+        images[imageCount] = loadImage(childFile.getPath());
         imageNames[imageCount] = childFile.getName();
         println(imageCount, contents[i], childFile.getPath());
       }
-      if (contents[i].toLowerCase().startsWith("master")) {
-        dissectMaster(images[imageCount]);
-      } else {
-        dissectImage(images[imageCount]);
-      }
+      dissectImage(images[imageCount]);
       imageCount++;
     }
   }
+  inProgress = false;
 }
-
 
 
 //cut apart all the sample images
@@ -189,7 +193,7 @@ void dissectImage(PImage image) {
 
   //this test determines if there is a smaller grid leftover, in which case you still need to compute a bValue for it
   int xLeftover = image.width % xIncrement;
-  int yLeftover = image.width % yIncrement;
+  int yLeftover = image.height % yIncrement;
   if (xLeftover != 0) {
     xDim++;
   }
@@ -203,17 +207,16 @@ void dissectImage(PImage image) {
   //each tile gets its own bValue
   bValues = new float[tileCount];
   println("the array is", xDim, "by", yDim);
-  println("newX" + resetX);
   //run the test again but with correct tileCount to limit the loop
   for (int i = 0; i < tileCount; i++) {
     if (xLeftover != 0) {
-      xIncrement = xLeftover;
+      //xIncrement = xLeftover;
       //println("xIncrement =", xIncrement);
     } else {
       //xIncrement = resetX;
     }
     if (yLeftover != 0) {
-      yIncrement = yLeftover;
+      //yIncrement = yLeftover;
       //println("yIncrement =", yIncrement);
     } else {
       //yIncrement = resetY;
@@ -251,7 +254,7 @@ void dissectMaster(PImage image) {
 
   //this test determines if there is a smaller grid leftover, in which case you still need to compute a bValue for it
   int xLeftover = image.width % xIncrement;
-  int yLeftover = image.width % yIncrement;
+  int yLeftover = image.height % yIncrement;
   if (xLeftover != 0) {
     xDim++;
   }
@@ -295,15 +298,14 @@ void dissectMaster(PImage image) {
 
     //store average brightness for this tile in a master array
     mValues[tileIndex] = mTotal; //PROBLEM LINE <----------------------------ArrayIndexOutOfBoundsException: [num]
-    println(tileIndex, "image #" + imageCount, imageNames[imageCount], x, y, mTotal);
+    println(tileIndex, imageNames[imageCount], mTotal);
     tileIndex++;
   }
-  //printArray(mValues);
-  findBestMatch(mValues, bValues);
-  reconstruct(images[1], tileIndex, xDim, yDim, tileCount);
-  println(images[1], tileIndex, xDim, yDim, tileCount);
-}
 
+  //run the test
+  findBestMatch(mValues, bValues);
+  //reconstruct(images[1], tileIndex, xDim, yDim, tileCount);
+}
 
 
 //this function compares each value in the mValues array to every other value in the bValues array
@@ -313,14 +315,13 @@ void findBestMatch(float masterArray[], float brightnessArray[]) {
   int valueCounter = 0;
   newValues = new int[masterArray.length];
   for (int i = 0; i < masterArray.length; i++) {
-    float bestDiff = abs(masterArray[i] - brightnessArray[0]);
+    float bestDiff = abs(masterArray[i] - brightnessArray[0]); // <-------------------NullPointerException because master image is dissected first
     for (int j = 0; j < brightnessArray.length; j++) {
       float diff = abs(masterArray[i] - brightnessArray[j]);
-      if (diff <= bestDiff) {//check back here on the less than/equal to tiebreaker
+      if (diff <= bestDiff) {
         //here’s a potential match; don’t stop now as there could be a better match later
         bestIndex = j;
         bestDiff = diff;
-        //println(bestIndex, bestDiff, masterArray[i], brightnessArray[j]);
       }
       //make a new array here to store each bestIndex, then extract those values in a different function and display them
       newValues[valueCounter] = bestIndex;
@@ -328,8 +329,8 @@ void findBestMatch(float masterArray[], float brightnessArray[]) {
     valueCounter++;
   }
   printArray(newValues);
-  //println(bestIndex, mValues[bestIndex], bValues[bestIndex]);
 }
+
 
 //after we take care of the files, reconstruct the images
 void reconstruct(PImage theImage, int tileIndex, int xDim, int yDim, int tileCount) {  
@@ -343,25 +344,6 @@ void reconstruct(PImage theImage, int tileIndex, int xDim, int yDim, int tileCou
     image(sampleTile, x, y);
   }
 }
-
-//trying to get the sketch to output a pdf of the onscreen result, even if its - UNUSED, see draw()
-//just the red grid lines
-void saveGrid() {
-  beginRecord(PDF, "grid_####.pdf");
-  noFill();
-  for (int x = 0; x < width; x += xIncrement) {
-    for (int y = 0; y < height; y += yIncrement) {
-      //tile(x, y, xIncrement, yIncrement);
-      bTotal = bTotal / resolution;
-      if (switchStyle==false) totalLessThan(x, y);
-      else totalGreaterThan(x, y);
-    }
-  }
-  endRecord();
-  println("pdf saved");
-  exit();
-}
-
 
 
 void keyReleased() {
@@ -377,6 +359,7 @@ void keyReleased() {
     savePDF = false;
   }
   if (key == 'd' || key == 'D') {
+    inProgress = true;
     dissect();
   }
   if (key == 'f' || key == 'F') {
