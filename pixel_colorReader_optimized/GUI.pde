@@ -6,6 +6,9 @@ color bgActive = color(0, 94, 33);
 color fgActive = color(0, 187, 66);
 
 void setupGUI() {
+  ControlFont cfont = new ControlFont(font);
+  //cp5.setControlFont(font);
+
   Group g2 = cp5
     .addGroup("g2")
     .setPosition(0, 0)
@@ -21,6 +24,7 @@ void setupGUI() {
     .setColorBackground(bgActive)
     .setColorForeground(fgActive)
     .setColorActive(col);
+    //.captionLabel().setControlFont().setFont(cfont);
 
   cp5.addButton("selectSamples")
     .setLabel("Choose Samples")

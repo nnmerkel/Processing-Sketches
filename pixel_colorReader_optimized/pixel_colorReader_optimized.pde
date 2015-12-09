@@ -1,7 +1,22 @@
+/**
+  *  
+  *  
+  *  
+  *  
+  *  
+  *  
+  *  
+  *  
+  *  
+  *  
+  */
+
 import processing.pdf.*;
 import controlP5.*;
 
 ControlP5 cp5;
+
+PFont font;
 
 PImage master;
 PImage loading;
@@ -20,6 +35,7 @@ float[] bValues;
 float[] mValues;
 int[] newValues;
 String masterImageObject;
+String samplesPath;
 
 //block size
 int xIncrement = 100;
@@ -35,6 +51,8 @@ void setup() {
   master = loadImage("master.jpg");
   loading = loadImage("loading-gif.gif");
   cp5 = new ControlP5(this);
+  font = createFont("UniversLTStd-UltraCn.otf", 14);
+  textFont(font); 
 
   setupGUI();
 }
@@ -58,7 +76,7 @@ void draw() {
 
   if (savePDF) beginRecord(PDF, "grid_####.pdf");
 
-  fill(205);
+  fill(230);
   rect(0, 0, width, height);
   noFill();
 
@@ -90,6 +108,8 @@ void draw() {
   int loadingSize = 75;
   //display the proper box size and the loading gif
   if (inProgress) {
+    fill(0, 50);
+    rect(0, 0, width, height);
     image(loading, (width+guiWidth-loadingSize)/2, (height-loadingSize)/2, loadingSize, loadingSize);
   }
 
@@ -130,7 +150,7 @@ void folderSelected(File selection) {
     //unlock the rest of the buttons
     setLock(cp5.getController("xIncrement"), false);
     setLock(cp5.getController("yIncrement"), false);
-    println("User selected " + selection.getAbsolutePath());
+    samplesPath = selection.getAbsolutePath();
   }
 }
 
@@ -154,19 +174,19 @@ void dissect() {
   imageCount = 0;
 
   //find directory of sample images NOTE: it doesn't work well if the folder is in "data"
-  File dir = new File("/Users/EAM/GitHub/Processing-Sketches/samples2");
+  File dir = new File(samplesPath);
   if (dir.isDirectory()) {
     String[] contents = dir.list();
     printArray(contents);
 
-    //check for hidden files here so that the loop runs for the appropriate length
     int directoryLength = contents.length;
 
-    images = new PImage[directoryLength]; 
-    imageNames = new String[directoryLength]; 
+    images = new PImage[directoryLength];
+    imageNames = new String[directoryLength];
+    //check for hidden files here so that the loop runs for the appropriate length
     for (int i = 0; i < directoryLength; i++) {
 
-      // skip hidden files, especially .DS_Store
+      // skip hidden files, especially .DS_Store (Mac)
       if (contents[i].charAt(0) == '.') continue;
       else {
         File childFile = new File(dir, contents[i]);
@@ -235,7 +255,7 @@ void dissectImage(PImage image) {
     bTotal = bTotal / resolution;
 
     //store average brightness for this tile in a master array
-    bValues[tileIndex] = bTotal; //PROBLEM LINE <----------------------------ArrayIndexOutOfBoundsException: [num]
+    bValues[tileIndex] = bTotal;
     println(tileIndex, imageNames[imageCount], bTotal);
     tileIndex++;
   }
@@ -297,7 +317,7 @@ void dissectMaster(PImage image) {
     mTotal = mTotal / resolution;
 
     //store average brightness for this tile in a master array
-    mValues[tileIndex] = mTotal; //PROBLEM LINE <----------------------------ArrayIndexOutOfBoundsException: [num]
+    mValues[tileIndex] = mTotal;
     println(tileIndex, imageNames[imageCount], mTotal);
     tileIndex++;
   }
@@ -360,7 +380,11 @@ void keyReleased() {
   }
   if (key == 'd' || key == 'D') {
     inProgress = true;
-    dissect();
+    if (samplesPath != null) {
+      dissect();
+    } else {
+      println("Please select a folder of images to sample");
+    }
   }
   if (key == 'f' || key == 'F') {
     reconstruct = true;
