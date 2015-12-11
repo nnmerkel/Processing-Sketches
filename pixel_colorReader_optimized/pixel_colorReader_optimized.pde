@@ -1,25 +1,26 @@
 /**
-  *  
-  *  
-  *  
-  *  
-  *  
-  *  
-  *  
-  *  
-  *  
-  *  
-  */
+ *  
+ *  
+ *  
+ *  
+ *  
+ *  
+ *  
+ *  
+ *  
+ *  
+ */
 
+//----------------libraries
 import processing.pdf.*;
 import controlP5.*;
 
 ControlP5 cp5;
 
-PFont font;
+PFont font, monospace;
 
 PImage master;
-PImage loading;
+PImage loadingGif;
 PImage[] images;
 String[] imageNames;
 int imageCount;
@@ -29,6 +30,7 @@ boolean reconstruct = false;
 boolean inProgress = false;
 boolean selectSamples = false;
 boolean selectMaster = false;
+boolean dissect = false;
 float bTotal = 0;
 float mTotal = 0;
 float[] bValues;
@@ -37,21 +39,40 @@ int[] newValues;
 String masterImageObject;
 String samplesPath;
 
-//block size
+//-------------------block size
 int xIncrement = 100;
 int yIncrement = 100;
 int resetX, resetY;
 int tileCount;
 float resolution;
 
+//--------------------command array strings and constants
+final String [] COMMAND_ARRAY = new String[] {
+  "Please select the image from which you want to make a photomoasic.", 
+  "Please select a folder of images from which to sample.", 
+  "Set options for the photomosaic.", 
+  "Press \"Dissect\" to continue.", 
+  "Window was closed or the user hit cancel.", 
+  "Frame saved"
+};
+final int SELECT_MASTER = 0;
+final int SELECT_SAMPLES = 1;
+final int SET_OPTIONS = 2;
+final int DISSECT = 3;
+final int WINDOW_CANCELLED = 4;
+final int FRAME_SAVED = 5;
+String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
+
+
 void setup() {
   fullScreen();
   pixelDensity(2);
   //load master image to be collaged
   master = loadImage("master.jpg");
-  loading = loadImage("loading-gif.gif");
+  loadingGif = loadImage("loading-gif.gif");
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 14);
+  monospace = createFont("Consolas.ttf", 14);
   textFont(font); 
 
   setupGUI();
@@ -78,6 +99,15 @@ void draw() {
 
   fill(230);
   rect(0, 0, width, height);
+
+  //draw the command line without recording it
+  fill(50);
+  rect(0, height-30, width, height-30);
+  //fill(64, 226, 72); //command line green
+  fill(170);
+  textFont(monospace);
+  textSize(12);
+  text(">   " + currentCommand, 10, height-10);
   noFill();
 
   //once a master image is chosen, display it every frame
@@ -110,7 +140,7 @@ void draw() {
   if (inProgress) {
     fill(0, 50);
     rect(0, 0, width, height);
-    image(loading, (width+guiWidth-loadingSize)/2, (height-loadingSize)/2, loadingSize, loadingSize);
+    image(loadingGif, (width+guiWidth-loadingSize)/2, (height-loadingSize)/2, loadingSize, loadingSize);
   }
 
   if (savePDF) {
@@ -145,12 +175,14 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
 //callback function for the samples
 void folderSelected(File selection) {
   if (selection == null) {
-    println("Window was closed or the user hit cancel.");
+    currentCommand = COMMAND_ARRAY[WINDOW_CANCELLED];
   } else {
     //unlock the rest of the buttons
     setLock(cp5.getController("xIncrement"), false);
     setLock(cp5.getController("yIncrement"), false);
+    setLock(cp5.getController("dissect"), false);
     samplesPath = selection.getAbsolutePath();
+    currentCommand = COMMAND_ARRAY[SET_OPTIONS];
   }
 }
 
@@ -158,11 +190,12 @@ void folderSelected(File selection) {
 //callback function for the master image selection
 void masterSelected(File selection) {
   if (selection == null) {
-    println("Window was closed or the user hit cancel.");
+    currentCommand = COMMAND_ARRAY[WINDOW_CANCELLED];
   } else {
     //unlock the sample selection
     setLock(cp5.getController("selectSamples"), false);
     masterImageObject = selection.getAbsolutePath();
+    currentCommand = COMMAND_ARRAY[SELECT_SAMPLES];
   }
 }
 
@@ -188,16 +221,18 @@ void dissect() {
 
       // skip hidden files, especially .DS_Store (Mac)
       if (contents[i].charAt(0) == '.') continue;
-      else {
+      else if (!contents[i].equals(masterImageObject)){
         File childFile = new File(dir, contents[i]);
         images[imageCount] = loadImage(childFile.getPath());
         imageNames[imageCount] = childFile.getName();
         println(imageCount, contents[i], childFile.getPath());
+        currentCommand = imageCount + " " + contents[i] + " " + childFile.getPath();
+        dissectImage(images[imageCount]);
       }
-      dissectImage(images[imageCount]);
       imageCount++;
     }
   }
+  dissect = false;
   inProgress = false;
 }
 
@@ -369,7 +404,7 @@ void reconstruct(PImage theImage, int tileIndex, int xDim, int yDim, int tileCou
 void keyReleased() {
   if (key == 's' || key == 'S') {
     saveFrame("frame_####.png");
-    println("frame saved");
+    currentCommand = COMMAND_ARRAY[FRAME_SAVED];
   }
   if (key == 'p' || key == 'P') {
     savePDF = true;
@@ -381,7 +416,7 @@ void keyReleased() {
   if (key == 'd' || key == 'D') {
     inProgress = true;
     if (samplesPath != null) {
-      dissect();
+      dissect = true;
     } else {
       println("Please select a folder of images to sample");
     }

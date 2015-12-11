@@ -6,7 +6,7 @@ color bgActive = color(0, 94, 33);
 color fgActive = color(0, 187, 66);
 
 void setupGUI() {
-  ControlFont cfont = new ControlFont(font);
+  //ControlFont cfont = new ControlFont(font);
   //cp5.setControlFont(font);
 
   Group g2 = cp5
@@ -24,7 +24,7 @@ void setupGUI() {
     .setColorBackground(bgActive)
     .setColorForeground(fgActive)
     .setColorActive(col);
-    //.captionLabel().setControlFont().setFont(cfont);
+  //.captionLabel().setControlFont().setFont(cfont);
 
   cp5.addButton("selectSamples")
     .setLabel("Choose Samples")
@@ -44,11 +44,15 @@ void setupGUI() {
     .setRange(1, 200)
     .setGroup(g2)
     .setValue(100);
-  //selectFolder("Select a folder to process:", "folderSelected");
+  cp5.addButton ("dissect")
+    .setPosition(pad, itemHeight*4+pad*5)
+    .setSize(guiWidth-pad*2, itemHeight)
+    .setGroup(g2);
 
   setLock(cp5.getController("selectSamples"), true);
   setLock(cp5.getController("xIncrement"), true);
   setLock(cp5.getController("yIncrement"), true);
+  setLock(cp5.getController("dissect"), true);
 }
 
 void setLock(Controller theController, boolean theValue) {
