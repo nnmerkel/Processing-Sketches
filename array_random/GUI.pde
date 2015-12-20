@@ -14,7 +14,7 @@ void setupGUI() {
   int ri = 0;
   int ti = 0;
 
-  sliders[si++] = cp5.addSlider("total").setPosition(0, 23).setSize(200, 15).setRange(100, 2000).setValue(100).setGroup(options);
+  sliders[si++] = cp5.addSlider("total").setPosition(0, 23).setSize(200, 15).setRange(1, 2000).setValue(100).setGroup(options);
   sliders[si++] = cp5.addSlider("smallLimit").setPosition(0, 4).setSize(200, 15).setRange(4, 300).setGroup(options);
 
   toggles[ti++] = cp5.addToggle("useShadows").setPosition(0, 4).setSize(15, 15).setGroup(shadows);
@@ -43,9 +43,4 @@ void setupGUI() {
   sliders[si++] = cp5.addSlider("highlightsBrightnessValue", 0, 100, 0, 99, 200, 15).setGroup(highlights);
   sliders[si++] = cp5.addSlider("highlightsLineSw").setPosition(0, 118).setSize(200, 15).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(highlights);
   sliders[si++] = cp5.addSlider("highlightsPointSw").setPosition(0, 137).setSize(200, 15).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(highlights);
-}
-
-void drawGUI() {
-  cp5.show();
-  cp5.draw();
 }
