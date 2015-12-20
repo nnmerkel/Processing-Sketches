@@ -44,6 +44,7 @@ void setupGUI() {
     .setRange(1, 200)
     .setGroup(g2)
     .setValue(100);
+    
   cp5.addButton ("dissect")
     .setPosition(pad, itemHeight*4+pad*5)
     .setSize(guiWidth-pad*2, itemHeight)
