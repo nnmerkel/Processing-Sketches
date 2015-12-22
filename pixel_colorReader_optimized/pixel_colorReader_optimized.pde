@@ -53,7 +53,8 @@ final String [] COMMAND_ARRAY = new String[] {
   "Set options for the photomosaic.", 
   "Press \"Dissect\" to continue.", 
   "Window was closed or the user hit cancel.", 
-  "Frame saved"
+  "Frame saved", 
+  "Operation complete"
 };
 final int SELECT_MASTER = 0;
 final int SELECT_SAMPLES = 1;
@@ -61,6 +62,7 @@ final int SET_OPTIONS = 2;
 final int DISSECT = 3;
 final int WINDOW_CANCELLED = 4;
 final int FRAME_SAVED = 5;
+final int COMPLETE = 6;
 String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 
@@ -95,20 +97,8 @@ void draw() {
   pushMatrix();
   translate(guiWidth, 0);
 
-  if (savePDF) beginRecord(PDF, "grid_####.pdf");
-
-  fill(230);
+  fill(242);
   rect(0, 0, width, height);
-
-  //draw the command line without recording it
-  fill(50);
-  rect(0, height-30, width, height-30);
-  //fill(64, 226, 72); //command line green
-  fill(170);
-  textFont(monospace);
-  textSize(12);
-  text(">   " + currentCommand, 10, height-10);
-  noFill();
 
   //once a master image is chosen, display it every frame
   if (masterImageObject != null) {
@@ -123,8 +113,8 @@ void draw() {
   resolution = xIncrement*yIncrement;
 
   //preserve initial increment values
-  resetX = xIncrement;
-  resetY = yIncrement;
+  //resetX = xIncrement;
+  //resetY = yIncrement;
 
   //draw the tiling grid
   for (int x = 0; x < width; x += xIncrement) {
@@ -143,12 +133,24 @@ void draw() {
     image(loadingGif, (width+guiWidth-loadingSize)/2, (height-loadingSize)/2, loadingSize, loadingSize);
   }
 
+  //draw the command line without recording it
+  fill(50);
+  rect(0, height-30, width, height-30);
+  //fill(64, 226, 72); //command line green
+  fill(170);
+  textFont(monospace);
+  textSize(12);
+  text(">  " + currentCommand, 10, height-10);
+  noFill();
+
   if (savePDF) {
     savePDF = false;
     endRecord();
     println("pdf saved");
     exit();
   }
+
+  //if (reconstruct) reconstruct();
 
   popMatrix();
 }
@@ -211,17 +213,21 @@ void dissect() {
   if (dir.isDirectory()) {
     String[] contents = dir.list();
     printArray(contents);
-
+    
     int directoryLength = contents.length;
-
     images = new PImage[directoryLength];
     imageNames = new String[directoryLength];
     //check for hidden files here so that the loop runs for the appropriate length
     for (int i = 0; i < directoryLength; i++) {
-
-      // skip hidden files, especially .DS_Store (Mac)
-      if (contents[i].charAt(0) == '.') continue;
-      else if (!contents[i].equals(masterImageObject)){
+      
+      // skip hidden files and the master file, if contained in the samples folder
+      // also skip non-image format files
+      if (contents[i].charAt(0) == '.')
+        //masterImageObject.endsWith(contents[i]) || 
+        || contents[i].toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$"))
+        {
+        continue;
+      } else {
         File childFile = new File(dir, contents[i]);
         images[imageCount] = loadImage(childFile.getPath());
         imageNames[imageCount] = childFile.getName();
@@ -234,6 +240,7 @@ void dissect() {
   }
   dissect = false;
   inProgress = false;
+  currentCommand = COMMAND_ARRAY[COMPLETE];
 }
 
 
@@ -389,7 +396,8 @@ void findBestMatch(float masterArray[], float brightnessArray[]) {
 
 //after we take care of the files, reconstruct the images
 void reconstruct(PImage theImage, int tileIndex, int xDim, int yDim, int tileCount) {  
-  //actual loop
+  noStroke();
+  noFill();
   int x, y;
   for (int i = 0; i < tileCount; i++) {
     //get the coordinates of the top-left corner of every tile

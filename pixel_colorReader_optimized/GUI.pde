@@ -13,7 +13,7 @@ void setupGUI() {
     .addGroup("g2")
     .setPosition(0, 0)
     .setWidth(guiWidth)
-    .setBackgroundColor(color(120))
+    .setBackgroundColor(color(220))
     .setBackgroundHeight(height)
     .setLabel("Menu");
 
