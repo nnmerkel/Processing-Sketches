@@ -87,9 +87,6 @@ void setup() {
   //GUI
   fill(160);
   rect(0, 0, guiOffset, height);
-  pushMatrix();
-  translate(guiOffset, 0);
-  popMatrix();
   setupGUI();
 }
 
@@ -98,9 +95,11 @@ void draw() {
   pushMatrix();
   translate(guiOffset, 0);
 
-  //if (recording) beginRecord(PDF, timestamp() + ".pdf");
-
-  overlay();
+  if (random) {
+    overlay();
+  } else {
+    orthongonalOverlay(15, 15);
+  }
   
   if (clear) {
     fill(background);
@@ -177,6 +176,24 @@ void overlay() {
           point(x[j], y[j]);
         }
       }
+    }
+  }
+}
+
+
+//90 degree version of overlay
+void orthongonalOverlay(int xStep, int yStep) {
+  for (int i = 0; i < total; i+=xStep) {
+    for (int j = 0; j < total; j+=yStep) {
+      color c = s.pixels[y*s.width+x];
+      float redc = red(c);
+      float redcc = red(cc);
+      float b = brightness(c);
+      float distance = dist(x[i], y[i], x[j], y[j]);
+      float opacityMap = map(distance, 0, smallLimit, 0, 255);
+      
+      x[i] = j;
+      y[i] = i;
     }
   }
 }
