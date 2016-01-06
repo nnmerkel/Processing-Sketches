@@ -1,26 +1,34 @@
 import processing.pdf.*;
+import java.util.Calendar;
 
 PImage s;
-int total = 8000;
+int total = 3000;
 int [] x = new int[total];
 int [] y = new int[total];
 float bigLimit = 120;
-float smallLimit = 40;
-float smallLowLimit = 2;
-float bigLowLimit = 90;
+float smallLimit = 100;
+float smallLowLimit = 5;
+
 
 void setup() {
-  size(884, 1024);//, PDF, "n1.pdf");
-  s = loadImage("n2.jpg");
+  size(1620, 1050, PDF, "try19.pdf");
+  pixelDensity(2);
+  s = loadImage("2919705596_39e2860318_b.jpg");
   background(0);
   //overlayWide();
   overlay();
+  smallLimit = 30;
+  overlay();
+  smallLimit = 15;
+  overlay();
 }
+
 
 void draw() {
   //saveFrame();
-  //exit();
+  exit();
 }
+
 
 void overlay() {
   for (int i = 0; i < total; i++) {
@@ -35,17 +43,18 @@ void overlay() {
       float distance = dist(x[i], y[i], x[j], y[j]);
 
       //target the brightest pixels, but not a white background
-      if (redcc >= redc && b > 100 && distance > smallLowLimit && distance < smallLimit) {
-        strokeWeight(1);
-        stroke(255);
+      if (redcc >= redc && b > 50 && b < 255 && distance > smallLowLimit && distance < smallLimit) {
+        strokeWeight(.5);
+        stroke(c);
         line(x[i], y[i], x[j], y[j]);
-        strokeWeight(3);
+        strokeWeight(2);
         point(x[i], y[i]);
         point(x[j], y[j]);
       }
     }
   }
 }
+
 
 void overlayWide() {
   for (int i = 0; i < total; i++) {
@@ -72,6 +81,7 @@ void overlayWide() {
   }
 }
 
+
 void keyPressed() {
   if (key == 's') {
     saveFrame();
@@ -79,3 +89,7 @@ void keyPressed() {
   }
 }
 
+
+String timestamp() {
+  return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", Calendar.getInstance());
+}
