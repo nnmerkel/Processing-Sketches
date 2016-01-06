@@ -1,4 +1,4 @@
-/**
+/** Photomosaic generator
  *  
  *  
  *  
@@ -70,7 +70,6 @@ void setup() {
   fullScreen();
   pixelDensity(2);
   //load master image to be collaged
-  master = loadImage("master.jpg");
   loadingGif = loadImage("loading-gif.gif");
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 14);
@@ -213,19 +212,16 @@ void dissect() {
   if (dir.isDirectory()) {
     String[] contents = dir.list();
     printArray(contents);
-    
+
     int directoryLength = contents.length;
     images = new PImage[directoryLength];
     imageNames = new String[directoryLength];
     //check for hidden files here so that the loop runs for the appropriate length
     for (int i = 0; i < directoryLength; i++) {
-      
+
       // skip hidden files and the master file, if contained in the samples folder
       // also skip non-image format files
-      if (contents[i].charAt(0) == '.')
-        //masterImageObject.endsWith(contents[i]) || 
-        || contents[i].toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$"))
-        {
+      if ((contents[i].charAt(0) == '.') || !contents[i].toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")) {
         continue;
       } else {
         File childFile = new File(dir, contents[i]);
@@ -233,11 +229,16 @@ void dissect() {
         imageNames[imageCount] = childFile.getName();
         println(imageCount, contents[i], childFile.getPath());
         currentCommand = imageCount + " " + contents[i] + " " + childFile.getPath();
-        dissectImage(images[imageCount]);
+        if (masterImageObject.endsWith(contents[i])) {
+          dissectMaster(images[imageCount]);
+        } else {
+          dissectImage(images[imageCount]);
+        }
       }
       imageCount++;
     }
   }
+  findBestMatch(mValues, bValues);
   dissect = false;
   inProgress = false;
   currentCommand = COMMAND_ARRAY[COMPLETE];
@@ -363,10 +364,6 @@ void dissectMaster(PImage image) {
     println(tileIndex, imageNames[imageCount], mTotal);
     tileIndex++;
   }
-
-  //run the test
-  findBestMatch(mValues, bValues);
-  //reconstruct(images[1], tileIndex, xDim, yDim, tileCount);
 }
 
 
@@ -390,7 +387,6 @@ void findBestMatch(float masterArray[], float brightnessArray[]) {
     }
     valueCounter++;
   }
-  printArray(newValues);
 }
 
 
@@ -423,11 +419,6 @@ void keyReleased() {
   }
   if (key == 'd' || key == 'D') {
     inProgress = true;
-    if (samplesPath != null) {
-      dissect = true;
-    } else {
-      println("Please select a folder of images to sample");
-    }
   }
   if (key == 'f' || key == 'F') {
     reconstruct = true;

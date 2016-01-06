@@ -33,4 +33,3 @@ class PurpleArc {
     arc(x, y, d, d, radians(bAngle), radians(eAngle));
   }
 }
-
