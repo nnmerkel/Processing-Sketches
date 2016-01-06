@@ -25,7 +25,7 @@ void setupGUI() {
   
   toggles[ti++] = cp5.addToggle("useShadows").setPosition(0, pad).setSize(itemHeight, itemHeight).setGroup(shadows);
   toggles[ti++] = cp5.addToggle("shadowFalseColor").setPosition(itemWidth/2, pad).setSize(itemHeight, itemHeight).setGroup(shadows);
-  ranges[ri++] = cp5.addRange("shadowsRange", 0, 85, lowShadows, highShadows, 0, itemHeight+pad*2, itemWidth, itemHeight).setGroup(shadows);
+  ranges[ri++] = cp5.addRange("shadowsRange", 0, 34, lowShadows, highShadows, 0, itemHeight+pad*2, itemWidth, itemHeight).setLowValue(1).setHighValue(15).setGroup(shadows);
   sliders[ri++] = cp5.addSlider("shadowHue").setRange(0, 360).setPosition(0, itemHeight*2+pad*3).setSize(itemWidth, itemHeight).setGroup(shadows);
   sliders[si++] = cp5.addSlider("shadowSaturationValue", 0, 100, 0, itemHeight*3+pad*4, itemWidth, itemHeight).setGroup(shadows);
   sliders[si++] = cp5.addSlider("shadowBrightnessValue", 0, 100, 0, itemHeight*4+pad*5, itemWidth, itemHeight).setGroup(shadows);
@@ -34,7 +34,7 @@ void setupGUI() {
   
   toggles[ti++] = cp5.addToggle("useMidtones").setPosition(0, pad).setSize(itemHeight, itemHeight).setGroup(midtones);
   toggles[ti++] = cp5.addToggle("midtonesFalseColor").setPosition(itemWidth/2, pad).setSize(itemHeight, itemHeight).setGroup(midtones);
-  ranges[ri++] = cp5.addRange("midtonesRange", 86, 170, lowMidtones, highMidtones, 0, itemHeight+pad*2, itemWidth, itemHeight).setGroup(midtones);
+  ranges[ri++] = cp5.addRange("midtonesRange", 34, 67, lowMidtones, highMidtones, 0, itemHeight+pad*2, itemWidth, itemHeight).setLowValue(34).setHighValue(50).setGroup(midtones);
   sliders[ri++] = cp5.addSlider("midtonesHue").setRange(0, 360).setPosition(0, itemHeight*2+pad*3).setSize(itemWidth, itemHeight).setGroup(midtones);
   sliders[si++] = cp5.addSlider("midtonesSaturationValue", 0, 100, 0, itemHeight*3+pad*4, itemWidth, itemHeight).setGroup(midtones);
   sliders[si++] = cp5.addSlider("midtonesBrightnessValue", 0, 100, 0, itemHeight*4+pad*5, itemWidth, itemHeight).setGroup(midtones);
@@ -43,7 +43,7 @@ void setupGUI() {
   
   toggles[ti++] = cp5.addToggle("useHighlights").setPosition(0, 4).setSize(itemHeight, itemHeight).setGroup(highlights);
   toggles[ti++] = cp5.addToggle("highlightsFalseColor").setPosition(0, 23).setSize(itemHeight, itemHeight).setGroup(highlights);
-  ranges[ri++] = cp5.addRange("highlightsRange", 171, 255, lowHighlights, highHighlights, 0, 42, itemWidth, itemHeight).setGroup(highlights);
+  ranges[ri++] = cp5.addRange("highlightsRange", 68, 100, lowHighlights, highHighlights, 0, 42, itemWidth, itemHeight).setLowValue(68).setHighValue(80).setGroup(highlights);
   sliders[ri++] = cp5.addSlider("highlightsHue").setRange(0, 360).setPosition(0, 61).setSize(itemWidth, itemHeight).setGroup(highlights);
   sliders[si++] = cp5.addSlider("highlightsSaturationValue", 0, 100, 0, 80, itemWidth, itemHeight).setGroup(highlights);
   sliders[si++] = cp5.addSlider("highlightsBrightnessValue", 0, 100, 0, 99, itemWidth, itemHeight).setGroup(highlights);

@@ -77,7 +77,7 @@ void setup() {
   size(1280, 800);
   pixelDensity(2);
 
-  s = loadImage("a-exp.jpg");
+  s = loadImage("shell-2.jpg");
 
   colorMode(RGB, 255, 255, 255, 255);
   background(background);
@@ -87,6 +87,7 @@ void setup() {
   //GUI
   fill(160);
   rect(0, 0, guiOffset, height);
+  //image(s, guiOffset, 0);
   setupGUI();
 }
 
@@ -100,14 +101,14 @@ void draw() {
   } else {
     orthongonalOverlay(15, 15);
   }
-  
+
   if (clear) {
     fill(background);
     noStroke();
     rect(0, 0, width, height);
     clear = false;
   }
-  
+
   popMatrix();
 }
 
@@ -128,52 +129,55 @@ void overlay() {
 
       if (useShadows) {
         //target the darkest pixels, but not the black background
-        if (redcc >= redc && b >= lowShadows && b < highShadows && distance > shadowLowLimit && distance < smallLimit) {
+        if (redcc <= redc && b >= lowShadows && b < highShadows && distance > shadowLowLimit && distance < smallLimit) {
           strokeWeight(shadowLineSw);
           if (shadowFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
             stroke(shadowHue, shadowSaturation, shadowBrightness, opacityMap);
           } else {
             stroke(c);
+            line(x[i], y[i], x[j], y[j]);
+            strokeWeight(shadowPointSw);
+            point(x[i], y[i]);
+            stroke(cc);
+            point(x[j], y[j]);
           }
-          line(x[i], y[i], x[j], y[j]);
-          strokeWeight(shadowPointSw);
-          point(x[i], y[i]);
-          point(x[j], y[j]);
         }
       }
 
       if (useMidtones) {
         //target the exact midtones, thinner lines
-        if (redcc > redc && b > lowMidtones && b < highMidtones && distance > midLowLimit && distance < smallLimit) {
+        if (redcc < redc && b > lowMidtones && b < highMidtones && distance > midLowLimit && distance < smallLimit) {
           strokeWeight(midtonesLineSw);
           if (midtonesFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
             stroke(midtonesHue, midtonesSaturation, midtonesBrightness, opacityMap);
           } else {
             stroke(c, opacityMap);
+            line(x[i], y[i], x[j], y[j]);
+            strokeWeight(midtonesPointSw);
+            point(x[i], y[i]);
+            stroke(cc);
+            point(x[j], y[j]);
           }
-          line(x[i], y[i], x[j], y[j]);
-          strokeWeight(midtonesPointSw);
-          point(x[i], y[i]);
-          point(x[j], y[j]);
         }
       }
 
       if (useHighlights) {
         //target the brightest pixels, but not a white background
-        if (redcc > redc && b > lowHighlights && b < highHighlights && distance > highlightsLowLimit && distance < smallLimit) {
+        if (redcc <= redc && b > lowHighlights && b < highHighlights && distance > highlightsLowLimit && distance < smallLimit) {
           strokeWeight(highlightsLineSw);
           if (highlightsFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
             stroke(highlightsHue, highlightsSaturation, highlightsBrightness, opacityMap);
           } else {
             stroke(c, opacityMap);
+            line(x[i], y[i], x[j], y[j]);
+            strokeWeight(highlightsPointSw);
+            point(x[i], y[i]);
+            stroke(cc);
+            point(x[j], y[j]);
           }
-          line(x[i], y[i], x[j], y[j]);
-          strokeWeight(highlightsPointSw);
-          point(x[i], y[i]);
-          point(x[j], y[j]);
         }
       }
     }
@@ -185,13 +189,13 @@ void overlay() {
 void orthongonalOverlay(int xStep, int yStep) {
   for (int i = 0; i < total; i+=xStep) {
     for (int j = 0; j < total; j+=yStep) {
-      color c = s.pixels[y*s.width+x];
+      color c = s.get(x[i], y[i]);
       float redc = red(c);
-      float redcc = red(cc);
+      //float redcc = red(cc);
       float b = brightness(c);
       float distance = dist(x[i], y[i], x[j], y[j]);
       float opacityMap = map(distance, 0, smallLimit, 0, 255);
-      
+
       x[i] = j;
       y[i] = i;
     }
@@ -204,11 +208,11 @@ void proximityTest() {
   if (useHighlights) {
     highlightsLowLimit = highlightsPointSw * 2;
   }
-  
+
   if (useMidtones) {
     midLowLimit = midtonesPointSw * 2;
   }
-  
+
   if (useShadows) {
     shadowLowLimit = shadowPointSw * 2;
   }
@@ -220,14 +224,14 @@ void keyPressed() {
     saveFrame(timestamp() + ".png");
     println("frame saved");
   }
-  
+
   if (key=='b' || key=='B')
   {
     recording = true;
     beginRecord(PDF, timestamp() + ".pdf");
     println("recording...");
   }
-  
+
   if (key=='e' || key=='E')
   {
     println("pdf saved");
@@ -235,7 +239,7 @@ void keyPressed() {
     recording = false;
     exit();
   }
-  
+
   if (key == BACKSPACE) {
     clear = true;
   }
