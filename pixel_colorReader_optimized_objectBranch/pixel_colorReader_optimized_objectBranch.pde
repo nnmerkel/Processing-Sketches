@@ -19,6 +19,8 @@ ControlP5 cp5;
 
 PFont font, monospace;
 
+TileObject [] t;
+
 PImage master;
 PImage loadingGif;
 PImage[] images;
@@ -129,7 +131,7 @@ void draw() {
   if (inProgress) {
     fill(0, 50);
     rect(0, 0, width, height);
-    image(loadingGif, (width+guiWidth-loadingSize)/2, (height-loadingSize)/2, loadingSize, loadingSize);
+    image(loadingGif, (width-guiWidth-loadingSize)/2, (height-loadingSize)/2, loadingSize, loadingSize);
   }
 
   //draw the command line without recording it
@@ -203,6 +205,10 @@ void masterSelected(File selection) {
 
 //cut apart each image in the folder
 void dissect() {
+  //variable to time this function
+  long startTime = System.nanoTime();
+
+  inProgress = true;
 
   //reset the array so it can run more than once
   imageCount = 0;
@@ -227,21 +233,65 @@ void dissect() {
         File childFile = new File(dir, contents[i]);
         images[imageCount] = loadImage(childFile.getPath());
         imageNames[imageCount] = childFile.getName();
-        println(imageCount, contents[i], childFile.getPath());
-        currentCommand = imageCount + " " + contents[i] + " " + childFile.getPath();
+        println(imageCount, contents[i]);
+        currentCommand = imageCount + " " + contents[i];
         if (masterImageObject.endsWith(contents[i])) {
           dissectMaster(images[imageCount]);
         } else {
-          dissectImage(images[imageCount]);
+          experiment(images[imageCount]);
         }
       }
       imageCount++;
     }
   }
-  findBestMatch(mValues, bValues);
+  //findBestMatch(mValues, bValues);
   dissect = false;
   inProgress = false;
   currentCommand = COMMAND_ARRAY[COMPLETE];
+  
+  //these lines are to time the dissect function ------------- best value so far: 5853 for 55 images
+  long endTime = System.nanoTime();
+  long duration = (endTime - startTime)/1000000;
+  println("\n" + "duration " + duration + "\n");
+}
+
+
+//experiemental object-oriented dissection
+void experiment(PImage image) {
+  int tileIndex = 0;
+
+  //calculate the size of bValues array
+  int xDim = image.width / xIncrement;
+  int yDim = image.height / yIncrement;
+  
+  tileCount = xDim * yDim;
+  t = new TileObject[tileCount];
+  printArray(t);
+  
+  for (int i = 0; i < tileCount; i++) {
+    t[i] = new TileObject();
+    t[i].printAttributes();
+    
+    //initialize the variables for each tile
+    t[i].x = (i % xDim) * xIncrement;
+    t[i].y = int(i / xDim) * yIncrement;
+    t[i].sourceImage = image;
+    t[i].tileIndex = tileIndex;
+    
+    //the average brightness starts at 0
+    bTotal = 0;
+    
+    //count each tile
+    tile(image, t[i].x, t[i].y, xIncrement, yIncrement);
+    bTotal /= resolution;
+    t[i].avgAttribute = bTotal;
+    t[i].printAttributes();
+
+    //store average brightness for this tile in a master array
+    bValues[tileIndex] = bTotal;
+    tileIndex++;
+    //t[i].printAttributes();
+  }
 }
 
 
@@ -250,7 +300,7 @@ void dissectImage(PImage image) {
   println("dissecting", imageNames[imageCount], "now");
   int tileIndex = 0;
 
-  //this will get your cut-and-dry grid count along x and y
+  //calculate the size of bValues array
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
 
@@ -267,9 +317,12 @@ void dissectImage(PImage image) {
   //now we can define the grid size
   tileCount = xDim * yDim;
 
+  t = new TileObject[tileCount];
+
   //each tile gets its own bValue
   bValues = new float[tileCount];
   println("the array is", xDim, "by", yDim);
+
   //run the test again but with correct tileCount to limit the loop
   for (int i = 0; i < tileCount; i++) {
     if (xLeftover != 0) {
@@ -308,7 +361,7 @@ void dissectImage(PImage image) {
 //run the dissection on the master. identical to dissectImage except the values
 //get put into a separate array for comparison later
 void dissectMaster(PImage image) {
-  println("dissecting the master now");
+  println("\n" + "dissecting the master now" + "\n");
   int tileIndex = 0;
 
   //this will get your cut-and-dry grid count along x and y
