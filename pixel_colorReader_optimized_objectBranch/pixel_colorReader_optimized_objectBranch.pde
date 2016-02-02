@@ -20,6 +20,7 @@ ControlP5 cp5;
 PFont font, monospace;
 
 TileObject [] t;
+TileObject [] m;
 
 PImage master;
 PImage loadingGif;
@@ -46,7 +47,7 @@ int xIncrement = 100;
 int yIncrement = 100;
 int resetX, resetY;
 int tileCount;
-float resolution;
+int resolution;
 
 //--------------------command array strings and constants
 final String [] COMMAND_ARRAY = new String[] {
@@ -69,8 +70,9 @@ String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 
 void setup() {
-  fullScreen();
-  pixelDensity(2);
+  size(800, 800);
+  //fullScreen();
+  //pixelDensity(2);
   //load master image to be collaged
   loadingGif = loadImage("loading-gif.gif");
   cp5 = new ControlP5(this);
@@ -209,7 +211,11 @@ void dissect() {
   long startTime = System.nanoTime();
 
   inProgress = true;
-
+  
+  //dissect the master image here, before we loop through the samples
+  PImage masterTemp = loadImage(masterImageObject);
+  experimentMaster(masterTemp);
+  
   //reset the array so it can run more than once
   imageCount = 0;
 
@@ -225,9 +231,12 @@ void dissect() {
     //check for hidden files here so that the loop runs for the appropriate length
     for (int i = 0; i < directoryLength; i++) {
 
-      // skip hidden files and the master file, if contained in the samples folder
-      // also skip non-image format files
-      if ((contents[i].charAt(0) == '.') || !contents[i].toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")) {
+      // 1. skip hidden files, if contained in the samples folder
+      // 2. also skip non-image format files
+      // 3. skip the master file, if contained in the samples folder
+      if (contents[i].charAt(0) == '.' ||                                         //1
+          !contents[i].toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$") ||      //2
+          masterImageObject.endsWith(contents[i])) {                              //3
         continue;
       } else {
         File childFile = new File(dir, contents[i]);
@@ -235,21 +244,19 @@ void dissect() {
         imageNames[imageCount] = childFile.getName();
         println(imageCount, contents[i]);
         currentCommand = imageCount + " " + contents[i];
-        if (masterImageObject.endsWith(contents[i])) {
-          dissectMaster(images[imageCount]);
-        } else {
-          experiment(images[imageCount]);
-        }
+        //the function for actual dissection
+        experiment(images[imageCount]);
       }
       imageCount++;
     }
   }
-  //findBestMatch(mValues, bValues);
+  //m and t are the TileObject arrays
+  findBestMatch(m, t);
   dissect = false;
   inProgress = false;
   currentCommand = COMMAND_ARRAY[COMPLETE];
-  
-  //these lines are to time the dissect function ------------- best value so far: 5853 for 55 images
+
+  //these lines are to time the dissect function ------------- best value so far: 5225 for 55 images
   long endTime = System.nanoTime();
   long duration = (endTime - startTime)/1000000;
   println("\n" + "duration " + duration + "\n");
@@ -263,34 +270,68 @@ void experiment(PImage image) {
   //calculate the size of bValues array
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
-  
+
   tileCount = xDim * yDim;
   t = new TileObject[tileCount];
-  printArray(t);
-  
+
   for (int i = 0; i < tileCount; i++) {
     t[i] = new TileObject();
-    t[i].printAttributes();
-    
+
     //initialize the variables for each tile
     t[i].x = (i % xDim) * xIncrement;
     t[i].y = int(i / xDim) * yIncrement;
     t[i].sourceImage = image;
     t[i].tileIndex = tileIndex;
-    
+
     //the average brightness starts at 0
     bTotal = 0;
-    
+
     //count each tile
     tile(image, t[i].x, t[i].y, xIncrement, yIncrement);
     bTotal /= resolution;
     t[i].avgAttribute = bTotal;
-    t[i].printAttributes();
+    //t[i].printAttributes();
 
     //store average brightness for this tile in a master array
-    bValues[tileIndex] = bTotal;
+    //println("bValues " + bValues[tileIndex] + "\n" + "avgAttribute " + t[i].avgAttribute);
+    //bValues[tileIndex] = t[i].avgAttribute;//<------------------------------encountering cp5 issue here
     tileIndex++;
-    //t[i].printAttributes();
+  }
+}
+
+
+void experimentMaster(PImage image) {
+  int tileIndex = 0;
+
+  //calculate the size of bValues array
+  int xDim = image.width / xIncrement;
+  int yDim = image.height / yIncrement;
+
+  tileCount = xDim * yDim;
+  m = new TileObject[tileCount];
+
+  for (int i = 0; i < tileCount; i++) {
+    m[i] = new TileObject();
+
+    //initialize the variables for each tile
+    m[i].x = (i % xDim) * xIncrement;
+    m[i].y = int(i / xDim) * yIncrement;
+    m[i].sourceImage = image;
+    m[i].tileIndex = tileIndex;
+
+    //the average brightness starts at 0
+    mTotal = 0;
+
+    //count each tile
+    tile(image, m[i].x, m[i].y, xIncrement, yIncrement);
+    mTotal /= resolution;
+    m[i].avgAttribute = mTotal;
+    m[i].printAttributes();
+
+    //store average brightness for this tile in a master array
+    //println("bValues " + bValues[tileIndex] + "\n" + "avgAttribute " + t[i].avgAttribute);
+    //bValues[tileIndex] = t[i].avgAttribute;//<------------------------------encountering cp5 issue here
+    tileIndex++;
   }
 }
 
@@ -316,8 +357,6 @@ void dissectImage(PImage image) {
 
   //now we can define the grid size
   tileCount = xDim * yDim;
-
-  t = new TileObject[tileCount];
 
   //each tile gets its own bValue
   bValues = new float[tileCount];
@@ -422,14 +461,14 @@ void dissectMaster(PImage image) {
 
 //this function compares each value in the mValues array to every other value in the bValues array
 //to find the closest possible match, then test display the tile image
-void findBestMatch(float masterArray[], float brightnessArray[]) {
+void findBestMatch(TileObject masterArray[], TileObject brightnessArray[]) {
   int bestIndex = 0;
   int valueCounter = 0;
   newValues = new int[masterArray.length];
   for (int i = 0; i < masterArray.length; i++) {
-    float bestDiff = abs(masterArray[i] - brightnessArray[0]); // <-------------------NullPointerException because master image is dissected first
+    float bestDiff = abs(masterArray[i].avgAttribute - brightnessArray[0].avgAttribute); // <-------------------NullPointerException because master image is dissected first
     for (int j = 0; j < brightnessArray.length; j++) {
-      float diff = abs(masterArray[i] - brightnessArray[j]);
+      float diff = abs(masterArray[i].avgAttribute - brightnessArray[j].avgAttribute);
       if (diff <= bestDiff) {
         //here’s a potential match; don’t stop now as there could be a better match later
         bestIndex = j;
