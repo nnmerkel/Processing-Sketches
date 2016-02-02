@@ -256,7 +256,11 @@ void dissect() {
   inProgress = false;
   currentCommand = COMMAND_ARRAY[COMPLETE];
 
-  //these lines are to time the dissect function ------------- best value so far: 5225 for 55 images
+  //these lines are to time the dissect function
+  //------------- best value so far: 4895 for 55 images @200x200
+  //------------- best value so far: 4882 for 55 images @100x100
+  //------------- best value so far: 4862 for 55 images @50x50
+  //------------- best value so far: 4739 for 55 images @20x20
   long endTime = System.nanoTime();
   long duration = (endTime - startTime)/1000000;
   println("\n" + "duration " + duration + "\n");
