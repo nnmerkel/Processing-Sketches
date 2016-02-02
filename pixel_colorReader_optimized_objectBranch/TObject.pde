@@ -8,8 +8,12 @@ class TileObject {
   int tileIndex;
   
   //constructor
-  TileObject () {
-    
+  TileObject (int _x, int _y, PImage _source, float _avg, int _i) {
+    x = _x;
+    y = _y;
+    sourceImage = _source;
+    avgAttribute = _avg;
+    tileIndex = _i;
   }
   
   void createTile() {

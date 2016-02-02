@@ -19,7 +19,8 @@ ControlP5 cp5;
 
 PFont font, monospace;
 
-TileObject [] t;
+ArrayList<TileObject> tx = new ArrayList<TileObject>();
+
 TileObject [] m;
 
 PImage master;
@@ -254,8 +255,9 @@ void dissect() {
       imageCount++;
     }
   }
+  println(tx.size());
   //m and t are the TileObject arrays
-  findBestMatch(m, t);
+  findBestMatch(m, tx);
   dissect = false;
   inProgress = false;
   currentCommand = COMMAND_ARRAY[COMPLETE];
@@ -280,25 +282,23 @@ void experiment(PImage image) {
   int yDim = image.height / yIncrement;
 
   tileCount = xDim * yDim;
-  t = new TileObject[tileCount];
+  //t = new TileObject[tileCount];
 
   for (int i = 0; i < tileCount; i++) {
-    t[i] = new TileObject();
-
     //initialize the variables for each tile
-    t[i].x = (i % xDim) * xIncrement;
-    t[i].y = int(i / xDim) * yIncrement;
-    t[i].sourceImage = image;
-    t[i].tileIndex = tileIndex;
+    int tempX = (i % xDim) * xIncrement;
+    int tempY = int(i / xDim) * yIncrement;
+    PImage tempSource = image;
+    int tempIndex = tileIndex;
 
     //the average brightness starts at 0
     bTotal = 0;
 
     //count each tile
-    tile(image, t[i].x, t[i].y, xIncrement, yIncrement);
+    tile(image, tempX, tempY, xIncrement, yIncrement);
     bTotal /= resolution;
-    t[i].avgAttribute = bTotal;
-    //t[i].printAttributes();
+    float tempAvg = bTotal;
+    tx.add(new TileObject(tempX, tempY, tempSource, tempAvg, tempIndex));
 
     //store average brightness for this tile in a master array
     //println("bValues " + bValues[tileIndex] + "\n" + "avgAttribute " + t[i].avgAttribute);
@@ -319,22 +319,20 @@ void experimentMaster(PImage image) {
   m = new TileObject[tileCount];
 
   for (int i = 0; i < tileCount; i++) {
-    m[i] = new TileObject();
-
     //initialize the variables for each tile
-    m[i].x = (i % xDim) * xIncrement;
-    m[i].y = int(i / xDim) * yIncrement;
-    m[i].sourceImage = image;
-    m[i].tileIndex = tileIndex;
+    int tempX = (i % xDim) * xIncrement;
+    int tempY = int(i / xDim) * yIncrement;
+    PImage tempSource = image;
+    int tempIndex = tileIndex;
 
     //the average brightness starts at 0
     mTotal = 0;
 
     //count each tile
-    tile(image, m[i].x, m[i].y, xIncrement, yIncrement);
+    tile(image, tempX, tempY, xIncrement, yIncrement);
     mTotal /= resolution;
-    m[i].avgAttribute = mTotal;
-    m[i].printAttributes();
+    float tempAvg = mTotal;
+    m[i] = new TileObject(tempX, tempY, tempSource, tempAvg, tempIndex);
 
     //store average brightness for this tile in a master array
     //println("bValues " + bValues[tileIndex] + "\n" + "avgAttribute " + t[i].avgAttribute);
@@ -469,14 +467,17 @@ void dissectMaster(PImage image) {
 
 //this function compares each value in the mValues array to every other value in the bValues array
 //to find the closest possible match, then test display the tile image
-void findBestMatch(TileObject masterArray[], TileObject brightnessArray[]) {
+void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   int bestIndex = 0;
   int valueCounter = 0;
+  TileObject tempTile, otherTile;
   newValues = new int[masterArray.length];
   for (int i = 0; i < masterArray.length; i++) {
-    float bestDiff = abs(masterArray[i].avgAttribute - brightnessArray[0].avgAttribute); // <-------------------NullPointerException because master image is dissected first
-    for (int j = 0; j < brightnessArray.length; j++) {
-      float diff = abs(masterArray[i].avgAttribute - brightnessArray[j].avgAttribute);
+    tempTile = brightness.get(i);
+    float bestDiff = abs(masterArray[i].avgAttribute - tempTile.avgAttribute);
+    for (int j = 0; j < brightness.size(); j++) {
+      otherTile = brightness.get(j);
+      float diff = abs(masterArray[i].avgAttribute - otherTile.avgAttribute);
       if (diff <= bestDiff) {
         //here’s a potential match; don’t stop now as there could be a better match later
         bestIndex = j;
@@ -487,6 +488,7 @@ void findBestMatch(TileObject masterArray[], TileObject brightnessArray[]) {
     }
     valueCounter++;
   }
+  printArray(newValues);
 }
 
 
