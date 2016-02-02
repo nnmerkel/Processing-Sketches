@@ -57,7 +57,8 @@ final String [] COMMAND_ARRAY = new String[] {
   "Press \"Dissect\" to continue.", 
   "Window was closed or the user hit cancel.", 
   "Frame saved", 
-  "Operation complete"
+  "Operation complete",
+  "Dissecting…"
 };
 final int SELECT_MASTER = 0;
 final int SELECT_SAMPLES = 1;
@@ -66,6 +67,7 @@ final int DISSECT = 3;
 final int WINDOW_CANCELLED = 4;
 final int FRAME_SAVED = 5;
 final int COMPLETE = 6;
+final int DISSECTING = 7;
 String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 
@@ -147,9 +149,9 @@ void draw() {
   noFill();
 
   if (savePDF) {
-    savePDF = false;
     endRecord();
     println("pdf saved");
+    savePDF = false;
     exit();
   }
 
@@ -211,6 +213,8 @@ void dissect() {
   long startTime = System.nanoTime();
 
   inProgress = true;
+  
+  currentCommand = COMMAND_ARRAY[DISSECTING];
   
   //dissect the master image here, before we loop through the samples
   PImage masterTemp = loadImage(masterImageObject);
