@@ -342,6 +342,8 @@ void experimentMaster(PImage image) {
 }
 
 
+//-----------------------DEPRECATED---------------------//
+//im only keeping this for the leftover computations
 //cut apart all the sample images
 void dissectImage(PImage image) {
   println("dissecting", imageNames[imageCount], "now");
@@ -398,68 +400,6 @@ void dissectImage(PImage image) {
     //store average brightness for this tile in a master array
     bValues[tileIndex] = bTotal;
     //println(tileIndex, imageNames[imageCount], bTotal);
-    tileIndex++;
-  }
-}
-
-
-//run the dissection on the master. identical to dissectImage except the values
-//get put into a separate array for comparison later
-void dissectMaster(PImage image) {
-  println("\n" + "dissecting the master now" + "\n");
-  int tileIndex = 0;
-
-  //this will get your cut-and-dry grid count along x and y
-  int xDim = image.width / xIncrement;
-  int yDim = image.height / yIncrement;
-
-  //this test determines if there is a smaller grid leftover, in which case you still need to compute a bValue for it
-  int xLeftover = image.width % xIncrement;
-  int yLeftover = image.height % yIncrement;
-  if (xLeftover != 0) {
-    xDim++;
-  }
-  if (yLeftover != 0) {
-    yDim++;
-  }
-
-  //now we can define the grid size
-  tileCount = xDim * yDim;
-
-  //each tile gets its own bValue
-  mValues = new float[tileCount];
-  println("the array is", xDim, "by", yDim);
-
-  //run the test again but with correct tileCount to limit the loop
-  for (int i = 0; i < tileCount; i++) {
-    if (xLeftover != 0) {
-      //xIncrement = xLeftover;
-      //println("xIncrement =", xIncrement);
-    } else {
-      //xIncrement = resetX;
-    }
-    if (yLeftover != 0) {
-      //yIncrement = yLeftover;
-      //println("yIncrement =", yIncrement);
-    } else {
-      //yIncrement = resetY;
-    }
-
-    int x, y;
-    //get the coordinates of the top-left corner of every tile
-    x = (i % xDim) * xIncrement;
-    y = int(i / xDim) * yIncrement;
-
-    //run the dissection itself
-    mTotal = 0;
-
-    //count each tile
-    tile(image, x, y, xIncrement, yIncrement);
-    mTotal = mTotal / resolution;
-
-    //store average brightness for this tile in a master array
-    mValues[tileIndex] = mTotal;
-    //println(tileIndex, imageNames[imageCount], mTotal);
     tileIndex++;
   }
 }
