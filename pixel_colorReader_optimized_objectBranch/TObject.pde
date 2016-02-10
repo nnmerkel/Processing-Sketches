@@ -7,6 +7,7 @@ class TileObject {
   PImage sourceImage;
   int tileIndex;
   
+  
   //constructor
   TileObject (int _x, int _y, PImage _source, float _avg, int _i) {
     x = _x;
@@ -16,9 +17,6 @@ class TileObject {
     tileIndex = _i;
   }
   
-  void createTile() {
-    //PImage i = sourceImage.get(x, y, width, height);
-  }
   
   void printAttributes() {
     println("tileIndex " + tileIndex + "\n" + "x " + x + "\n" +"y " + y + "\n" + "avgAttribute " + avgAttribute + "\n" + "sourceImage " + sourceImage + "\n");

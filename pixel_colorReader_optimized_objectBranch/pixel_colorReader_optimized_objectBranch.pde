@@ -2,20 +2,16 @@
  *  
  *  
  *  
- *  
- *  
- *  
- *  
- *  
- *  
- *  
  */
 
 //----------------libraries
 import processing.pdf.*;
 import controlP5.*;
+import java.util.Calendar;
 
 ControlP5 cp5;
+
+PGraphics savedImage;
 
 PFont font, monospace;
 
@@ -35,6 +31,8 @@ boolean inProgress = false;
 boolean selectSamples = false;
 boolean selectMaster = false;
 boolean dissect = false;
+boolean brightness = true;
+boolean red, green, blue, hue, saturation;
 float bTotal = 0;
 float mTotal = 0;
 float[] bValues;
@@ -44,8 +42,8 @@ String masterImageObject;
 String samplesPath;
 
 //-------------------block size
-int xIncrement = 100;
-int yIncrement = 100;
+int xIncrement = 50;
+int yIncrement = 50;
 int resetX, resetY;
 int tileCount;
 int resolution;
@@ -58,7 +56,7 @@ final String [] COMMAND_ARRAY = new String[] {
   "Press \"Dissect\" to continue.", 
   "Window was closed or the user hit cancel.", 
   "Frame saved", 
-  "Operation complete",
+  "Operation complete", 
   "Dissecting…"
 };
 final int SELECT_MASTER = 0;
@@ -73,16 +71,14 @@ String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 
 void setup() {
-  size(800, 800);
-  //fullScreen();
-  //pixelDensity(2);
-  //load master image to be collaged
+  //size(800, 800);
+  fullScreen();
+  pixelDensity(2);
   loadingGif = loadImage("loading-gif.gif");
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 14);
   monospace = createFont("Consolas.ttf", 14);
   textFont(font); 
-
   setupGUI();
 }
 
@@ -118,10 +114,6 @@ void draw() {
   //resolution must be defined for each frame
   resolution = xIncrement*yIncrement;
 
-  //preserve initial increment values
-  //resetX = xIncrement;
-  //resetY = yIncrement;
-
   //draw the tiling grid
   for (int x = 0; x < width; x += xIncrement) {
     for (int y = 0; y < height; y += yIncrement) {
@@ -156,7 +148,10 @@ void draw() {
     exit();
   }
 
-  //if (reconstruct) reconstruct();
+  if (reconstruct) {
+    reconstruct2();
+    noLoop();
+  }
 
   popMatrix();
 }
@@ -169,12 +164,25 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
   mTotal = 0;
   int tileX = tileSizeX + startX;
   int tileY = tileSizeY + startY;
+  float attr = 0;
   for (int x = startX; x < tileX; x++) {
     for (int y = startY; y < tileY; y++) {
       color c1 = theImage.get(x, y);
-      float b1 = brightness(c1);
-      bTotal = bTotal + b1;
-      mTotal = mTotal + b1;
+      if (brightness) {
+        attr = brightness(c1);
+      } else if (red) {
+        attr = red(c1);
+      } else if (green) {
+        attr = green(c1);
+      } else if (blue) {
+        attr = blue(c1);
+      } else if(hue) {
+        attr = hue(c1);
+      } else if (saturation) {
+        attr = saturation(c1);
+      }
+      bTotal = bTotal + attr;
+      mTotal = mTotal + attr;
     }
   }
 }
@@ -214,13 +222,14 @@ void dissect() {
   long startTime = System.nanoTime();
 
   inProgress = true;
-  
+  reconstruct = false;
+
   currentCommand = COMMAND_ARRAY[DISSECTING];
-  
+
   //dissect the master image here, before we loop through the samples
   PImage masterTemp = loadImage(masterImageObject);
   experimentMaster(masterTemp);
-  
+
   //reset the array so it can run more than once
   imageCount = 0;
 
@@ -240,8 +249,8 @@ void dissect() {
       // 2. also skip non-image format files
       // 3. skip the master file, if contained in the samples folder
       if (contents[i].charAt(0) == '.' ||                                         //1
-          !contents[i].toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$") ||      //2
-          masterImageObject.endsWith(contents[i])) {                              //3
+        !contents[i].toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$") ||      //2
+        masterImageObject.endsWith(contents[i])) {                              //3
         continue;
       } else {
         File childFile = new File(dir, contents[i]);
@@ -270,6 +279,7 @@ void dissect() {
   long endTime = System.nanoTime();
   long duration = (endTime - startTime)/1000000;
   println("\n" + "duration " + duration + "\n");
+  reconstruct = true;
 }
 
 
@@ -428,22 +438,31 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
     }
     valueCounter++;
   }
-  printArray(newValues);
+  //printArray(newValues);
 }
 
 
-//after we take care of the files, reconstruct the images
-void reconstruct(PImage theImage, int tileIndex, int xDim, int yDim, int tileCount) {  
-  noStroke();
-  noFill();
-  int x, y;
-  for (int i = 0; i < tileCount; i++) {
-    //get the coordinates of the top-left corner of every tile
-    x = (i % xDim) * xIncrement;
-    y = int(i / xDim) * yIncrement;
-    PImage sampleTile = theImage.get(x, y, xIncrement, yIncrement);
-    image(sampleTile, x, y);
+void reconstruct2() {
+  int xDim = m[0].sourceImage.width / xIncrement;
+  savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
+  savedImage.beginDraw();
+  savedImage.noStroke();
+  savedImage.noFill();
+  for (int i = 0; i < m.length; i++) {    
+    int indexToNewTile = newValues[i];
+    TileObject newTile = tx.get(indexToNewTile);
+
+    int xWalker = (i % xDim) * xIncrement;
+    int yWalker = int(i / xDim) * yIncrement;
+
+    int tempX = newTile.x;
+    int tempY = newTile.y;
+
+    PImage tileInstance = newTile.sourceImage.get(tempX, tempY, xIncrement, yIncrement);
+    savedImage.image(tileInstance, xWalker, yWalker);
   }
+  savedImage.endDraw();
+  savedImage.save(timestamp() + ".png");
 }
 
 
@@ -467,4 +486,8 @@ void keyReleased() {
     //reconstruct(images[1], 47, startX, startY, tileCount);
     //reconstruct(images[], bestIndex[i], x, y);
   }
+}
+
+String timestamp() {
+  return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", Calendar.getInstance());
 }
