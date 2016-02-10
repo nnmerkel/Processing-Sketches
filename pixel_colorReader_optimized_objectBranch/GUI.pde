@@ -5,6 +5,8 @@ color col = color(127, 200, 22);
 color bgActive = color(0, 94, 33);
 color fgActive = color(0, 187, 66);
 
+RadioButton r1;
+
 void setupGUI() {
   //ControlFont cfont = new ControlFont(font);
   //cp5.setControlFont(font);
@@ -24,7 +26,7 @@ void setupGUI() {
     .setColorBackground(bgActive)
     .setColorForeground(fgActive)
     .setColorActive(col);
-  //.captionLabel().setControlFont().setFont(cfont);
+    //.captionLabel().setControlFont().setFont(cfont);
 
   cp5.addButton("selectSamples")
     .setLabel("Choose Samples")
@@ -34,19 +36,32 @@ void setupGUI() {
   cp5.addSlider("xIncrement")
     .setPosition(pad, itemHeight*2+pad*3)
     .setSize(guiWidth-pad*2, itemHeight)
-    .setRange(1, 200)
+    .setRange(1, 100)
     .setGroup(g2)
-    .setValue(100);
+    .setValue(50);
 
   cp5.addSlider("yIncrement")
     .setPosition(pad, itemHeight*3+pad*4)
     .setSize(guiWidth-pad*2, itemHeight)
-    .setRange(1, 200)
+    .setRange(1, 100)
     .setGroup(g2)
-    .setValue(100);
+    .setValue(50);
     
+  r1 = cp5.addRadioButton("radioButton")
+         .setPosition(pad,itemHeight*4+pad*5)
+         .setSize(itemHeight,itemHeight)
+         .setItemsPerRow(6)
+         .setSpacingColumn(pad)
+         .addItem("red",1)
+         .addItem("green",2)
+         .addItem("blue",3)
+         .addItem("hue",4)
+         .addItem("saturation",5)
+         .addItem("brightness",6)
+         ;
+     
   cp5.addButton ("dissect")
-    .setPosition(pad, itemHeight*4+pad*5)
+    .setPosition(pad, 600)
     .setSize(guiWidth-pad*2, itemHeight)
     .setGroup(g2);
 
