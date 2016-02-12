@@ -8,6 +8,7 @@
 import processing.pdf.*;
 import controlP5.*;
 import java.util.Calendar;
+import java.util.Arrays;
 
 ControlP5 cp5;
 
@@ -31,8 +32,7 @@ boolean inProgress = false;
 boolean selectSamples = false;
 boolean selectMaster = false;
 boolean dissect = false;
-boolean brightness = true;
-boolean red, green, blue, hue, saturation;
+boolean[] modes = new boolean[7]; //r, g, b, h, s, b, c
 float bTotal = 0;
 float mTotal = 0;
 float[] bValues;
@@ -168,18 +168,20 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
   for (int x = startX; x < tileX; x++) {
     for (int y = startY; y < tileY; y++) {
       color c1 = theImage.get(x, y);
-      if (brightness) {
-        attr = brightness(c1);
-      } else if (red) {
+      if (modes[0]) {
         attr = red(c1);
-      } else if (green) {
+      } else if (modes[1]) {
         attr = green(c1);
-      } else if (blue) {
+      } else if (modes[2]) {
         attr = blue(c1);
-      } else if(hue) {
+      } else if(modes[3]) {
         attr = hue(c1);
-      } else if (saturation) {
+      } else if (modes[4]) {
         attr = saturation(c1);
+      } else if (modes[5]) {
+        attr = brightness(c1);
+      } else if (modes[6]) {
+        attr = color(c1);
       }
       bTotal = bTotal + attr;
       mTotal = mTotal + attr;
@@ -420,6 +422,10 @@ void dissectImage(PImage image) {
 void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   int bestIndex = 0;
   int valueCounter = 0;
+  float tolerance = 0.005;
+  //if using color as the mode, we are dealing with larger ints so we can bring the tolerance up
+  if (modes[6]) tolerance = 0.1;
+  
   TileObject tempTile, otherTile;
   newValues = new int[masterArray.length];
   for (int i = 0; i < masterArray.length; i++) {
@@ -435,6 +441,11 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
       }
       //make a new array here to store each bestIndex, then extract those values in a different function and display them
       newValues[valueCounter] = bestIndex;
+      
+      //"close enough" -- evan merkel 2k16
+      if (bestDiff <= tolerance) {
+        break;
+      }
     }
     valueCounter++;
   }
