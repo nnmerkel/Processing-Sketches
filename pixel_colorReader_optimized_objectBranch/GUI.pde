@@ -1,6 +1,6 @@
 int guiWidth = 220;
 int pad = 10;
-int itemHeight = 25;
+int itemHeight = 20;
 color col = color(127, 200, 22);
 color bgActive = color(0, 94, 33);
 color fgActive = color(0, 187, 66);
@@ -26,7 +26,7 @@ void setupGUI() {
     .setColorBackground(bgActive)
     .setColorForeground(fgActive)
     .setColorActive(col);
-    //.captionLabel().setControlFont().setFont(cfont);
+  //.captionLabel().setControlFont().setFont(cfont);
 
   cp5.addButton("selectSamples")
     .setLabel("Choose Samples")
@@ -46,20 +46,21 @@ void setupGUI() {
     .setRange(1, 100)
     .setGroup(g2)
     .setValue(50);
-    
+
   r1 = cp5.addRadioButton("radioButton")
-         .setPosition(pad,itemHeight*4+pad*5)
-         .setSize(itemHeight,itemHeight)
-         .setItemsPerRow(6)
-         .setSpacingColumn(pad)
-         .addItem("red",1)
-         .addItem("green",2)
-         .addItem("blue",3)
-         .addItem("hue",4)
-         .addItem("saturation",5)
-         .addItem("brightness",6)
-         ;
-     
+    .setPosition(pad, itemHeight*4+pad*5)
+    .setSize(itemHeight, itemHeight)
+    .setItemsPerRow(7)
+    .setSpacingColumn(pad)
+    .addItem("red", 1)
+    .addItem("green", 2)
+    .addItem("blue", 3)
+    .addItem("hue", 4)
+    .addItem("saturation", 5)
+    .addItem("brightness", 6)
+    .addItem("color", 7)
+    ;
+
   cp5.addButton ("dissect")
     .setPosition(pad, 600)
     .setSize(guiWidth-pad*2, itemHeight)
@@ -81,5 +82,17 @@ void setLock(Controller theController, boolean theValue) {
     theController.setColorBackground(bgActive);
     theController.setColorForeground(fgActive);
     theController.setColorActive(col);
+  }
+}
+
+void controlEvent(ControlEvent theEvent) {
+  if (theEvent.isFrom(r1)) {
+    for (int i = 0; i < theEvent.getGroup().getArrayValue().length; i++) {
+      print(int(theEvent.getGroup().getArrayValue()[i]));
+    }
+    int controller = (int)theEvent.getGroup().getValue()-1;
+    Arrays.fill(modes, false);
+    modes[controller] = true;
+    printArray(modes);
   }
 }
