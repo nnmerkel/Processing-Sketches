@@ -36,14 +36,14 @@ void setupGUI() {
   cp5.addSlider("xIncrement")
     .setPosition(pad, itemHeight*2+pad*3)
     .setSize(guiWidth-pad*2, itemHeight)
-    .setRange(1, 100)
+    .setRange(2, 100)
     .setGroup(g2)
     .setValue(50);
 
   cp5.addSlider("yIncrement")
     .setPosition(pad, itemHeight*3+pad*4)
     .setSize(guiWidth-pad*2, itemHeight)
-    .setRange(1, 100)
+    .setRange(2, 100)
     .setGroup(g2)
     .setValue(50);
 
@@ -87,12 +87,8 @@ void setLock(Controller theController, boolean theValue) {
 
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(r1)) {
-    for (int i = 0; i < theEvent.getGroup().getArrayValue().length; i++) {
-      print(int(theEvent.getGroup().getArrayValue()[i]));
-    }
     int controller = (int)theEvent.getGroup().getValue()-1;
     Arrays.fill(modes, false);
     modes[controller] = true;
-    printArray(modes);
   }
 }

@@ -11,20 +11,14 @@ import java.util.Calendar;
 import java.util.Arrays;
 
 ControlP5 cp5;
-
 PGraphics savedImage;
-
 PFont font, monospace;
-
 ArrayList<TileObject> tx = new ArrayList<TileObject>();
-
 TileObject [] m;
-
 PImage master;
 PImage loadingGif;
 PImage[] images;
 String[] imageNames;
-int imageCount;
 
 boolean savePDF = false;
 boolean reconstruct = false;
@@ -36,16 +30,15 @@ boolean[] modes = new boolean[7]; //r, g, b, h, s, b, c
 float bTotal = 0;
 float mTotal = 0;
 int scaleFactor = 1;
-float[] bValues;
 float[] mValues;
 int[] newValues;
+int imageCount;
 String masterImageObject;
 String samplesPath;
 
 //-------------------block size
 int xIncrement = 50;
 int yIncrement = 50;
-int resetX, resetY;
 int tileCount;
 int resolution;
 
@@ -124,7 +117,7 @@ void draw() {
     }
   }
 
-  int loadingSize = 75;
+  int loadingSize = 25;
   //display the proper box size and the loading gif
   if (inProgress) {
     fill(0, 50);
@@ -219,12 +212,11 @@ void masterSelected(File selection) {
 
 
 //cut apart each image in the folder
-void dissect() {
+void runDissection() {
   //variable to time this function
   long startTime = System.nanoTime();
 
   inProgress = true;
-  reconstruct = false;
 
   currentCommand = COMMAND_ARRAY[DISSECTING];
 
@@ -255,7 +247,7 @@ void dissect() {
       // 1. skip hidden files, if contained in the samples folder
       // 2. also skip non-image format files
       // 3. skip the master file, if contained in the samples folder
-      if (contents[i].charAt(0) == '.' ||                                         //1
+      if (contents[i].charAt(0) == '.' ||                                       //1
         !contents[i].toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$") ||      //2
         masterImageObject.endsWith(contents[i])) {                              //3
         continue;
@@ -284,6 +276,12 @@ void dissect() {
   println("\n" + "duration " + duration + "\n");
 
   reconstruct = true;
+}
+
+
+//this function takes the brunt of the computations out of the drawing thread
+void dissect() {
+  thread("runDissection");
 }
 
 
@@ -324,6 +322,8 @@ void dissectMaster(PImage image) {
   //calculate the size of bValues array
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
+  
+  println("xDim", xDim, "yDim", yDim);
 
   tileCount = xDim * yDim;
   m = new TileObject[tileCount];
@@ -347,69 +347,6 @@ void dissectMaster(PImage image) {
     //store average brightness for this tile in a master array
     //println("bValues " + bValues[tileIndex] + "\n" + "avgAttribute " + t[i].avgAttribute);
     //bValues[tileIndex] = t[i].avgAttribute;//<------------------------------encountering cp5 issue here
-    tileIndex++;
-  }
-}
-
-
-//-----------------------DEPRECATED---------------------//
-//im only keeping this for the leftover computations
-//cut apart all the sample images
-void dissectImage2(PImage image) {
-  println("dissecting", imageNames[imageCount], "now");
-  int tileIndex = 0;
-
-  //calculate the size of bValues array
-  int xDim = image.width / xIncrement;
-  int yDim = image.height / yIncrement;
-
-  //this test determines if there is a smaller grid leftover, in which case you still need to compute a bValue for it
-  int xLeftover = image.width % xIncrement;
-  int yLeftover = image.height % yIncrement;
-  if (xLeftover != 0) {
-    xDim++;
-  }
-  if (yLeftover != 0) {
-    yDim++;
-  }
-
-  //now we can define the grid size
-  tileCount = xDim * yDim;
-
-  //each tile gets its own bValue
-  bValues = new float[tileCount];
-  println("the array is", xDim, "by", yDim);
-
-  //run the test again but with correct tileCount to limit the loop
-  for (int i = 0; i < tileCount; i++) {
-    if (xLeftover != 0) {
-      //xIncrement = xLeftover;
-      //println("xIncrement =", xIncrement);
-    } else {
-      //xIncrement = resetX;
-    }
-    if (yLeftover != 0) {
-      //yIncrement = yLeftover;
-      //println("yIncrement =", yIncrement);
-    } else {
-      //yIncrement = resetY;
-    }
-
-    int x, y;
-    //get the coordinates of the top-left corner of every tile
-    x = (i % xDim) * xIncrement;
-    y = int(i / xDim) * yIncrement;
-
-    //run the dissection itself
-    bTotal = 0;
-
-    //count each tile
-    tile(image, x, y, xIncrement, yIncrement);
-    bTotal = bTotal / resolution;
-
-    //store average brightness for this tile in a master array
-    bValues[tileIndex] = bTotal;
-    //println(tileIndex, imageNames[imageCount], bTotal);
     tileIndex++;
   }
 }
@@ -455,6 +392,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
 void reconstruct() {
   int xDim = m[0].sourceImage.width / xIncrement;
   savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
+  println(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();
   savedImage.noFill();
@@ -472,6 +410,7 @@ void reconstruct() {
   }
   savedImage.endDraw();
   savedImage.save(timestamp() + ".png");
+  reconstruct = false;
 }
 
 
