@@ -35,6 +35,7 @@ boolean dissect = false;
 boolean[] modes = new boolean[7]; //r, g, b, h, s, b, c
 float bTotal = 0;
 float mTotal = 0;
+int scaleFactor = 1;
 float[] bValues;
 float[] mValues;
 int[] newValues;
@@ -149,8 +150,7 @@ void draw() {
   }
 
   if (reconstruct) {
-    reconstruct2();
-    noLoop();
+    reconstruct();
   }
 
   popMatrix();
@@ -174,7 +174,7 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
         attr = green(c1);
       } else if (modes[2]) {
         attr = blue(c1);
-      } else if(modes[3]) {
+      } else if (modes[3]) {
         attr = hue(c1);
       } else if (modes[4]) {
         attr = saturation(c1);
@@ -230,10 +230,15 @@ void dissect() {
 
   //dissect the master image here, before we loop through the samples
   PImage masterTemp = loadImage(masterImageObject);
-  experimentMaster(masterTemp);
+  dissectMaster(masterTemp);
 
   //reset the array so it can run more than once
   imageCount = 0;
+
+  //set scaling options AFTER the master image has been dissected, and reset resolution
+  xIncrement *= scaleFactor;
+  yIncrement *= scaleFactor;
+  resolution = xIncrement * yIncrement;
 
   //find directory of sample images NOTE: it doesn't work well if the folder is in "data"
   File dir = new File(samplesPath);
@@ -261,40 +266,33 @@ void dissect() {
         println(imageCount, contents[i]);
         currentCommand = imageCount + " " + contents[i];
         //the function for actual dissection
-        experiment(images[imageCount]);
+        dissectImage(images[imageCount]);
       }
       imageCount++;
     }
   }
   println(tx.size());
-  //m and t are the TileObject arrays
+
+  //m and tx are the TileObject arrays
   findBestMatch(m, tx);
   dissect = false;
   inProgress = false;
   currentCommand = COMMAND_ARRAY[COMPLETE];
 
-  //these lines are to time the dissect function
-  //------------- best value so far: 4895 for 55 images @200x200
-  //------------- best value so far: 4882 for 55 images @100x100
-  //------------- best value so far: 4862 for 55 images @50x50
-  //------------- best value so far: 4739 for 55 images @20x20
   long endTime = System.nanoTime();
   long duration = (endTime - startTime)/1000000;
   println("\n" + "duration " + duration + "\n");
+
   reconstruct = true;
 }
 
 
 //experiemental object-oriented dissection
-void experiment(PImage image) {
+void dissectImage(PImage image) {
   int tileIndex = 0;
 
   //calculate the size of bValues array
   int xDim = image.width / xIncrement;
-  int yDim = image.height / yIncrement;
-
-  tileCount = xDim * yDim;
-  //t = new TileObject[tileCount];
 
   for (int i = 0; i < tileCount; i++) {
     //initialize the variables for each tile
@@ -320,7 +318,7 @@ void experiment(PImage image) {
 }
 
 
-void experimentMaster(PImage image) {
+void dissectMaster(PImage image) {
   int tileIndex = 0;
 
   //calculate the size of bValues array
@@ -357,7 +355,7 @@ void experimentMaster(PImage image) {
 //-----------------------DEPRECATED---------------------//
 //im only keeping this for the leftover computations
 //cut apart all the sample images
-void dissectImage(PImage image) {
+void dissectImage2(PImage image) {
   println("dissecting", imageNames[imageCount], "now");
   int tileIndex = 0;
 
@@ -423,9 +421,10 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   int bestIndex = 0;
   int valueCounter = 0;
   float tolerance = 0.005;
+  
   //if using color as the mode, we are dealing with larger ints so we can bring the tolerance up
   if (modes[6]) tolerance = 0.1;
-  
+
   TileObject tempTile, otherTile;
   newValues = new int[masterArray.length];
   for (int i = 0; i < masterArray.length; i++) {
@@ -441,7 +440,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
       }
       //make a new array here to store each bestIndex, then extract those values in a different function and display them
       newValues[valueCounter] = bestIndex;
-      
+
       //"close enough" -- evan merkel 2k16
       if (bestDiff <= tolerance) {
         break;
@@ -453,15 +452,14 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
 }
 
 
-void reconstruct2() {
+void reconstruct() {
   int xDim = m[0].sourceImage.width / xIncrement;
   savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();
   savedImage.noFill();
   for (int i = 0; i < m.length; i++) {    
-    int indexToNewTile = newValues[i];
-    TileObject newTile = tx.get(indexToNewTile);
+    TileObject newTile = tx.get(newValues[i]);
 
     int xWalker = (i % xDim) * xIncrement;
     int yWalker = int(i / xDim) * yIncrement;
