@@ -4,6 +4,7 @@ import java.util.Arrays;
 /**
  * This software has been released into the public domain.
  * Please read the notes in this source file for additional information.
+ * http://www.tomgibara.com/computer-vision/CannyEdgeDetector.java
  * 
  * This class provides a configurable implementation of the Canny edge
  * detection algorithm. This classic algorithm has a number of shortcomings,
