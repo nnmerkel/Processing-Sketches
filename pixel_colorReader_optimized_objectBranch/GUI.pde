@@ -59,6 +59,7 @@ void setupGUI() {
     .addItem("saturation", 5)
     .addItem("brightness", 6)
     .addItem("color", 7)
+    .setGroup(g2)
     ;
 
   cp5.addButton ("dissect")
@@ -69,6 +70,14 @@ void setupGUI() {
   setLock(cp5.getController("selectSamples"), true);
   setLock(cp5.getController("xIncrement"), true);
   setLock(cp5.getController("yIncrement"), true);
+  setLock(cp5.getController("dissect"), true);
+  setLock(cp5.getController("red"), true);
+  setLock(cp5.getController("green"), true);
+  setLock(cp5.getController("blue"), true);
+  setLock(cp5.getController("hue"), true);
+  setLock(cp5.getController("saturation"), true);
+  setLock(cp5.getController("brightness"), true);
+  setLock(cp5.getController("color"), true);
   setLock(cp5.getController("dissect"), true);
 }
 

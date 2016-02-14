@@ -44,14 +44,15 @@ int resolution;
 
 //--------------------command array strings and constants
 final String [] COMMAND_ARRAY = new String[] {
-  "Please select the image from which you want to make a photomoasic.", 
-  "Please select a folder of images from which to sample.", 
-  "Set options for the photomosaic.", 
-  "Press \"Dissect\" to continue.", 
-  "Window was closed or the user hit cancel.", 
+  "Please select the image from which you want to make a photomoasic", 
+  "Please select a folder of images from which to sample", 
+  "Set options for the photomosaic", 
+  "Press \"Dissect\" to continue", 
+  "Window was closed or the user hit cancel", 
   "Frame saved", 
   "Operation complete", 
-  "Dissecting…"
+  "Dissecting…",
+  "Please select a sampling mode to continue"
 };
 final int SELECT_MASTER = 0;
 final int SELECT_SAMPLES = 1;
@@ -61,6 +62,7 @@ final int WINDOW_CANCELLED = 4;
 final int FRAME_SAVED = 5;
 final int COMPLETE = 6;
 final int DISSECTING = 7;
+final int PICK_MODE = 8;
 String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 
@@ -150,6 +152,13 @@ void draw() {
 }
 
 
+//this checks the modes[] array to make sure user selected a sampling method
+boolean isAllFalse(boolean[] array) {
+  for (boolean b : array) if (b) return false;
+  return true;
+}
+
+
 //the actual counting function
 void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY) {
   resolution = tileSizeX * tileSizeY;
@@ -191,6 +200,13 @@ void folderSelected(File selection) {
     //unlock the rest of the buttons
     setLock(cp5.getController("xIncrement"), false);
     setLock(cp5.getController("yIncrement"), false);
+    setLock(cp5.getController("red"), false);
+    setLock(cp5.getController("green"), false);
+    setLock(cp5.getController("blue"), false);
+    setLock(cp5.getController("hue"), false);
+    setLock(cp5.getController("saturation"), false);
+    setLock(cp5.getController("brightness"), false);
+    setLock(cp5.getController("color"), false);
     setLock(cp5.getController("dissect"), false);
     samplesPath = selection.getAbsolutePath();
     currentCommand = COMMAND_ARRAY[SET_OPTIONS];
@@ -281,7 +297,11 @@ void runDissection() {
 
 //this function takes the brunt of the computations out of the drawing thread
 void dissect() {
-  thread("runDissection");
+  if (!isAllFalse(modes)) {
+    thread("runDissection");
+  } else {
+    currentCommand = COMMAND_ARRAY[PICK_MODE];
+  }
 }
 
 
@@ -322,7 +342,7 @@ void dissectMaster(PImage image) {
   //calculate the size of bValues array
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
-  
+
   println("xDim", xDim, "yDim", yDim);
 
   tileCount = xDim * yDim;
@@ -358,7 +378,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   int bestIndex = 0;
   int valueCounter = 0;
   float tolerance = 0.005;
-  
+
   //if using color as the mode, we are dealing with larger ints so we can bring the tolerance up
   if (modes[6]) tolerance = 0.1;
 
