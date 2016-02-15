@@ -51,7 +51,7 @@ final String [] COMMAND_ARRAY = new String[] {
   "Window was closed or the user hit cancel", 
   "Frame saved", 
   "Operation complete", 
-  "Dissecting…",
+  "Dissecting…", 
   "Please select a sampling mode to continue"
 };
 final int SELECT_MASTER = 0;
@@ -111,20 +111,20 @@ void draw() {
   resolution = xIncrement*yIncrement;
 
   //draw the tiling grid
+  stroke(255, 0, 0, 80);
+    noFill();
   for (int x = 0; x < width; x += xIncrement) {
-    for (int y = 0; y < height; y += yIncrement) {
-      stroke(255, 0, 0, 40);
-      noFill();
-      rect(x, y, xIncrement, yIncrement);
-    }
+    line(x, 0, x, height);
+  }
+  for (int y = 0; y < height; y += yIncrement) {
+    line(0, y, width, y);
   }
 
-  int loadingSize = 25;
   //display the proper box size and the loading gif
   if (inProgress) {
-    fill(0, 50);
+    fill(0, 100);
     rect(0, 0, width, height);
-    image(loadingGif, (width-guiWidth-loadingSize)/2, (height-loadingSize)/2, loadingSize, loadingSize);
+    progressWheel((width-guiWidth)/2, height/2);
   }
 
   //draw the command line without recording it
@@ -137,18 +137,33 @@ void draw() {
   text(">  " + currentCommand, 10, height-10);
   noFill();
 
-  if (savePDF) {
-    endRecord();
-    println("pdf saved");
-    savePDF = false;
-    exit();
-  }
-
   if (reconstruct) {
     reconstruct();
   }
 
   popMatrix();
+}
+
+
+//progress display function
+void progressWheel(int centerX, int centerY) {
+  int lineCount = 10;
+  pushMatrix();
+  translate(centerX, centerY);
+  rotate(radians((frameCount * (360/lineCount)) % 360));
+  for (int j = 0; j < 360; j += 360/lineCount) {
+    stroke(((float)j/360)*255);
+    strokeWeight(3);
+    strokeCap(ROUND);
+    float startX = cos(radians(j))*10;
+    float startY = sin(radians(j))*10;
+    float endX = cos(radians(j))*25;
+    float endY = sin(radians(j))*25;
+    line(startX, startY, endX, endY);
+  }
+  popMatrix();
+  noStroke();
+  strokeWeight(1);
 }
 
 
@@ -257,7 +272,6 @@ void runDissection() {
     int directoryLength = contents.length;
     images = new PImage[directoryLength];
     imageNames = new String[directoryLength];
-    //check for hidden files here so that the loop runs for the appropriate length
     for (int i = 0; i < directoryLength; i++) {
 
       // 1. skip hidden files, if contained in the samples folder
