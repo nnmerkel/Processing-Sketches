@@ -51,18 +51,20 @@ final String [] COMMAND_ARRAY = new String[] {
   "Window was closed or the user hit cancel", 
   "Frame saved", 
   "Operation complete", 
-  "Dissecting…", 
-  "Please select a sampling mode to continue"
+  "Dissecting...", 
+  "Please select a sampling mode to continue",
+  "Matching tiles to get the best fit..."
 };
-final int SELECT_MASTER = 0;
-final int SELECT_SAMPLES = 1;
-final int SET_OPTIONS = 2;
-final int DISSECT = 3;
-final int WINDOW_CANCELLED = 4;
-final int FRAME_SAVED = 5;
-final int COMPLETE = 6;
-final int DISSECTING = 7;
-final int PICK_MODE = 8;
+final static int SELECT_MASTER = 0;
+final static int SELECT_SAMPLES = 1;
+final static int SET_OPTIONS = 2;
+final static int DISSECT = 3;
+final static int WINDOW_CANCELLED = 4;
+final static int FRAME_SAVED = 5;
+final static int COMPLETE = 6;
+final static int DISSECTING = 7;
+final static int PICK_MODE = 8;
+final static int NOW_MATCHING = 9;
 String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 
@@ -153,7 +155,7 @@ void progressWheel(int centerX, int centerY) {
   rotate(radians((frameCount * (360/lineCount)) % 360));
   for (int j = 0; j < 360; j += 360/lineCount) {
     stroke(((float)j/360)*255);
-    strokeWeight(3);
+    strokeWeight(4);
     strokeCap(ROUND);
     float startX = cos(radians(j))*10;
     float startY = sin(radians(j))*10;
@@ -294,7 +296,7 @@ void runDissection() {
     }
   }
   println(tx.size());
-
+  currentCommand = COMMAND_ARRAY[NOW_MATCHING];
   //m and tx are the TileObject arrays
   findBestMatch(m, tx);
   dissect = false;
@@ -325,6 +327,10 @@ void dissectImage(PImage image) {
 
   //calculate the size of bValues array
   int xDim = image.width / xIncrement;
+  int yDim = image.height / yIncrement;
+  
+  //we only need yDim and tileCount so the arraylist loop counts off the right number of tiles
+  tileCount = xDim * yDim;
 
   for (int i = 0; i < tileCount; i++) {
     //initialize the variables for each tile
@@ -459,14 +465,6 @@ void keyReleased() {
   if (key == 'e' || key == 'E') {
     endRecord();
     savePDF = false;
-  }
-  if (key == 'd' || key == 'D') {
-    inProgress = true;
-  }
-  if (key == 'f' || key == 'F') {
-    reconstruct = true;
-    //reconstruct(images[1], 47, startX, startY, tileCount);
-    //reconstruct(images[], bestIndex[i], x, y);
   }
 }
 
