@@ -52,7 +52,7 @@ final String [] COMMAND_ARRAY = new String[] {
   "Frame saved", 
   "Operation complete", 
   "Dissecting...", 
-  "Please select a sampling mode to continue",
+  "Please select a sampling mode to continue", 
   "Matching tiles to get the best fit..."
 };
 final static int SELECT_MASTER = 0;
@@ -114,7 +114,7 @@ void draw() {
 
   //draw the tiling grid
   stroke(255, 0, 0, 80);
-    noFill();
+  noFill();
   for (int x = 0; x < width; x += xIncrement) {
     line(x, 0, x, height);
   }
@@ -147,6 +147,21 @@ void draw() {
 }
 
 
+
+boolean hasAlpha(PImage img) {
+  for (int y = 0; y < img.height; y++) {
+    for (int x = 0; x < img.width; x++) {
+      int result = (img.get(x, y) >> 24) & 0xFF;
+      println(result);
+      if (result != 1) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+
 //progress display function
 void progressWheel(int centerX, int centerY) {
   int lineCount = 10;
@@ -173,6 +188,34 @@ void progressWheel(int centerX, int centerY) {
 boolean isAllFalse(boolean[] array) {
   for (boolean b : array) if (b) return false;
   return true;
+}
+
+
+//check if an image contains a transparent pixel
+boolean isTransparent(PImage img) {
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      int pixel = img.get(x, y);
+      if ((pixel>>24) == 0x00 ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+
+//convert transparency to white background
+PImage drawWhite(PImage img) {
+  PGraphics p = createGraphics(img.width, img.height);
+  p.beginDraw();
+  p.background(255);
+  p.image(img, 0, 0);
+  p.endDraw();
+
+  img = p;
+
+  return img;
 }
 
 
@@ -287,6 +330,13 @@ void runDissection() {
         File childFile = new File(dir, contents[i]);
         images[imageCount] = loadImage(childFile.getPath());
         imageNames[imageCount] = childFile.getName();
+        //check for transparency
+        if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$")) {
+        //statements to make transparency white
+          if (isTransparent(images[imageCount])) {
+            images[imageCount] = drawWhite(images[imageCount]);
+          }
+        }
         println(imageCount, contents[i]);
         currentCommand = imageCount + " " + contents[i];
         //the function for actual dissection
@@ -328,7 +378,7 @@ void dissectImage(PImage image) {
   //calculate the size of bValues array
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
-  
+
   //we only need yDim and tileCount so the arraylist loop counts off the right number of tiles
   tileCount = xDim * yDim;
 
