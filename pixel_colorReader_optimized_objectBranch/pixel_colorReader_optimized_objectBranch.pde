@@ -301,7 +301,9 @@ void runDissection() {
   dissectMaster(masterTemp);
 
   //reset the array so it can run more than once
+  //also reset the ArrayList so tiles don't get reused and memory gets freed up
   imageCount = 0;
+  tx.clear();
 
   //set scaling options AFTER the master image has been dissected, and reset resolution
   xIncrement *= scaleFactor;
@@ -331,12 +333,12 @@ void runDissection() {
         images[imageCount] = loadImage(childFile.getPath());
         imageNames[imageCount] = childFile.getName();
         //check for transparency
-        if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$")) {
+        /*if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$")) {
         //statements to make transparency white
           if (isTransparent(images[imageCount])) {
             images[imageCount] = drawWhite(images[imageCount]);
           }
-        }
+        }*/
         println(imageCount, contents[i]);
         currentCommand = imageCount + " " + contents[i];
         //the function for actual dissection

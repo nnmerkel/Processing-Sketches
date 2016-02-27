@@ -2,17 +2,20 @@ class Point {
   PVector location;
   PVector velocity;
   PVector wind;
+  float limitingFactor = 0.7;
+  float deviation;
 
   Point () {
-    location = new PVector(random(width), random(height));
-    velocity = new PVector(random(-1, 1), random(-1, 1));
+    location = new PVector(random(-width/2, width/2), random(-height/2, height/2));
+    velocity = new PVector(random(-0.05, 0.05), random(-0.05, 0.05));
+    deviation = random(-30.0, 30.0);
   }
 
   void run() {
-    wind = new PVector(random(-0.15, 0.15), random(-0.15, 0.15));
+    wind = new PVector(random(-0.015, 0.015), random(-0.015, 0.015));
     location.add(velocity);
     velocity.add(wind);
-    velocity.limit(2.0);
+    velocity.limit(limitingFactor);
     /*if (location.mag() > radius) {
      velocity.x = velocity.x * -1;
      velocity.y = velocity.y * -1;
