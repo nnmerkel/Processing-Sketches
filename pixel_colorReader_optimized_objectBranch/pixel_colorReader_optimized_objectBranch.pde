@@ -53,7 +53,8 @@ final String [] COMMAND_ARRAY = new String[] {
   "Operation complete", 
   "Dissecting...", 
   "Please select a sampling mode to continue", 
-  "Matching tiles to get the best fit..."
+  "Matching tiles to get the best fit...",
+  "The file you have selected is not an image. Please select a .jpg, .png, or .gif"
 };
 final static int SELECT_MASTER = 0;
 final static int SELECT_SAMPLES = 1;
@@ -65,6 +66,7 @@ final static int COMPLETE = 6;
 final static int DISSECTING = 7;
 final static int PICK_MODE = 8;
 final static int NOW_MATCHING = 9;
+final static int NOT_AN_IMAGE = 10;
 String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 
@@ -147,21 +149,6 @@ void draw() {
 }
 
 
-
-boolean hasAlpha(PImage img) {
-  for (int y = 0; y < img.height; y++) {
-    for (int x = 0; x < img.width; x++) {
-      int result = (img.get(x, y) >> 24) & 0xFF;
-      println(result);
-      if (result != 1) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-
 //progress display function
 void progressWheel(int centerX, int centerY) {
   int lineCount = 10;
@@ -212,9 +199,7 @@ PImage drawWhite(PImage img) {
   p.background(255);
   p.image(img, 0, 0);
   p.endDraw();
-
   img = p;
-
   return img;
 }
 
@@ -278,6 +263,9 @@ void folderSelected(File selection) {
 void masterSelected(File selection) {
   if (selection == null) {
     currentCommand = COMMAND_ARRAY[WINDOW_CANCELLED];
+  } else if (!selection.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")) {
+    currentCommand = COMMAND_ARRAY[NOT_AN_IMAGE];
+    selection = null;
   } else {
     //unlock the sample selection
     setLock(cp5.getController("selectSamples"), false);
