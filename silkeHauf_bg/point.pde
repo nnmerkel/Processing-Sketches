@@ -7,8 +7,9 @@ class Point {
   float rand;
 
   Point () {
-    location = new PVector(random(0, width), random(0, height));
-    velocity = new PVector(random(-0.05, 0.05), random(-0.05, 0.05));
+    //set location for the node
+    location = new PVector(random(width), random(height));
+    velocity = new PVector(random(-0.15, 0.15), random(-0.15, 0.15));
     deviation = random(-30.0, 30.0);
     rand = random(0, 2);
   }
