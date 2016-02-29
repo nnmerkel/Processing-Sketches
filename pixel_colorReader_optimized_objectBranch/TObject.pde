@@ -2,8 +2,6 @@ class TileObject {
   int x;
   int y;
   float avgAttribute;
-  float width = xIncrement;
-  float height = yIncrement;
   PImage sourceImage;
   int tileIndex;
   

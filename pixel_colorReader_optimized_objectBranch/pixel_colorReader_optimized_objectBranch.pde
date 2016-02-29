@@ -361,7 +361,7 @@ void dissect() {
 }
 
 
-//experiemental object-oriented dissection
+//object-oriented dissection
 void dissectImage(PImage image) {
   int tileIndex = 0;
 
@@ -388,9 +388,6 @@ void dissectImage(PImage image) {
     float tempAvg = bTotal;
     tx.add(new TileObject(tempX, tempY, tempSource, tempAvg, tempIndex));
 
-    //store average brightness for this tile in a master array
-    //println("bValues " + bValues[tileIndex] + "\n" + "avgAttribute " + t[i].avgAttribute);
-    //bValues[tileIndex] = t[i].avgAttribute;//<------------------------------encountering cp5 issue here
     tileIndex++;
   }
 }
@@ -424,9 +421,6 @@ void dissectMaster(PImage image) {
     float tempAvg = mTotal;
     m[i] = new TileObject(tempX, tempY, tempSource, tempAvg, tempIndex);
 
-    //store average brightness for this tile in a master array
-    //println("bValues " + bValues[tileIndex] + "\n" + "avgAttribute " + t[i].avgAttribute);
-    //bValues[tileIndex] = t[i].avgAttribute;//<------------------------------encountering cp5 issue here
     tileIndex++;
   }
 }
@@ -465,10 +459,10 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
     }
     valueCounter++;
   }
-  //printArray(newValues);
 }
 
 
+//write the new image to a file
 void reconstruct() {
   int xDim = m[0].sourceImage.width / xIncrement;
   savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
