@@ -71,12 +71,12 @@ String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 
 void setup() {
-  //size(800, 800);
-  fullScreen();
+  size(1280, 720);
+  //fullScreen();
   pixelDensity(2);
   loadingGif = loadImage("loading-gif.gif");
   cp5 = new ControlP5(this);
-  font = createFont("UniversLTStd-UltraCn.otf", 14);
+  font = createFont("UniversLTStd-UltraCn.otf", 12);
   monospace = createFont("Consolas.ttf", 14);
   textFont(font); 
   setupGUI();
