@@ -31,6 +31,8 @@ class Node {
     pushMatrix();
     translate(centerX, centerY);
     for (int i = 0; i < pointsContained; i++) {
+      //reset the connection counter
+      p[i].ccounter = 0;
       p[i].run();
       float _x = p[i].location.x;
       float _y = p[i].location.y;
@@ -38,19 +40,33 @@ class Node {
         float _x2 = p[j].location.x;
         float _y2 = p[j].location.y;
         float r = dist(_x, _y, _x2, _y2);
-
+        
+        // create connections
         if (r <= lineDistance) {
           float opacityMap = map(r, 0, lineDistance, 255, 0);
           stroke(242, 118, 48, opacityMap);
           strokeWeight(1);
           line(_x, _y, _x2, _y2);
+          
+          //count the connections
+          p[i].ccounter++;
         }
+        
+        //set ellipse to grow based on connections
+        //the 1.15 is a "best-look" constant. it can be changed according to preference
+        p[i].r = pow(1.15, p[i].ccounter);
       }
+      // keep the points in the bounds of the node
       if (p[i].location.mag() > nodeSize) {
         p[i].velocity.mult(-1);
       }
     }
     popMatrix();
+  }
+  
+  
+  void divide() {
+    
   }
   
 //end of class

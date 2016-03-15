@@ -5,8 +5,14 @@ class Point {
   float limitingFactor = 1.0;
   float deviation;
   float r;
-  int sw;
   float radius;
+  
+  //connection counter
+  int ccounter;
+  
+  // strokeweight var
+  int psw;
+  
   //speed
   float param = 1.5;
 
@@ -15,8 +21,9 @@ class Point {
     location = new PVector();
     velocity = new PVector(random(-param, param), random(-param, param));
     deviation = random(-30.0, 30.0);
-    r = random(4, 10);
-    sw = 3;
+    r = 1;
+    ccounter = 0;
+    psw = 3;
   }
 
   void run() {
@@ -30,7 +37,7 @@ class Point {
     //if (location.x < 0) location.x = width;
     //if (location.y < 0) location.y = height;
     stroke(242, 118, 48, 200);
-    strokeWeight(sw);
+    strokeWeight(psw);
     point(location.x, location.y);
     noStroke();
     fill(242, 118, 48, 120);
