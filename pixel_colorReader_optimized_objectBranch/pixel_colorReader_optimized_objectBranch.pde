@@ -431,7 +431,7 @@ void dissectMaster(PImage image) {
 void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   int bestIndex = 0;
   int valueCounter = 0;
-  float tolerance = 0.005;
+  float tolerance = 0.0005;
 
   //if using color as the mode, we are dealing with larger ints so we can bring the tolerance up
   if (modes[6]) tolerance = 0.1;
