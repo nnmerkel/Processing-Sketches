@@ -10,9 +10,6 @@ class Point {
   
   // strokeweight var
   int psw;
-  
-  //speed
-  float param = 1.5;
 
   Point () {
     //set location for the node
