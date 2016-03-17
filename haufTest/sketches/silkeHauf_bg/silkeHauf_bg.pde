@@ -7,13 +7,11 @@
  * 
  */
 
-import java.util.Arrays;
-
 Point [] p;
 Node [] n;
 
 int lineDistance = 90;              // maximum distance between points for them to be connected
-int numNodes = (int)random(4, 8);   // random number of nodes generated per page load
+int numNodes = (int)random(3, 6);   // random number of nodes generated per page load
 int ni = 0;                         // "nodeIndex" walks through the nodes array
 int numPoints = 80;                 // number of points in the node
 float nodeSize = 200;               // radius of the node
@@ -22,7 +20,7 @@ float nodeSize = 200;               // radius of the node
 float param = 1.5;
 
 long startTime, endTime, totalTime; // timing variables for division parameters
-long targetTime = 10000; // time after which nodes can divide, in milliseconds
+long targetTime = 2000; // time after which nodes can divide, in milliseconds
 
 boolean longRunTime, denseEnough; // conditions for division
 boolean reset;
@@ -43,7 +41,7 @@ void setup() {
   }
 
   // flags moves each successive node to the animation thread
-  flags = new boolean[numNodes-1];
+  flags = new boolean[numNodes];
 }
 
 
@@ -55,11 +53,23 @@ void draw() {
 
   //division loop; if the program has been running for more than x seconds and if there is a point with enough connections
   if (denseEnough && longRunTime) {
-    flags[0] = true;
-    reset = true;
+    if (ni+1 >= numNodes) {
+      setAllFalse(flags);
+      ni = 0;
+      println("ni", ni);
+    }
+
+    flags[ni] = true;
+    
+    // for each flag added, ni walks to the next place in the array and waits for the right conditions
+    ni++;
+    
+    //reset = true;
 
     //reset the clock for the countdown so nodes dont keep spawning
     totalTime = 0;
+    println("loopbottom", ni, numNodes);
+    printArray(flags);
   }
 
   //walk through the nodes array and if all conditions are met, make a new node
@@ -72,7 +82,6 @@ void draw() {
 
       n[i+1].node();
     }
-    println(numNodes, i);
   }
 
   // try to write this as a function var in p5js
@@ -83,5 +92,14 @@ void draw() {
     longRunTime = true;
   } else {
     longRunTime = false;
+  }
+}
+
+
+//sets all booleans in the flags array to false
+//this essentially resets the program
+void setAllFalse(boolean [] b) {
+  for (int i = 0; i < numNodes; i++) {
+    b[i] = false;
   }
 }
