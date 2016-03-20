@@ -10,6 +10,10 @@ class Point {
   
   // strokeweight var
   int psw;
+  
+  //is true if point qualifies to be a source point for a new node
+  boolean sourcePoint;
+  
 
   Point () {
     //set location for the node
@@ -18,7 +22,9 @@ class Point {
     r = 1;
     ccounter = 0;
     psw = 3;
+    sourcePoint = false;
   }
+  
 
   void run() {
     wind = new PVector(random(-0.1, 0.1), random(-0.1, 0.1));
@@ -29,11 +35,11 @@ class Point {
     //if (location.y > height) location.y = 0;
     //if (location.x < 0) location.x = width;
     //if (location.y < 0) location.y = height;
-    stroke(c, 200);
+    stroke(positive, 200);
     strokeWeight(psw);
     point(location.x, location.y);
     noStroke();
-    fill(c, 120);
+    fill(positive, 120);
     ellipse(location.x, location.y, r, r);
   }
 }

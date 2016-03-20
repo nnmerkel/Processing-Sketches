@@ -1,6 +1,7 @@
 class Node {
-  int pointsContained;
+  int pointsContained, rand;
   float innerSquareSide, centerX, centerY, nodeSize;
+  Point[] p;
 
 
   Node(float _centerX, float _centerY, float _nodeSize, int _pointsContained) {
@@ -8,6 +9,7 @@ class Node {
     centerY = _centerY;
     nodeSize = _nodeSize;
     pointsContained = _pointsContained;
+    rand = (int)random(pointsContained);
 
     //too much work to fit points exactly in the circle, so this is an approximation
     //that calculates the largest inscribed square (todo: quadrilateral) in the given bounds
@@ -20,6 +22,7 @@ class Node {
     p = new Point[pointsContained];
     for (int i = 0; i < pointsContained; i++) {
       p[i] = new Point();
+      if (i == rand) p[i].sourcePoint = true;
       setLocation(p[i]);
     }
   }
@@ -50,7 +53,7 @@ class Node {
     for (int i = 0; i < pointsContained; i++) {
       p[i].location.set(0, 0);
       p[i].velocity.set(random(-param, param), random(-param, param));
-      p[i].wind.set(random(-0.1, 0.1), random(-0.1, 0.1));
+      //p[i].wind.set(random(-0.1, 0.1), random(-0.1, 0.1));
     }
   }
 
@@ -78,7 +81,7 @@ class Node {
         // create connections
         if (r <= lineDistance) {
           float opacityMap = map(r, 0, lineDistance, 255, 0);
-          stroke(c, opacityMap);
+          stroke(positive, opacityMap);
           strokeWeight(1);
           line(_x, _y, _x2, _y2);
 
@@ -91,11 +94,22 @@ class Node {
       //the 1.14 is a "best-look" constant. it can be changed according to preference
       p[i].r = pow(1.14, p[i].ccounter);
       
+      if (p[i].sourcePoint) {
+        stroke(0, 0, 255);
+        ellipse(p[i].location.x, p[i].location.y, 50, 50);
+      }
+      
       //limit the size of the disc so it's not absurdly large
       if (p[i].r > 40) p[i].r = 40;
       
       //if it is large enough after the beginning of the sketch, activate the flag that will trigger a node
-      if (p[i].ccounter >= 24) denseEnough = true;
+      if (p[i].ccounter >= 18 && p[i].sourcePoint) {
+        denseEnough = true;
+        stroke(0, 255, 0);
+        ellipse(p[i].location.x, p[i].location.y, 50, 50);
+        newX = p[i].location.x;
+        newY = p[i].location.y;
+      }
 
       // keep the points in the bounds of the node
       //the first condition is enough for processing, the second condition is a failsafe for browsers

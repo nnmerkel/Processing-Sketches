@@ -7,26 +7,28 @@
  * 
  */
 
-Point [] p;
 Node [] n;
 
 int lineDistance = 90;              // maximum distance between points for them to be connected
 int numNodes = (int)random(3, 6);   // random number of nodes generated per page load
 int ni = 0;                         // "nodeIndex" walks through the nodes array
-int numPoints = 80;                 // number of points in the node
+int numPoints = (int)random(50, 70);                 // number of points in the node
 float nodeSize = 200;               // radius of the node
 
 //speed
 float param = 1.5;
 
 long startTime, endTime, totalTime; // timing variables for division parameters
-long targetTime = 2000; // time after which nodes can divide, in milliseconds
+long targetTime = 8000; // time after which nodes can divide, in milliseconds
 
 boolean longRunTime, denseEnough; // conditions for division
 boolean reset;
 boolean [] flags;
 
-color c = color(242, 118, 48);
+color positive = color(random(180, 255));
+color negative = color(18, 37, 44);
+
+float newX, newY;
 
 void setup() {
   size(800, 450);
@@ -48,27 +50,28 @@ void setup() {
 void draw() {
   startTime = System.currentTimeMillis();
   noFill();
-  background(205);
+  background(negative);
   n[0].node();
 
   //division loop; if the program has been running for more than x seconds and if there is a point with enough connections
   if (denseEnough && longRunTime) {
+    
+    //if the program has added enough loops, kill them all
     if (ni+1 >= numNodes) {
       setAllFalse(flags);
       ni = 0;
-      println("ni", ni);
     }
-
+    
+    //ensures that there is always at least one node running
     flags[ni] = true;
     
     // for each flag added, ni walks to the next place in the array and waits for the right conditions
     ni++;
     
-    //reset = true;
+    reset = true;
 
     //reset the clock for the countdown so nodes dont keep spawning
     totalTime = 0;
-    println("loopbottom", ni, numNodes);
     printArray(flags);
   }
 
@@ -79,8 +82,13 @@ void draw() {
         n[i+1].resetParameters();
         reset = false;
       }
-
+      
+      //n[i+1].centerX = newX;
+      //n[i+1].centerY = newY;
+      pushMatrix();
+      translate(newX, newY);
       n[i+1].node();
+      popMatrix();
     }
   }
 
@@ -93,6 +101,7 @@ void draw() {
   } else {
     longRunTime = false;
   }
+  denseEnough = false;
 }
 
 
