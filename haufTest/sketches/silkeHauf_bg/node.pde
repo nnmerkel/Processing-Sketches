@@ -10,6 +10,8 @@ class Node {
     nodeSize = _nodeSize;
     pointsContained = _pointsContained;
     rand = (int)random(pointsContained);
+    
+    positive = color(random(180, 255));
 
     //too much work to fit points exactly in the circle, so this is an approximation
     //that calculates the largest inscribed square (todo: quadrilateral) in the given bounds
@@ -91,22 +93,22 @@ class Node {
       }
 
       //set ellipse to grow based on connections
-      //the 1.14 is a "best-look" constant. it can be changed according to preference
-      p[i].r = pow(1.14, p[i].ccounter);
+      //the 1.15 is a "best-look" constant. it can be changed according to preference
+      p[i].r = pow(1.15, p[i].ccounter);
       
       if (p[i].sourcePoint) {
-        stroke(0, 0, 255);
+        stroke(accent2, 220);
         ellipse(p[i].location.x, p[i].location.y, 50, 50);
       }
       
       //limit the size of the disc so it's not absurdly large
-      if (p[i].r > 40) p[i].r = 40;
+      if (p[i].r > 30) p[i].r = 30;
       
       //if it is large enough after the beginning of the sketch, activate the flag that will trigger a node
-      if (p[i].ccounter >= 18 && p[i].sourcePoint) {
+      if (p[i].ccounter >= 16 && p[i].sourcePoint) {
         denseEnough = true;
-        stroke(0, 255, 0);
-        ellipse(p[i].location.x, p[i].location.y, 50, 50);
+        stroke(accent, 100);
+        ellipse(p[i].location.x, p[i].location.y, 30, 30);
         newX = p[i].location.x;
         newY = p[i].location.y;
       }

@@ -22,11 +22,14 @@ long startTime, endTime, totalTime; // timing variables for division parameters
 long targetTime = 8000; // time after which nodes can divide, in milliseconds
 
 boolean longRunTime, denseEnough; // conditions for division
-boolean reset;
-boolean [] flags;
+boolean reset; //toggles new node sequence
+boolean [] flags; //array to toggle each individual node
 
-color positive = color(random(180, 255));
-color negative = color(18, 37, 44);
+//swatches
+color positive = color(random(180, 255)); //color of the actual nodes/points
+color negative = color(18, 37, 44); //background
+color accent = color(152, 0, 0); //indicator for eligibility
+color accent2 = color(255, 102, 0); //toggles when new node is formed
 
 float newX, newY;
 
