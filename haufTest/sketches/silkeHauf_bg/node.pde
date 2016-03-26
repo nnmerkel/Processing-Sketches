@@ -105,7 +105,7 @@ class Node {
       if (p[i].r > 30) p[i].r = 30;
       
       //if it is large enough after the beginning of the sketch, activate the flag that will trigger a node
-      if (p[i].ccounter >= 16 && p[i].sourcePoint) {
+      if (p[i].ccounter >= 10 && p[i].sourcePoint) {
         denseEnough = true;
         stroke(accent, 100);
         ellipse(p[i].location.x, p[i].location.y, 30, 30);

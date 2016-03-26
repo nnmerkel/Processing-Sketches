@@ -26,7 +26,7 @@ boolean reset; //toggles new node sequence
 boolean [] flags; //array to toggle each individual node
 
 //swatches
-color positive = color(random(180, 255)); //color of the actual nodes/points
+color positive = color(random(180, 255)); //color of the actual nodes/points, greys
 color negative = color(18, 37, 44); //background
 color accent = color(152, 0, 0); //indicator for eligibility
 color accent2 = color(255, 102, 0); //toggles when new node is formed
