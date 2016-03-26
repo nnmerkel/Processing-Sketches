@@ -11,6 +11,7 @@ RadioButton r1;
 Textlabel t;
 Textlabel [] dpi = new Textlabel[2];
 
+
 void setupGUI() {
   //ControlFont cfont = new ControlFont(font);
   //cp5.setControlFont(font);
@@ -112,6 +113,7 @@ void setupGUI() {
   setLock(cp5.getController("dissect"), true);
 }
 
+
 void setLock(Controller theController, boolean theValue) {
   if (theValue) {
     theController.setLock(theValue);
@@ -124,6 +126,7 @@ void setLock(Controller theController, boolean theValue) {
     theController.setColorActive(col);
   }
 }
+
 
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(r1)) {

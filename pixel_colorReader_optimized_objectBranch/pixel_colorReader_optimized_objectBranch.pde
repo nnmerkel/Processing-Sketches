@@ -16,7 +16,6 @@ PFont font, monospace;
 ArrayList<TileObject> tx = new ArrayList<TileObject>();
 TileObject [] m;
 PImage master;
-PImage loadingGif;
 PImage[] images;
 String[] imageNames;
 
@@ -74,7 +73,6 @@ void setup() {
   size(1280, 720);
   //fullScreen();
   pixelDensity(2);
-  loadingGif = loadImage("loading-gif.gif");
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 12);
   monospace = createFont("Consolas.ttf", 14);
@@ -329,7 +327,6 @@ void runDissection() {
         }*/
         println(imageCount, contents[i]);
         currentCommand = imageCount + " " + contents[i];
-        //the function for actual dissection
         dissectImage(images[imageCount]);
       }
       imageCount++;
@@ -352,7 +349,7 @@ void runDissection() {
 
 
 //this function takes the brunt of the computations out of the drawing thread
-void dissect() {
+void dissect1() {
   if (!isAllFalse(modes)) {
     thread("runDissection");
   } else {
@@ -399,8 +396,6 @@ void dissectMaster(PImage image) {
   //calculate the size of bValues array
   int xDim = image.width / xIncrement;
   int yDim = image.height / yIncrement;
-
-  println("xDim", xDim, "yDim", yDim);
 
   tileCount = xDim * yDim;
   m = new TileObject[tileCount];
@@ -501,6 +496,7 @@ void keyReleased() {
     savePDF = false;
   }
 }
+
 
 String timestamp() {
   return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", Calendar.getInstance());

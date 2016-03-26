@@ -14,10 +14,4 @@ class TileObject {
     avgAttribute = _avg;
     tileIndex = _i;
   }
-  
-  
-  void printAttributes() {
-    println("tileIndex " + tileIndex + "\n" + "x " + x + "\n" +"y " + y + "\n" + "avgAttribute " + avgAttribute + "\n" + "sourceImage " + sourceImage + "\n");
-  }
-  
 }
