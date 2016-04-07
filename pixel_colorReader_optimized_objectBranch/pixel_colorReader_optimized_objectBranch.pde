@@ -226,7 +226,7 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
       } else if (modes[5]) {
         attr = brightness(c1);
       } else if (modes[6]) {
-        attr = color(c1);
+        attr = (c1 >> 16 & 0xFF) + (c1 >> 8 & 0xFF) + (c1 & 0xFF);
       }
       bTotal = bTotal + attr;
       mTotal = mTotal + attr;
@@ -340,16 +340,16 @@ void runDissection() {
   inProgress = false;
   currentCommand = COMMAND_ARRAY[COMPLETE];
 
+  reconstruct = true;
+  
   long endTime = System.nanoTime();
   long duration = (endTime - startTime)/1000000;
   println("\n" + "duration " + duration + "\n");
-
-  reconstruct = true;
 }
 
 
 //this function takes the brunt of the computations out of the drawing thread
-void dissect1() {
+void dissect() {
   if (!isAllFalse(modes)) {
     thread("runDissection");
   } else {
@@ -461,7 +461,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
 void reconstruct() {
   int xDim = m[0].sourceImage.width / xIncrement;
   savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
-  println(m[0].sourceImage.width, m[0].sourceImage.height);
+  //println(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();
   savedImage.noFill();
