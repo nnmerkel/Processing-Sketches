@@ -4,10 +4,9 @@ class Node {
   Point[] p;
 
 
-  Node(float _centerX, float _centerY, float _nodeSize, int _pointsContained) {
+  Node(float _centerX, float _centerY, int _pointsContained) {
     centerX = _centerX;
     centerY = _centerY;
-    nodeSize = _nodeSize;
     pointsContained = _pointsContained;
     innerSquareSide = (nodeSize * sqrt(2)) / 2;
     rand = (int)random(pointsContained);
@@ -81,7 +80,7 @@ class Node {
       }
 
       //limit the size of the disc so it's not absurdly large
-      if (p[i].r > 30) p[i].r = 30;
+      if (p[i].r > 20) p[i].r = 20;
       
       if (p[i].location.mag() > width/2) {
         p[i].location.set(0, 0);

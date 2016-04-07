@@ -8,7 +8,7 @@ import java.util.Calendar;
 
 Node [] n;
 
-int lineDistance = 60;              // maximum distance between points for them to be connected
+int lineDistance = 50;              // maximum distance between points for them to be connected
 int numNodes = (int)random(3, 6);   // random number of nodes generated per page load
 int numPoints = 150;                 // number of points in the node
 float nodeSize = 200;               // radius of the node
