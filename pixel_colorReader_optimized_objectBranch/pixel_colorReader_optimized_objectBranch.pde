@@ -10,6 +10,11 @@ import controlP5.*;
 import java.util.Calendar;
 import java.util.Arrays;
 
+//secondary image classes
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.color.ColorSpace;
+
 //the glorious, glorious sauce:
 //https://github.com/drewnoakes/metadata-extractor
 import com.drew.metadata.Metadata;
@@ -32,7 +37,6 @@ PImage[] images;
 String[] imageNames;
 
 boolean savePDF = false;
-boolean reconstruct = false;
 boolean inProgress = false;
 boolean selectSamples = false;
 boolean selectMaster = false;
@@ -89,11 +93,19 @@ void setup() {
   monospace = createFont("Consolas.ttf", 14);
   textFont(font); 
   setupGUI();
-  
+
   //experimental code here
   File file = new File("/Users/EAM/Desktop/cmyktest.jpg");
   try {
     Metadata metadata = ImageMetadataReader.readMetadata(file);
+
+    //Directory directory2 = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+    //String orientation = directory2.getDescription(directory2.TAG_ORIENTATION);
+
+    ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+    String colorSpace = directory.getDescription(directory.TAG_COLOR_SPACE);
+
+    println(colorSpace);
     printx(metadata);
   } 
   catch (ImageProcessingException e) {
@@ -102,6 +114,7 @@ void setup() {
   catch (IOException e) {
     println(e);
   }
+  println(isCMYK("/Users/EAM/Desktop/cmyktest.jpg"));
 }
 
 
@@ -120,6 +133,23 @@ void printx(Metadata metadata) {
       }
     }
   }
+}
+
+
+boolean isCMYK(String filename) {
+  boolean result = false;
+  BufferedImage img = null;
+  try {
+    img = ImageIO.read(new File(filename));
+  }
+  catch (IOException e) {
+    System.out.println(e.getMessage() + ": " + filename);
+  }
+  if (img != null) {
+    int colorSpaceType = img.getColorModel().getColorSpace().getType();
+    result = colorSpaceType == ColorSpace.TYPE_CMYK;
+  }
+  return result;
 }
 
 
@@ -147,11 +177,32 @@ void draw() {
     PImage master = loadImage(masterImageObject);
     imageMode(CENTER);
     float workspaceWidth = width-guiWidth;
-    image(master, workspaceWidth/2, height/2);
-    if (master.width > workspaceWidth) {
-      image(master, workspaceWidth/2, height/2, workspaceWidth, height);
+    float widthDiff = workspaceWidth/master.width;
+    float heightDiff = height/master.height;
+
+    //dynamically size the master image
+    if (widthDiff < 1 && heightDiff < 1) {
+      //wider and taller than window
+      float smallerDiff = widthDiff - heightDiff;
+      if (smallerDiff > 0) {
+        //needs to be fit to height
+        image(master, workspaceWidth/2, height/2, master.width * heightDiff, master.height * heightDiff);
+      } else {
+        //needs to be fit to width
+        image(master, workspaceWidth/2, height/2, master.width * widthDiff, master.height * widthDiff);
+      }
+    } else if (widthDiff < 1) {
+      //wider than window
+      image(master, workspaceWidth/2, height/2, master.width * widthDiff, master.height * widthDiff);
+    } else if (heightDiff < 1) {
+      //taller than window
+      image(master, workspaceWidth/2, height/2, master.width * heightDiff, master.height * heightDiff);
+    } else {
+      //if it fits already
+      image(master, workspaceWidth/2, height/2);
     }
   }
+
   //reset the image drawing mode
   imageMode(CORNER);
 
@@ -184,10 +235,6 @@ void draw() {
   textSize(12);
   text(">  " + currentCommand, 10, height-10);
   noFill();
-
-  if (reconstruct) {
-    reconstruct();
-  }
 
   popMatrix();
 }
@@ -388,7 +435,7 @@ void runDissection() {
   inProgress = false;
   currentCommand = COMMAND_ARRAY[COMPLETE];
 
-  reconstruct = true;
+  reconstruct();
 
   long endTime = System.nanoTime();
   long duration = (endTime - startTime)/1000000;
@@ -527,7 +574,6 @@ void reconstruct() {
   }
   savedImage.endDraw();
   savedImage.save(timestamp() + ".png");
-  reconstruct = false;
 }
 
 
@@ -535,13 +581,6 @@ void keyReleased() {
   if (key == 's' || key == 'S') {
     saveFrame("frame_####.png");
     currentCommand = COMMAND_ARRAY[FRAME_SAVED];
-  }
-  if (key == 'p' || key == 'P') {
-    savePDF = true;
-  }
-  if (key == 'e' || key == 'E') {
-    endRecord();
-    savePDF = false;
   }
 }
 
