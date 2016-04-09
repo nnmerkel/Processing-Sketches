@@ -10,6 +10,18 @@ import controlP5.*;
 import java.util.Calendar;
 import java.util.Arrays;
 
+//the glorious, glorious sauce:
+//https://github.com/drewnoakes/metadata-extractor
+import com.drew.metadata.Metadata;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
+import com.drew.metadata.exif.ExifReader;
+import com.drew.metadata.iptc.IptcReader;
+
 ControlP5 cp5;
 PGraphics savedImage;
 PFont font, monospace;
@@ -52,7 +64,7 @@ final String [] COMMAND_ARRAY = new String[] {
   "Operation complete", 
   "Dissecting...", 
   "Please select a sampling mode to continue", 
-  "Matching tiles to get the best fit...",
+  "Matching tiles to get the best fit...", 
   "The file you have selected is not an image. Please select a .jpg, .png, or .gif"
 };
 final static int SELECT_MASTER = 0;
@@ -71,13 +83,43 @@ String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 void setup() {
   size(1280, 720);
-  //fullScreen();
   pixelDensity(2);
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 12);
   monospace = createFont("Consolas.ttf", 14);
   textFont(font); 
   setupGUI();
+  
+  //experimental code here
+  File file = new File("/Users/EAM/Desktop/cmyktest.jpg");
+  try {
+    Metadata metadata = ImageMetadataReader.readMetadata(file);
+    printx(metadata);
+  } 
+  catch (ImageProcessingException e) {
+    println(e);
+  } 
+  catch (IOException e) {
+    println(e);
+  }
+}
+
+
+//EXPERIMENTAL: function to print image metadata
+void printx(Metadata metadata) {
+  System.out.println("-------------------------------------");
+  for (Directory directory : metadata.getDirectories()) {
+
+    for (Tag tag : directory.getTags()) {
+      System.out.println(tag);
+    }
+
+    if (directory.hasErrors()) {
+      for (String error : directory.getErrors()) {
+        System.err.println("ERROR: " + error);
+      }
+    }
+  }
 }
 
 
@@ -104,7 +146,11 @@ void draw() {
   if (masterImageObject != null) {
     PImage master = loadImage(masterImageObject);
     imageMode(CENTER);
-    image(master, (width-guiWidth)/2, height/2);
+    float workspaceWidth = width-guiWidth;
+    image(master, workspaceWidth/2, height/2);
+    if (master.width > workspaceWidth) {
+      image(master, workspaceWidth/2, height/2, workspaceWidth, height);
+    }
   }
   //reset the image drawing mode
   imageMode(CORNER);
@@ -318,13 +364,15 @@ void runDissection() {
         File childFile = new File(dir, contents[i]);
         images[imageCount] = loadImage(childFile.getPath());
         imageNames[imageCount] = childFile.getName();
+
         //check for transparency
-        /*if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$")) {
-        //statements to make transparency white
+        if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$")) {
+          //statements to make transparency white
           if (isTransparent(images[imageCount])) {
             images[imageCount] = drawWhite(images[imageCount]);
           }
-        }*/
+        }
+
         println(imageCount, contents[i]);
         currentCommand = imageCount + " " + contents[i];
         dissectImage(images[imageCount]);
@@ -341,7 +389,7 @@ void runDissection() {
   currentCommand = COMMAND_ARRAY[COMPLETE];
 
   reconstruct = true;
-  
+
   long endTime = System.nanoTime();
   long duration = (endTime - startTime)/1000000;
   println("\n" + "duration " + duration + "\n");
