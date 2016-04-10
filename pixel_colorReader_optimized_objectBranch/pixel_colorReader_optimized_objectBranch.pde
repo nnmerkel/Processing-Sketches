@@ -175,10 +175,10 @@ void draw() {
   //once a master image is chosen, display it every frame
   if (masterImageObject != null) {
     PImage master = loadImage(masterImageObject);
+    int workspaceWidth = width-guiWidth;
+    float widthDiff = (float)workspaceWidth/(float)master.width;
+    float heightDiff = (float)height/(float)master.height;
     imageMode(CENTER);
-    float workspaceWidth = width-guiWidth;
-    float widthDiff = workspaceWidth/master.width;
-    float heightDiff = height/master.height;
 
     //dynamically size the master image
     if (widthDiff < 1 && heightDiff < 1) {
@@ -190,16 +190,20 @@ void draw() {
       } else {
         //needs to be fit to width
         image(master, workspaceWidth/2, height/2, master.width * widthDiff, master.height * widthDiff);
+        println("wider and taller, but more wide");
       }
     } else if (widthDiff < 1) {
       //wider than window
       image(master, workspaceWidth/2, height/2, master.width * widthDiff, master.height * widthDiff);
+      println("wider");
     } else if (heightDiff < 1) {
       //taller than window
       image(master, workspaceWidth/2, height/2, master.width * heightDiff, master.height * heightDiff);
+      println("taller");
     } else {
       //if it fits already
       image(master, workspaceWidth/2, height/2);
+      println("it fits");
     }
   }
 
