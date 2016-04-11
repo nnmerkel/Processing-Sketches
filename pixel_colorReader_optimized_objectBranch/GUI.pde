@@ -64,7 +64,6 @@ void setupGUI() {
     .setValue(50);
 
   dpi[0] = cp5.addTextlabel("screen")
-    .setText("Screen " + (float)xIncrement/72 + " in.")
     .setPosition(pad, itemHeight*4+pad*5+buffer)
     .setGroup(g2)
     .setColorValue(170)
@@ -72,7 +71,6 @@ void setupGUI() {
     .setFont(createFont("UniversLTStd-UltraCn.otf", 8));
 
   dpi[1] = cp5.addTextlabel("print")
-    .setText("Print " + (float)xIncrement/300 + " in.")
     .setPosition((guiWidth/2)+pad, itemHeight*4+pad*5+buffer)
     .setGroup(g2)
     .setColorValue(170)
@@ -125,6 +123,14 @@ void setLock(Controller theController, boolean theValue) {
     theController.setColorForeground(fgActive);
     theController.setColorActive(col);
   }
+}
+
+
+//redraw gui, but mostly just for the DPI readouts
+void updateGUI() {
+  float print = (float)round((xIncrement/300f) * 100f) / 100f;
+  dpi[0].setText("Screen: " + xIncrement + "px");
+  dpi[1].setText("Print: " + print + " in.");
 }
 
 
