@@ -10,22 +10,12 @@ import controlP5.*;
 import java.util.Calendar;
 import java.util.Arrays;
 
+import com.sun.image.codec.jpeg.*;
+import java.awt.image.*;
+
 //secondary image classes
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.awt.color.ColorSpace;
-
-//the glorious, glorious sauce:
-//https://github.com/drewnoakes/metadata-extractor
-import com.drew.metadata.Metadata;
-
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.imaging.jpeg.JpegMetadataReader;
-import com.drew.imaging.jpeg.JpegProcessingException;
-import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
-import com.drew.metadata.exif.ExifReader;
-import com.drew.metadata.iptc.IptcReader;
 
 ControlP5 cp5;
 PGraphics savedImage;
@@ -94,7 +84,7 @@ void setup() {
   textFont(font); 
   setupGUI();
 
-  //experimental code here
+  /*experimental code here
   File file = new File("/Users/EAM/Desktop/cmyktest.jpg");
   try {
     Metadata metadata = ImageMetadataReader.readMetadata(file);
@@ -103,7 +93,7 @@ void setup() {
     //String orientation = directory2.getDescription(directory2.TAG_ORIENTATION);
 
     ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-    String colorSpace = directory.getDescription(directory.TAG_COLOR_SPACE);
+    String colorSpace = directory.getDescription(ExifSubIFDDirectory.TAG_COLOR_SPACE);
 
     println(colorSpace);
     printx(metadata);
@@ -114,10 +104,11 @@ void setup() {
   catch (IOException e) {
     println(e);
   }
-  println(isCMYK("/Users/EAM/Desktop/cmyktest.jpg"));
+  println(isCMYK("/Users/EAM/Desktop/cmyktest.jpg"));*/
 }
 
 
+/*
 //EXPERIMENTAL: function to print image metadata
 void printx(Metadata metadata) {
   System.out.println("-------------------------------------");
@@ -151,6 +142,7 @@ boolean isCMYK(String filename) {
   }
   return result;
 }
+*/
 
 
 void draw() {
@@ -229,7 +221,6 @@ void draw() {
   //draw the command line without recording it
   fill(50);
   rect(0, height-30, width, height-30);
-  //fill(64, 226, 72); //command line green
   fill(170);
   textFont(monospace);
   textSize(12);
@@ -237,7 +228,7 @@ void draw() {
   noFill();
 
   popMatrix();
-  
+
   updateGUI();
 }
 
@@ -414,17 +405,31 @@ void runDissection() {
         images[imageCount] = loadImage(childFile.getPath());
         imageNames[imageCount] = childFile.getName();
 
-        //check for transparency
+        //handle gifs/pngs and check for transparency
         if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$")) {
           //statements to make transparency white
           if (isTransparent(images[imageCount])) {
             images[imageCount] = drawWhite(images[imageCount]);
+            println("made one white");
           }
+          println(imageCount, contents[i]);
+          currentCommand = imageCount + " " + contents[i];
+          dissectImage(images[imageCount]);
         }
 
-        println(imageCount, contents[i]);
-        currentCommand = imageCount + " " + contents[i];
-        dissectImage(images[imageCount]);
+        //handle jpgs and check for CMYK
+        if (contents[i].toLowerCase().matches("^.*\\.(jpg|jpeg)$")) {
+          try {
+            println(imageCount, contents[i]);
+            currentCommand = imageCount + " " + contents[i];
+            dissectImage(images[imageCount]);
+          } 
+          catch (Exception e) {
+            println("found a cmyk image");
+            println(e);
+            continue;
+          }
+        }
       }
       imageCount++;
     }
@@ -558,7 +563,6 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
 void reconstruct() {
   int xDim = m[0].sourceImage.width / xIncrement;
   savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
-  //println(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();
   savedImage.noFill();
