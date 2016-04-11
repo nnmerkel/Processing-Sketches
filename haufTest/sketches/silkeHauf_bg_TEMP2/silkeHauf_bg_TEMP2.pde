@@ -8,16 +8,16 @@ Node [] n;
 
 int lineDistance = 100;              // maximum distance between points for them to be connected
 int numNodes = (int)random(3, 6);   // random number of nodes generated per page load
-int numPoints = 140;// number of points in the node
+int numPoints = 180;// number of points in the node
 
 //speed
-float param = 1.0;
+float param = 1.8;
 
 //swatches
 color positive = color(220); //color of the actual nodes/points, greys
-color negative = color(36, 74, 88); //background
+color negative = color(60, 91, 111); //background
 color accent = color(152, 0, 0); //toggles when new node is formed
-color accent2 = color(255, 102, 0); //sourcepoint indicator
+color accent2 = color(48, 80, 32); //sourcepoint indicator
 
 
 void setup() {
@@ -36,6 +36,6 @@ void draw() {
   noFill();
   background(negative);
   n[0].node();
-  saveFrame("small2_####.png");
+  saveFrame("small3_####.png");
   if (frameCount == 180) exit();
 }

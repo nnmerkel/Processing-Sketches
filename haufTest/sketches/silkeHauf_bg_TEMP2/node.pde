@@ -39,7 +39,7 @@ class Node {
       p[i].ccounter = 0;
       p[i].run();
       if (p[i].location.x > width/2) p[i].location.x = 0;
-      if (p[i].location.y > height/2) p[i].location.y = 0;
+      if (p[i].location.y > height/3) p[i].location.y = 0;
       //if (p[i].location.x < 0) p[i].location.x = width;
       //if (p[i].location.y < 0) p[i].location.y = height;
       float _x = p[i].location.x;
@@ -54,9 +54,12 @@ class Node {
         // create connections
         if (r <= lineDistance) {
           float opacityMap = map(r, 0, lineDistance, 255, 0);
-          if (i % 5 == 0) {
+          if (i % 4 == 0) {
             stroke(accent, opacityMap);
             fill(accent, 150);
+          } else if (i % 5 == 0) {
+            stroke(accent2, opacityMap);
+            fill(accent2, 150);
           } else {
             stroke(positive, opacityMap);
             fill(positive, 150);
@@ -80,7 +83,7 @@ class Node {
       }
 
       //limit the size of the disc so it's not absurdly large
-      if (p[i].r > 20) p[i].r = 20;
+      if (p[i].r > 15) p[i].r = 15;
       
       if (p[i].location.mag() > width/2) {
         p[i].location.set(0, 0);
