@@ -59,8 +59,8 @@ int resolution;
 
 //--------------------command array strings and constants
 final String [] COMMAND_ARRAY = new String[] {
-  "Please select the image from which you want to make a photomoasic", 
-  "Please select a folder of images from which to sample", 
+  "Please select the image from which you want to make a photomosaic", 
+  "Please select a folder of sample images", 
   "Set options for the photomosaic", 
   "Press \"Dissect\" to continue", 
   "Window was closed or the user hit cancel", 
@@ -190,20 +190,16 @@ void draw() {
       } else {
         //needs to be fit to width
         image(master, workspaceWidth/2, height/2, master.width * widthDiff, master.height * widthDiff);
-        println("wider and taller, but more wide");
       }
     } else if (widthDiff < 1) {
       //wider than window
       image(master, workspaceWidth/2, height/2, master.width * widthDiff, master.height * widthDiff);
-      println("wider");
     } else if (heightDiff < 1) {
       //taller than window
       image(master, workspaceWidth/2, height/2, master.width * heightDiff, master.height * heightDiff);
-      println("taller");
     } else {
       //if it fits already
       image(master, workspaceWidth/2, height/2);
-      println("it fits");
     }
   }
 
@@ -241,6 +237,8 @@ void draw() {
   noFill();
 
   popMatrix();
+  
+  updateGUI();
 }
 
 
