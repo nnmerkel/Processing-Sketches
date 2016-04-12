@@ -10,7 +10,6 @@ import controlP5.*;
 import java.util.Calendar;
 import java.util.Arrays;
 
-import com.sun.image.codec.jpeg.*;
 import java.awt.image.*;
 
 //secondary image classes
@@ -77,72 +76,72 @@ String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 void setup() {
   size(1280, 720);
-  pixelDensity(2);
+  //pixelDensity(2);
   cp5 = new ControlP5(this);
-  font = createFont("UniversLTStd-UltraCn.otf", 12);
+  font = createFont("UniversLTStd-UltraCn.otf", 24);
   monospace = createFont("Consolas.ttf", 14);
   textFont(font); 
   setupGUI();
 
   /*experimental code here
-  File file = new File("/Users/EAM/Desktop/cmyktest.jpg");
-  try {
-    Metadata metadata = ImageMetadataReader.readMetadata(file);
-
-    //Directory directory2 = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-    //String orientation = directory2.getDescription(directory2.TAG_ORIENTATION);
-
-    ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-    String colorSpace = directory.getDescription(ExifSubIFDDirectory.TAG_COLOR_SPACE);
-
-    println(colorSpace);
-    printx(metadata);
-  } 
-  catch (ImageProcessingException e) {
-    println(e);
-  } 
-  catch (IOException e) {
-    println(e);
-  }
-  println(isCMYK("/Users/EAM/Desktop/cmyktest.jpg"));*/
+   File file = new File("/Users/EAM/Desktop/cmyktest.jpg");
+   try {
+   Metadata metadata = ImageMetadataReader.readMetadata(file);
+   
+   //Directory directory2 = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+   //String orientation = directory2.getDescription(directory2.TAG_ORIENTATION);
+   
+   ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+   String colorSpace = directory.getDescription(ExifSubIFDDirectory.TAG_COLOR_SPACE);
+   
+   println(colorSpace);
+   printx(metadata);
+   } 
+   catch (ImageProcessingException e) {
+   println(e);
+   } 
+   catch (IOException e) {
+   println(e);
+   }
+   println(isCMYK("/Users/EAM/Desktop/cmyktest.jpg"));*/
 }
 
 
 /*
 //EXPERIMENTAL: function to print image metadata
-void printx(Metadata metadata) {
-  System.out.println("-------------------------------------");
-  for (Directory directory : metadata.getDirectories()) {
-
-    for (Tag tag : directory.getTags()) {
-      System.out.println(tag);
-    }
-
-    if (directory.hasErrors()) {
-      for (String error : directory.getErrors()) {
-        System.err.println("ERROR: " + error);
-      }
-    }
-  }
-}
-
-
-boolean isCMYK(String filename) {
-  boolean result = false;
-  BufferedImage img = null;
-  try {
-    img = ImageIO.read(new File(filename));
-  }
-  catch (IOException e) {
-    System.out.println(e.getMessage() + ": " + filename);
-  }
-  if (img != null) {
-    int colorSpaceType = img.getColorModel().getColorSpace().getType();
-    result = colorSpaceType == ColorSpace.TYPE_CMYK;
-  }
-  return result;
-}
-*/
+ void printx(Metadata metadata) {
+ System.out.println("-------------------------------------");
+ for (Directory directory : metadata.getDirectories()) {
+ 
+ for (Tag tag : directory.getTags()) {
+ System.out.println(tag);
+ }
+ 
+ if (directory.hasErrors()) {
+ for (String error : directory.getErrors()) {
+ System.err.println("ERROR: " + error);
+ }
+ }
+ }
+ }
+ 
+ 
+ boolean isCMYK(String filename) {
+ boolean result = false;
+ BufferedImage img = null;
+ try {
+ img = ImageIO.read(new File(filename));
+ }
+ catch (IOException e) {
+ System.out.println(e.getMessage() + ": " + filename);
+ }
+ if (img != null) {
+ int colorSpaceType = img.getColorModel().getColorSpace().getType();
+ result = colorSpaceType == ColorSpace.TYPE_CMYK;
+ }
+ return result;
+ }
+ */
 
 
 void draw() {
@@ -264,15 +263,20 @@ boolean isAllFalse(boolean[] array) {
 
 //check if an image contains a transparent pixel
 boolean isTransparent(PImage img) {
+  boolean result = false;
+outerloop:
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
       int pixel = img.get(x, y);
-      if ((pixel>>24) == 0x00 ) {
-        return true;
+      if ((pixel>>24) == 0x00) {
+        result = true;
+        break outerloop;
+      } else {
+        result = false;
       }
     }
   }
-  return false;
+  return result;
 }
 
 
@@ -284,6 +288,7 @@ PImage drawWhite(PImage img) {
   p.image(img, 0, 0);
   p.endDraw();
   img = p;
+  println("made one white");
   return img;
 }
 
@@ -342,7 +347,7 @@ void folderSelected(File selection) {
   }
 }
 
-
+PImage masterTemp;
 //callback function for the master image selection
 void masterSelected(File selection) {
   if (selection == null) {
@@ -354,6 +359,12 @@ void masterSelected(File selection) {
     //unlock the sample selection
     setLock(cp5.getController("selectSamples"), false);
     masterImageObject = selection.getAbsolutePath();
+    masterTemp = loadImage(masterImageObject);
+    println(isTransparent(masterTemp));
+    if (isTransparent(masterTemp)) {
+      println("the master image contained transparency");
+      masterTemp = drawWhite(masterTemp);
+    }
     currentCommand = COMMAND_ARRAY[SELECT_SAMPLES];
   }
 }
@@ -369,7 +380,7 @@ void runDissection() {
   currentCommand = COMMAND_ARRAY[DISSECTING];
 
   //dissect the master image here, before we loop through the samples
-  PImage masterTemp = loadImage(masterImageObject);
+  //PImage masterTemp = loadImage(masterImageObject);
   dissectMaster(masterTemp);
 
   //reset the array so it can run more than once
@@ -406,30 +417,15 @@ void runDissection() {
         imageNames[imageCount] = childFile.getName();
 
         //handle gifs/pngs and check for transparency
-        if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$")) {
+        if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$") && isTransparent(images[imageCount])) {
           //statements to make transparency white
-          if (isTransparent(images[imageCount])) {
-            images[imageCount] = drawWhite(images[imageCount]);
-            println("made one white");
-          }
-          println(imageCount, contents[i]);
-          currentCommand = imageCount + " " + contents[i];
-          dissectImage(images[imageCount]);
+          println("found a white one");
+          images[imageCount] = drawWhite(images[imageCount]);
         }
 
-        //handle jpgs and check for CMYK
-        if (contents[i].toLowerCase().matches("^.*\\.(jpg|jpeg)$")) {
-          try {
-            println(imageCount, contents[i]);
-            currentCommand = imageCount + " " + contents[i];
-            dissectImage(images[imageCount]);
-          } 
-          catch (Exception e) {
-            println("found a cmyk image");
-            println(e);
-            continue;
-          }
-        }
+        println(imageCount, contents[i]);
+        currentCommand = imageCount + " " + contents[i];
+        dissectImage(images[imageCount]);
       }
       imageCount++;
     }
