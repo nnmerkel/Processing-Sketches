@@ -68,13 +68,13 @@ void setupGUI() {
     .setGroup(g2)
     .setColorValue(170)
     .setSize(10, 10)
-    .setFont(createFont("UniversLTStd-UltraCn.otf", 8));
+    .setFont(createFont("UniversLTStd-UltraCn.otf", 16));
 
   dpi[1] = cp5.addTextlabel("print")
     .setPosition((guiWidth/2)+pad, itemHeight*4+pad*5+buffer)
     .setGroup(g2)
     .setColorValue(170)
-    .setFont(createFont("UniversLTStd-UltraCn.otf", 8));
+    .setFont(createFont("UniversLTStd-UltraCn.otf", 16));
 
   r1 = cp5.addRadioButton("radioButton")
     .setPosition(pad, itemHeight*5+pad*6+buffer)
