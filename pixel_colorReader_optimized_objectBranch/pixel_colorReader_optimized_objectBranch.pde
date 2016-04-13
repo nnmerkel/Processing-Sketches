@@ -17,7 +17,6 @@ import javax.imageio.ImageIO;
 import java.awt.color.ColorSpace;
 
 ControlP5 cp5;
-PGraphics savedImage;
 PFont font, monospace;
 ArrayList<TileObject> tx = new ArrayList<TileObject>();
 TileObject [] m;
@@ -557,15 +556,18 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
 
 //write the new image to a file
 void reconstruct() {
-  int xLeftover = m[0].sourceImage.width % xIncrement;
-  int yLeftover = m[0].sourceImage.height % yIncrement;
-  println("xLeftover", xLeftover, "yLeftover", yLeftover);
-  println(m[0].sourceImage.width - xLeftover, m[0].sourceImage.height - yLeftover);
   int xDim = m[0].sourceImage.width / xIncrement;
-  savedImage = createGraphics(m[0].sourceImage.width - xLeftover, m[0].sourceImage.height - yLeftover);
+  
+  //int newWidth = m[0].sourceImage.width - (m[0].sourceImage.width % xIncrement);
+  //int newHeight = m[0].sourceImage.height - (m[0].sourceImage.height % yIncrement);
+  //println("xDim", xDim, newWidth, newHeight);
+  
+  //PGraphics savedImage = createGraphics(newWidth, newHeight);
+  PGraphics savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();
   savedImage.noFill();
+  
   for (int i = 0; i < m.length; i++) {    
     TileObject newTile = tx.get(newValues[i]);
 
@@ -578,6 +580,7 @@ void reconstruct() {
     PImage tileInstance = newTile.sourceImage.get(tempX, tempY, xIncrement, yIncrement);
     savedImage.image(tileInstance, xWalker, yWalker);
   }
+  
   savedImage.endDraw();
   savedImage.save(timestamp() + ".png");
 }
