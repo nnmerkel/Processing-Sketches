@@ -25,12 +25,10 @@ class Point {
     wind = new PVector(random(-0.1, 0.1), random(-0.1, 0.1));
     location.add(velocity);
     velocity.add(wind);
-    velocity.limit(param+.3);
-    //stroke(positive, 200);
+    velocity.limit(param + 1.0);
     strokeWeight(3);
     point(location.x, location.y);
     noStroke();
-    //fill(positive, 120);
     ellipse(location.x, location.y, r, r);
   }
 }

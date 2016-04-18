@@ -1,6 +1,6 @@
 class Node {
-  int pointsContained, rand;
-  float innerSquareSide, centerX, centerY, nodeSize;
+  int pointsContained;
+  float innerSquareSide, centerX, centerY;
   Point[] p;
 
 
@@ -8,8 +8,6 @@ class Node {
     centerX = _centerX;
     centerY = _centerY;
     pointsContained = _pointsContained;
-    innerSquareSide = (nodeSize * sqrt(2)) / 2;
-    rand = (int)random(pointsContained);
   }
 
 
@@ -18,14 +16,12 @@ class Node {
     p = new Point[pointsContained];
     for (int i = 0; i < pointsContained; i++) {
       p[i] = new Point();
-      if (i == rand) p[i].sourcePoint = true;
       setLocation(p[i]);
     }
   }
   
   
   PVector setLocation(Point p) {
-    //return p.location.set(random(-innerSquareSide, innerSquareSide), random(-innerSquareSide, innerSquareSide));
     return p.location.set(random(-width/2, width/2), random(-height/2, height/2));
   }
 
@@ -38,10 +34,8 @@ class Node {
       //reset the connection counter
       p[i].ccounter = 0;
       p[i].run();
-      if (p[i].location.x > width/2) p[i].location.x = 0;
-      if (p[i].location.y > height/3) p[i].location.y = 0;
-      //if (p[i].location.x < 0) p[i].location.x = width;
-      //if (p[i].location.y < 0) p[i].location.y = height;
+      if (p[i].location.x > width/2 || p[i].location.x < -width/2) p[i].location.x = random(-width/2, width/2);
+      if (p[i].location.y > height/2 || p[i].location.y < -height/2) p[i].location.y = random(-height/3, height/3);
       float _x = p[i].location.x;
       float _y = p[i].location.y;
 
@@ -73,21 +67,15 @@ class Node {
       }
 
       //set ellipse to grow based on connections
-      //the 1.15 is a "best-look" constant. it can be changed according to preference
       p[i].r = pow(1.15, p[i].ccounter);
 
       if (p[i].sourcePoint) {
         stroke(accent2, 220);
         fill(accent2, 220);
-        //ellipse(p[i].location.x, p[i].location.y, 50, 50);
       }
 
       //limit the size of the disc so it's not absurdly large
       if (p[i].r > 15) p[i].r = 15;
-      
-      if (p[i].location.mag() > width/2) {
-        p[i].location.set(0, 0);
-      }
     }
     popMatrix();
   }
