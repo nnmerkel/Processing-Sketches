@@ -7,25 +7,33 @@ class Point {
   //connection counter
   int ccounter;
   
-  //is true if point qualifies to be a source point for a new node
-  boolean sourcePoint;
-  
 
   Point () {
     //set location for the node
     location = new PVector();
+    
+    //sets random speed for each point
     velocity = new PVector(random(-param, param), random(-param, param));
+    
+    //sets initial point size
     r = 1;
     ccounter = 0;
-    sourcePoint = false;
   }
   
 
   void run() {
+    //the "wind" PVector adds a randomized motion to each point, so that
+    //their motion is more fluid and organic.
     wind = new PVector(random(-0.1, 0.1), random(-0.1, 0.1));
+    
     location.add(velocity);
     velocity.add(wind);
+    
+    //limit the speed so it doesn't get absurdly fast, but also add
+    //speed as the program continues
     velocity.limit(param + 1.0);
+    
+    //styling options
     strokeWeight(3);
     point(location.x, location.y);
     noStroke();
