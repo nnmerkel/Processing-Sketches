@@ -1,34 +1,27 @@
 *.zip
 *.jar
 
-samples/
-
-array_random/151001_175620.png
-
 libraries/
 
 Grad School Sketches/pixel_colorReader_optimized_objectBranch/*.png
 
-haufTest/sketches/silkeHauf_bg_TEMP2/example1/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/example1/
 
-haufTest/sketches/silkeHauf_bg_TEMP2/example2/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/example2/
 
-haufTest/sketches/silkeHauf_bg_TEMP2/example3/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/example3/
 
-haufTest/sketches/silkeHauf_bg_TEMP2/example4/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/example4/
 
-haufTest/sketches/silkeHauf_bg_TEMP2/small1/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/small1/
 
-haufTest/sketches/silkeHauf_bg_TEMP2/small1 long/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/small1 long/
 
-haufTest/sketches/silkeHauf_bg_TEMP2/small1 long2/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/small1 long2/
 
-haufTest/sketches/silkeHauf_bg_TEMP2/small2 long1/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/small2 long1/
 
-haufTest/sketches/silkeHauf_bg_TEMP2/small3 long1/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/small3 long1/
 
-haufTest/sketches/silkeHauf_bg_TEMP2/small4 long1/
+Grad School Sketches/haufTest/sketches/silkeHauf_bg_TEMP2/small4 long1/
 
-silkeHauf_bg/bounce/
-
-silkeHauf_bg/bounce2/
