@@ -1,7 +1,14 @@
-Processing-Sketches
-===================
+#Processing-Sketches
 
-shared folder of Processing sketches
+##Contents
 
-Fall 2014 semester
-Both in-class and for VBI
+###Fall 2015 - Spring 2016 (Grad school sketches)
+*pixel_colorReader_optimized_objectBranch
+*second
+*third
+
+###VBI Branding Tools
+
+###Misc. Tools
+
+###Undergrad Practice Sketches
