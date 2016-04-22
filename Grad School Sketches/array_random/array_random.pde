@@ -77,7 +77,7 @@ void setup() {
   size(1280, 800);
   pixelDensity(2);
 
-  s = loadImage("shell-2.jpg");
+  s = loadImage("n.jpg");
 
   colorMode(RGB, 255, 255, 255, 255);
   background(background);

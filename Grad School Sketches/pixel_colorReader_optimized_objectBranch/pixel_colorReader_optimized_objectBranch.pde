@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 import java.awt.image.*;
 
-//secondary image classes
+//secondary image libraries
 import javax.imageio.ImageIO;
 import java.awt.color.ColorSpace;
 
