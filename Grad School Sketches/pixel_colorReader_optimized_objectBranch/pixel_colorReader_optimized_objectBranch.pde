@@ -75,7 +75,6 @@ String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 void setup() {
   size(1280, 720);
-  //pixelDensity(2);
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 24);
   monospace = createFont("Consolas.ttf", 14);
@@ -264,8 +263,8 @@ boolean isAllFalse(boolean[] array) {
 boolean isTransparent(PImage img) {
   boolean result = false;
 outerloop:
-  for (int x = 0; x < width; x++) {
-    for (int y = 0; y < height; y++) {
+  for (int x = 0; x < img.width; x++) {
+    for (int y = 0; y < img.height; y++) {
       int pixel = img.get(x, y);
       if ((pixel>>24) == 0x00) {
         result = true;
@@ -558,17 +557,17 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
 //write the new image to a file
 void reconstruct() {
   int xDim = m[0].sourceImage.width / xIncrement;
-  
+
   //int newWidth = m[0].sourceImage.width - (m[0].sourceImage.width % xIncrement);
   //int newHeight = m[0].sourceImage.height - (m[0].sourceImage.height % yIncrement);
   //println("xDim", xDim, newWidth, newHeight);
-  
+
   //PGraphics savedImage = createGraphics(newWidth, newHeight);
   PGraphics savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();
   savedImage.noFill();
-  
+
   for (int i = 0; i < m.length; i++) {    
     TileObject newTile = tx.get(newValues[i]);
 
@@ -581,7 +580,7 @@ void reconstruct() {
     PImage tileInstance = newTile.sourceImage.get(tempX, tempY, xIncrement, yIncrement);
     savedImage.image(tileInstance, xWalker, yWalker);
   }
-  
+
   savedImage.endDraw();
   savedImage.save(timestamp() + ".png");
 }

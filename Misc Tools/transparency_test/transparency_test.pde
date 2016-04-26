@@ -1,6 +1,7 @@
 
 
 void setup () {
+  size(100, 100);
   //PImage img = loadImage("/Users/EAM/GitHub/em-site/images/ae_dreams_cover.png");
   PImage img = loadImage("/Users/EAM/GitHub/em-site/images/idtheft-mockup1.jpg");
   boolean flag = isTransparent(img);
