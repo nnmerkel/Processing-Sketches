@@ -416,9 +416,10 @@ void runDissection() {
         imageNames[imageCount] = childFile.getName();
 
         //handle gifs/pngs and check for transparency
+        println(contents[i] + " isTransparent? " + isTransparent(images[imageCount]));
         if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$") && isTransparent(images[imageCount])) {
           //statements to make transparency white
-          println("found a white one");
+          println("found a transparent one at " + contents[i]);
           images[imageCount] = drawWhite(images[imageCount]);
         }
 
