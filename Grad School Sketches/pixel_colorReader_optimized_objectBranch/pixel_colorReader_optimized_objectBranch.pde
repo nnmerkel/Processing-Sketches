@@ -12,6 +12,19 @@ import java.util.Arrays;
 
 import java.awt.image.*;
 
+//package com.drew.metadata;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
+import com.drew.metadata.exif.ExifReader;
+import com.drew.metadata.iptc.IptcReader;
+
+import java.io.File;
+import java.io.IOException;
+
 //secondary image libraries
 import javax.imageio.ImageIO;
 import java.awt.color.ColorSpace;
@@ -81,65 +94,65 @@ void setup() {
   textFont(font); 
   setupGUI();
 
-  /*experimental code here
-   File file = new File("/Users/EAM/Desktop/cmyktest.jpg");
-   try {
-   Metadata metadata = ImageMetadataReader.readMetadata(file);
-   
-   //Directory directory2 = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-   //String orientation = directory2.getDescription(directory2.TAG_ORIENTATION);
-   
-   ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-   String colorSpace = directory.getDescription(ExifSubIFDDirectory.TAG_COLOR_SPACE);
-   
-   println(colorSpace);
-   printx(metadata);
-   } 
-   catch (ImageProcessingException e) {
-   println(e);
-   } 
-   catch (IOException e) {
-   println(e);
-   }
-   println(isCMYK("/Users/EAM/Desktop/cmyktest.jpg"));*/
+  //experimental code here
+  File file = new File("/Users/EAM/Desktop/cmyktest.jpg");
+  try {
+    Metadata metadata = ImageMetadataReader.readMetadata(file);
+
+    //Directory directory2 = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+    //String orientation = directory2.getDescription(directory2.TAG_ORIENTATION);
+
+    ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+    String colorSpace = directory.getDescription(ExifSubIFDDirectory.TAG_COLOR_SPACE);
+
+    println(colorSpace);
+    printx(metadata);
+  } 
+  catch (ImageProcessingException e) {
+    println(e);
+  } 
+  catch (IOException e) {
+    println(e);
+  }
+  println(isCMYK("/Users/EAM/Desktop/cmyktest.jpg"));
 }
 
 
-/*
+
 //EXPERIMENTAL: function to print image metadata
- void printx(Metadata metadata) {
- System.out.println("-------------------------------------");
- for (Directory directory : metadata.getDirectories()) {
- 
- for (Tag tag : directory.getTags()) {
- System.out.println(tag);
- }
- 
- if (directory.hasErrors()) {
- for (String error : directory.getErrors()) {
- System.err.println("ERROR: " + error);
- }
- }
- }
- }
- 
- 
- boolean isCMYK(String filename) {
- boolean result = false;
- BufferedImage img = null;
- try {
- img = ImageIO.read(new File(filename));
- }
- catch (IOException e) {
- System.out.println(e.getMessage() + ": " + filename);
- }
- if (img != null) {
- int colorSpaceType = img.getColorModel().getColorSpace().getType();
- result = colorSpaceType == ColorSpace.TYPE_CMYK;
- }
- return result;
- }
- */
+void printx(Metadata metadata) {
+  System.out.println("-------------------------------------");
+  for (Directory directory : metadata.getDirectories()) {
+
+    for (Tag tag : directory.getTags()) {
+      System.out.println(tag);
+    }
+
+    if (directory.hasErrors()) {
+      for (String error : directory.getErrors()) {
+        System.err.println("ERROR: " + error);
+      }
+    }
+  }
+}
+
+
+boolean isCMYK(String filename) {
+  boolean result = false;
+  BufferedImage img = null;
+  try {
+    img = ImageIO.read(new File(filename));
+  }
+  catch (IOException e) {
+    System.out.println(e.getMessage() + ": " + filename);
+  }
+  if (img != null) {
+    int colorSpaceType = img.getColorModel().getColorSpace().getType();
+    result = colorSpaceType == ColorSpace.TYPE_CMYK;
+  }
+  return result;
+}
+
 
 
 void draw() {
@@ -415,10 +428,8 @@ void runDissection() {
         imageNames[imageCount] = childFile.getName();
 
         //handle gifs/pngs and check for transparency
-        println(contents[i] + " isTransparent? " + isTransparent(images[imageCount]));
         if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$") && isTransparent(images[imageCount])) {
           //statements to make transparency white
-          println("found a transparent one at " + contents[i]);
           images[imageCount] = drawWhite(images[imageCount]);
         }
 
