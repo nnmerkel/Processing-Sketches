@@ -15,12 +15,12 @@ import java.awt.image.*;
 //package com.drew.metadata;
 
 import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.imaging.jpeg.JpegMetadataReader;
-import com.drew.imaging.jpeg.JpegProcessingException;
-import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
-import com.drew.metadata.exif.ExifReader;
-import com.drew.metadata.iptc.IptcReader;
+//import com.drew.imaging.ImageProcessingException;
+//import com.drew.imaging.jpeg.JpegMetadataReader;
+//import com.drew.imaging.jpeg.JpegProcessingException;
+//import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
+//import com.drew.metadata.exif.ExifReader;
+//import com.drew.metadata.iptc.IptcReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,8 +104,11 @@ void setup() {
 
     ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
     String colorSpace = directory.getDescription(ExifSubIFDDirectory.TAG_COLOR_SPACE);
+    
+    IccDirectory directory2 = metadata.getFirstDirectoryOfType(IccDirectory.class);
+    String colorSpace2 = directory2.getDescription(IccDirectory.TAG_COLOR_SPACE);
 
-    println(colorSpace);
+    println(colorSpace, colorSpace2);
     printx(metadata);
   } 
   catch (ImageProcessingException e) {
@@ -125,12 +128,12 @@ void printx(Metadata metadata) {
   for (Directory directory : metadata.getDirectories()) {
 
     for (Tag tag : directory.getTags()) {
-      System.out.println(tag);
+      println(tag);
     }
 
     if (directory.hasErrors()) {
       for (String error : directory.getErrors()) {
-        System.err.println("ERROR: " + error);
+        println("ERROR: " + error);
       }
     }
   }
@@ -178,8 +181,8 @@ void draw() {
   if (masterImageObject != null) {
     PImage masterDrawToScreen = loadImage(masterImageObject);
     int workspaceWidth = width-guiWidth;
-    float widthDiff = (float)workspaceWidth/(float)masterDrawToScreen.width;
-    float heightDiff = (float)height/(float)masterDrawToScreen.height;
+    float widthDiff = (float)workspaceWidth/masterDrawToScreen.width;
+    float heightDiff = (float)height/masterDrawToScreen.height;
     imageMode(CENTER);
 
     //dynamically size the master image
@@ -457,7 +460,10 @@ void runDissection() {
 
 
 //this function takes the brunt of the computations out of the drawing thread
+//UPDATE: there is still no logical reason why this works. I never explicitly call
+//this function anywhere, and yet when you click the button it runs, so idk
 void dissect() {
+  //if they were a moron and didnt pick a mode, make them pick one
   if (!isAllFalse(modes)) {
     thread("runDissection");
   } else {
@@ -537,7 +543,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   float tolerance = 0.0005;
 
   //if using color as the mode, we are dealing with larger ints so we can bring the tolerance up
-  if (modes[6]) tolerance = 0.1;
+  if (modes[6]) tolerance = 0.01;
 
   TileObject tempTile, otherTile;
   newValues = new int[masterArray.length];
@@ -568,12 +574,15 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
 //write the new image to a file
 void reconstruct() {
   int xDim = m[0].sourceImage.width / xIncrement;
-
+  
+  //shit works, but PGraphics gets grumpy
+  //see https://github.com/nnmerkel/Processing-Sketches/issues/14
   //int newWidth = m[0].sourceImage.width - (m[0].sourceImage.width % xIncrement);
   //int newHeight = m[0].sourceImage.height - (m[0].sourceImage.height % yIncrement);
   //println("xDim", xDim, newWidth, newHeight);
 
   //PGraphics savedImage = createGraphics(newWidth, newHeight);
+  
   PGraphics savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();

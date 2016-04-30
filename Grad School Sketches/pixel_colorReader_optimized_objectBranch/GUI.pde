@@ -134,6 +134,7 @@ void updateGUI() {
 }
 
 
+//unchecks/checks radio buttons for mode selection
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(r1)) {
     int controller = (int)theEvent.getGroup().getValue()-1;
