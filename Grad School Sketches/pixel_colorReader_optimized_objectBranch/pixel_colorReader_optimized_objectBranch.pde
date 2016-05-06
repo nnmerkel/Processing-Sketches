@@ -282,7 +282,7 @@ outerloop:
   for (int x = 0; x < img.width; x++) {
     for (int y = 0; y < img.height; y++) {
       int pixel = img.get(x, y);
-      if ((pixel>>24) == 0x00) {
+      if ((pixel >> 24) == 0x00) {
         result = true;
         break outerloop;
       } else {
@@ -368,6 +368,7 @@ void masterSelected(File selection) {
     currentCommand = COMMAND_ARRAY[WINDOW_CANCELLED];
   } else if (!selection.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")) {
     currentCommand = COMMAND_ARRAY[NOT_AN_IMAGE];
+    setLock(cp5.getController("selectSamples"), true);
     selection = null;
   } else {
     //unlock the sample selection
@@ -543,7 +544,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   float tolerance = 0.0005;
 
   //if using color as the mode, we are dealing with larger ints so we can bring the tolerance up
-  if (modes[6]) tolerance = 0.01;
+  if (modes[6]) tolerance = 1f;
 
   TileObject tempTile, otherTile;
   newValues = new int[masterArray.length];
