@@ -104,7 +104,7 @@ void setup() {
 
     ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
     String colorSpace = directory.getDescription(ExifSubIFDDirectory.TAG_COLOR_SPACE);
-    
+
     IccDirectory directory2 = metadata.getFirstDirectoryOfType(IccDirectory.class);
     String colorSpace2 = directory2.getDescription(IccDirectory.TAG_COLOR_SPACE);
 
@@ -574,8 +574,12 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
 
 //write the new image to a file
 void reconstruct() {
-  int xDim = m[0].sourceImage.width / xIncrement;
+  //load the 1px images to sub in for near-black and near-white
+  PImage black = loadImage("black.png");
+  PImage white = loadImage("white.png");
   
+  int xDim = m[0].sourceImage.width / xIncrement;
+
   //shit works, but PGraphics gets grumpy
   //see https://github.com/nnmerkel/Processing-Sketches/issues/14
   //int newWidth = m[0].sourceImage.width - (m[0].sourceImage.width % xIncrement);
@@ -583,7 +587,7 @@ void reconstruct() {
   //println("xDim", xDim, newWidth, newHeight);
 
   //PGraphics savedImage = createGraphics(newWidth, newHeight);
-  
+
   PGraphics savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();
@@ -599,6 +603,19 @@ void reconstruct() {
     int tempY = newTile.y;
 
     PImage tileInstance = newTile.sourceImage.get(tempX, tempY, xIncrement, yIncrement);
+    
+    //if the tiles is almost black, make it true black to enhance quality
+    if (newTile.avgAttribute <= 0.1) {
+      tileInstance.set(xWalker, yWalker, black);
+      println("near-black");
+    }
+    
+    //if it's almost white, make it white
+    if (newTile.avgAttribute >= 254.0) {
+      tileInstance.set(xWalker, yWalker, white);
+      println("near-white");
+    }
+    
     savedImage.image(tileInstance, xWalker, yWalker);
   }
 
