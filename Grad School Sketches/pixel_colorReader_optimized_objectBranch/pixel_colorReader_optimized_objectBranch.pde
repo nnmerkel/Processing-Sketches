@@ -70,7 +70,8 @@ final String [] COMMAND_ARRAY = new String[] {
   "Dissecting...", 
   "Please select a sampling mode to continue", 
   "Matching tiles to get the best fit...", 
-  "The file you have selected is not an image. Please select a .jpg, .png, or .gif"
+  "The file you have selected is not an image. Please select a .jpg, .png, or .gif",
+  "This folder contains no supported image types. Please select a different folder"
 };
 final static int SELECT_MASTER = 0;
 final static int SELECT_SAMPLES = 1;
@@ -83,6 +84,7 @@ final static int DISSECTING = 7;
 final static int PICK_MODE = 8;
 final static int NOW_MATCHING = 9;
 final static int NOT_AN_IMAGE = 10;
+final static int NO_VALID_FILES = 11;
 String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 
@@ -217,12 +219,8 @@ void draw() {
   //draw the tiling grid
   stroke(255, 0, 0, 80);
   noFill();
-  for (int x = 0; x < width; x += xIncrement) {
-    line(x, 0, x, height);
-  }
-  for (int y = 0; y < height; y += yIncrement) {
-    line(0, y, width, y);
-  }
+  
+  rect(50, 50, xIncrement, yIncrement);
 
   //display the proper box size and the loading gif
   if (inProgress) {
@@ -442,6 +440,11 @@ void runDissection() {
         dissectImage(images[imageCount]);
       }
       imageCount++;
+    }
+    
+    //if no file in the directory was an image, tell the user that nothing happened
+    if (imageCount == 0) {
+      currentCommand = COMMAND_ARRAY[NO_VALID_FILES];
     }
   }
   println(tx.size());
