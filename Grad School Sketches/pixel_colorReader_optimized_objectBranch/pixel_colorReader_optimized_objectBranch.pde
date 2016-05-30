@@ -608,7 +608,7 @@ void reconstruct() {
     PImage tileInstance = newTile.sourceImage.get(tempX, tempY, xIncrement, yIncrement);
     
     //if the tiles is almost black, make it true black to enhance quality
-    if (newTile.avgAttribute <= 0.1) {
+    if (newTile.avgAttribute <= 1.0) {
       tileInstance.set(xWalker, yWalker, black);
       println("near-black");
     }
