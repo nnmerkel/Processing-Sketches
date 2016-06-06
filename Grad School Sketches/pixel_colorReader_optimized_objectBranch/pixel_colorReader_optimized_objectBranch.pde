@@ -9,11 +9,7 @@ import processing.pdf.*;
 import controlP5.*;
 import java.util.Calendar;
 import java.util.Arrays;
-
 import java.awt.image.*;
-
-//package com.drew.metadata;
-
 import com.drew.imaging.ImageMetadataReader;
 //import com.drew.imaging.ImageProcessingException;
 //import com.drew.imaging.jpeg.JpegMetadataReader;
@@ -21,11 +17,8 @@ import com.drew.imaging.ImageMetadataReader;
 //import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
 //import com.drew.metadata.exif.ExifReader;
 //import com.drew.metadata.iptc.IptcReader;
-
 import java.io.File;
 import java.io.IOException;
-
-//secondary image libraries
 import javax.imageio.ImageIO;
 import java.awt.color.ColorSpace;
 
@@ -37,7 +30,6 @@ PImage master;
 PImage[] images;
 String[] imageNames;
 
-boolean savePDF = false;
 boolean inProgress = false;
 boolean selectSamples = false;
 boolean selectMaster = false;
@@ -73,6 +65,7 @@ final String [] COMMAND_ARRAY = new String[] {
   "The file you have selected is not an image. Please select a .jpg, .png, or .gif",
   "This folder contains no supported image types. Please select a different folder"
 };
+
 final static int SELECT_MASTER = 0;
 final static int SELECT_SAMPLES = 1;
 final static int SET_OPTIONS = 2;
