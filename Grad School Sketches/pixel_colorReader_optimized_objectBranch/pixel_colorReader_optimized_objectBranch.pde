@@ -90,7 +90,7 @@ void setup() {
   setupGUI();
 
   //experimental code here
-  File file = new File("/Users/EAM/Desktop/cmyktest.jpg");
+  File file = new File("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/cmyktest.jpg");
   try {
     Metadata metadata = ImageMetadataReader.readMetadata(file);
 
@@ -112,7 +112,7 @@ void setup() {
   catch (IOException e) {
     println(e);
   }
-  println(isCMYK("/Users/EAM/Desktop/cmyktest.jpg"));
+  println(isCMYK("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/cmyktest.jpg"));
 }
 
 
@@ -170,6 +170,7 @@ void draw() {
   translate(guiWidth, 0);
 
   fill(242);
+  noStroke();
   rect(0, 0, width, height);
 
   //once a master image is chosen, display it every frame
@@ -215,7 +216,7 @@ void draw() {
   
   rect(50, 50, xIncrement, yIncrement);
 
-  //display the proper box size and the loading gif
+  //display progress wheel
   if (inProgress) {
     fill(0, 100);
     rect(0, 0, width, height);
