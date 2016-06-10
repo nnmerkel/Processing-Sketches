@@ -538,7 +538,7 @@ void dissectMaster(PImage image) {
 void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   int bestIndex = 0;
   int valueCounter = 0;
-  float tolerance = 0.0005;
+  float tolerance = 0.005;
 
   //if using color as the mode, we are dealing with larger ints so we can bring the tolerance up
   if (modes[6]) tolerance = 1f;
@@ -604,13 +604,13 @@ void reconstruct() {
     //if the tiles is almost black, make it true black to enhance quality
     if (newTile.avgAttribute <= 1.0) {
       tileInstance.set(xWalker, yWalker, black);
-      println("near-black");
+      //println("near-black");
     }
     
     //if it's almost white, make it white
     if (newTile.avgAttribute >= 254.0) {
       tileInstance.set(xWalker, yWalker, white);
-      println("near-white");
+      //println("near-white");
     }
     
     savedImage.image(tileInstance, xWalker, yWalker);
