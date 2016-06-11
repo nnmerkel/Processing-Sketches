@@ -5,6 +5,7 @@ import java.io.File;
 
 
 Capture cam;
+ControlP5 cp5;
 
 ArrayList<TileObject> t;
 ArrayList<PImage> directory;
