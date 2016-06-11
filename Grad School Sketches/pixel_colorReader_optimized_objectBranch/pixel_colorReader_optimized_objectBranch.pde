@@ -38,7 +38,6 @@ boolean[] modes = new boolean[7]; //r, g, b, h, s, b, c
 float bTotal = 0;
 float mTotal = 0;
 int scaleFactor = 1;
-float[] mValues;
 int[] newValues;
 int imageCount;
 String masterImageObject;
@@ -215,6 +214,8 @@ void draw() {
   noFill();
   
   rect(50, 50, xIncrement, yIncrement);
+  
+  noStroke();
 
   //display progress wheel
   if (inProgress) {
@@ -325,8 +326,8 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
       } else if (modes[6]) {
         attr = (c1 >> 16 & 0xFF) + (c1 >> 8 & 0xFF) + (c1 & 0xFF);
       }
-      bTotal = bTotal + attr;
-      mTotal = mTotal + attr;
+      bTotal += attr;
+      mTotal += attr;
     }
   }
 }
@@ -387,7 +388,6 @@ void runDissection() {
   currentCommand = COMMAND_ARRAY[DISSECTING];
 
   //dissect the master image here, before we loop through the samples
-  //PImage master = loadImage(masterImageObject);
   dissectMaster(master);
 
   //reset the array so it can run more than once
@@ -443,6 +443,7 @@ void runDissection() {
   }
   println(tx.size());
   currentCommand = COMMAND_ARRAY[NOW_MATCHING];
+  
   //m and tx are the TileObject arrays
   findBestMatch(m, tx);
   dissect = false;
@@ -453,7 +454,7 @@ void runDissection() {
 
   long endTime = System.nanoTime();
   long duration = (endTime - startTime)/1000000;
-  println("\n" + "duration " + duration + "\n");
+  println("\n" + "duration: " + duration + "\n");
 }
 
 
