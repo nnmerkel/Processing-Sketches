@@ -7,8 +7,8 @@ import java.io.File;
 Capture cam;
 ControlP5 cp5;
 
-ArrayList<TileObject> t;
-ArrayList<PImage> directory;
+ArrayList<TileObject> t = new ArrayList<TileObject>();
+ArrayList<PImage> directory = new ArrayList<PImage>();
 
 //how often the program will resample a new still frame to source from, in milliseconds
 int interval = 10000;
@@ -21,6 +21,10 @@ float resolution;
 float bTotal;
 float mTotal;
 
+String directoryName = "";
+
+boolean directorySet;
+
 //r, g, b, h, s, b, c
 boolean[] modes = new boolean[7];
 int[] newValues;
@@ -30,6 +34,7 @@ String[] imageNames;
 
 void setup() {
   size(1080, 720);
+  cp5 = new ControlP5(this);
 
   String[] cameras = Capture.list();
 
@@ -42,21 +47,40 @@ void setup() {
   // element from the array returned by list():
   cam = new Capture(this, cameras[0]);
   cam.start();
+  setupGUI();
 }
 
 
 void draw() {
+  if (!directorySet) {
+    setDestination();
+  }
+
   if (cam.available() == true) {
     cam.read();
   }
-
-  //cut apart the current frame
-  runDissection();
 
   //image(cam, 0, 0);
   // The following does the same, and is faster when just drawing the image
   // without any additional resizing, transformations, or tint.
   set(0, 0, cam);
+
+  //cut apart the current frame
+  //runDissection();
+}
+
+
+void setDestination() {
+  
+  File f = new File("/Users/EAM/GitHub/Processing-Sketches//Grad School Sketches/video_collager/test");
+  try {
+    f.mkdir();
+  } 
+  catch(Exception e) {
+    e.printStackTrace();
+  }
+  
+  directorySet = true;
 }
 
 
@@ -171,7 +195,7 @@ void runDissection() {
   //reset resolution
   resolution = xIncrement * yIncrement;
 
-  File dir = new File(samplesPath);
+  File dir = new File(directoryName);
   if (dir.isDirectory()) {
     String[] contents = dir.list();
     printArray(contents);

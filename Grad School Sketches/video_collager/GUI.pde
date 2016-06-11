@@ -15,6 +15,7 @@ void setupGUI() {
     .setPosition(0, 0)
     .setSize(guiWidth, 20)
     .setFocus(true)
-    .setGroup("g")
+    .setAutoClear(true)
+    .setGroup(g)
     ;
 }
