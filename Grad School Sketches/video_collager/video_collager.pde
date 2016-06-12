@@ -35,9 +35,10 @@ String[] imageNames;
 void setup() {
   size(1080, 720);
   cp5 = new ControlP5(this);
+  String workingDir = System.getProperty("user.dir");
+  System.out.println("Current working directory : " + workingDir);
 
   String[] cameras = Capture.list();
-
   if (cameras.length == 0) {
     println("There are no cameras available for capture.");
     exit();
@@ -70,16 +71,19 @@ void draw() {
 }
 
 
+//create folder for sampling images
 void setDestination() {
-  
-  File f = new File("/Users/EAM/GitHub/Processing-Sketches//Grad School Sketches/video_collager/test");
+  String fullPath = "/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/video_collager/locations/" + directoryName;
+  File f = new File(fullPath);
+  //working directory is /Users/EAM
   try {
     f.mkdir();
+    println("yup");
   } 
   catch(Exception e) {
     e.printStackTrace();
   }
-  
+
   directorySet = true;
 }
 

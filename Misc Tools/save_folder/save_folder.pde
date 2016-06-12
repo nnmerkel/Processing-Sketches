@@ -1,10 +1,11 @@
 import java.io.File;
 
 void setup () {
-  File f = new File("/Users/EAM/GitHub/Processing-Sketches/Misc Tools/save_folder/new");
-  f.mkdirs();
+  File f = new File("/Users/EAM/GitHub/Processing-Sketches/Misc Tools/save_folder/new2");
+  f.mkdir();
+  println(f.mkdir());
   try {
-    if (f.mkdirs()) { 
+    if (f.mkdir()) { 
       System.out.println("Directory Created");
     } else {
       System.out.println("Directory is not created");
