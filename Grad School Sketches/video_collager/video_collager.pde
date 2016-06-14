@@ -73,7 +73,7 @@ void draw() {
 
 //create folder for sampling images
 void setDestination() {
-  String fullPath = "/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/video_collager/locations/" + directoryName;
+  String fullPath = sketchPath("" + directoryName);
   File f = new File(fullPath);
   //working directory is /Users/EAM
   try {
