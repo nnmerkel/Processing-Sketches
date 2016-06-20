@@ -21,8 +21,8 @@ CircleString [] c;
  =============================================*/
 int xtotal = 30; //number of purple arcs in the sketch
 int ttotal = 60; //number of orange arcs in the sketch
-int htotal = 0; //number of purple hairline  arcs in the sketch
-int ytotal = 0; //number of orange hairline  arcs in the sketch
+int htotal = 100; //number of purple hairline  arcs in the sketch
+int ytotal = 60; //number of orange hairline  arcs in the sketch
 int ctotal = 0;
 
 /**============================================
@@ -31,7 +31,7 @@ int ctotal = 0;
  R, G, B, opacity
  =============================================*/
 color p = color(58, 132, 182, 180);
-color o = color(58, 132, 182, 180);
+color o = color(255, 0, 0, 180);
 color f = color(255);
 
 boolean record = false;
@@ -132,4 +132,3 @@ void keyPressed() {
 String timestamp() {
   return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", Calendar.getInstance());
 }
-

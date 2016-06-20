@@ -23,7 +23,7 @@ void setup() {
    CHANGE SIZE PROPERTY TO YOUR PREFERRED CANVAS SIZE (IN PIXELS)
    NUMBERS ONLY, DO NOT APPEND UNITS
    =============================================*/
-  size(displayWidth*2, displayHeight);
+  size(1280, 720);
 }
 
 void draw() {
@@ -93,4 +93,3 @@ void keyPressed() {
     record = true;
   }
 }
-
