@@ -9,15 +9,12 @@ void setup() {
   // user colour converted to XYZ space
   float [] xyz = RGBtoXYZ(red, green, blue);
 
-  float colX = xyz[0];
-  float colY = xyz[1];
-  float colZ = xyz[2];
-
-  float [] lab = XYZtoLAB(colX, colY, colZ);
+  //target CIE-L*ab = 34.188, 8.072, -32.478
+  float [] lab = XYZtoLAB(xyz[0], xyz[1], xyz[2]);
 
   printArray(xyz);
   printArray(lab);
-  //target CIE-L*ab = 34.188, 8.072, -32.478
+  exit();
 }
 
 
@@ -34,9 +31,9 @@ float [] RGBtoXYZ(int r, int g, int b)
   if (var_B > 0.04045) var_B = pow(( var_B + 0.055) / 1.055, 2.4);
   else                 var_B = var_B / 12.92;
 
-  var_R *= 100;
-  var_G *= 100;
-  var_B *= 100;
+  var_R *= 100.0;
+  var_G *= 100.0;
+  var_B *= 100.0;
 
   //Observer. = 2°, Illuminant = D65
   float x = var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805;
@@ -50,24 +47,28 @@ float [] RGBtoXYZ(int r, int g, int b)
 
 float [] XYZtoLAB(float x, float y, float z)
 {
-  float ref_X =  95.047;
+  float ref_X =  95.047;      //Observer = 2°, Illuminant = D65
   float ref_Y = 100.000;
   float ref_Z = 108.883;
 
-  float var_X = x / ref_X;          //ref_X =  95.047   Observer= 2°, Illuminant= D65
-  float var_Y = y / ref_Y;          //ref_Y = 100.000
-  float var_Z = z / ref_Z;          //ref_Z = 108.883
+  float var_X = x / ref_X;
+  float var_Y = y / ref_Y;
+  float var_Z = z / ref_Z;
 
-  if (var_X > 0.008856) var_X = pow(var_X, (1/3));
-  else                  var_X = (7.787 * var_X) + (16 / 116);
-  if (var_Y > 0.008856) var_Y = pow(var_Y, (1/3));
-  else                  var_Y = (7.787 * var_Y) + (16 / 116);
-  if (var_Z > 0.008856) var_Z = pow(var_Z, (1/3));
-  else                  var_Z = (7.787 * var_Z) + (16 / 116);
+  println(var_X, var_Y, var_Z);
 
-  float CIE_L = (116 * var_Y) - 16;
-  float CIE_a = 500 * (var_X - var_Y);
-  float CIE_b = 200 * (var_Y - var_Z);
+  if (var_X > 0.008856) var_X = pow(var_X, 0.333333);
+  else                  var_X = (7.787 * var_X) + (16.0 / 116.0);
+  if (var_Y > 0.008856) var_Y = pow(var_Y, 0.333333);
+  else                  var_Y = (7.787 * var_Y) + (16.0 / 116.0);
+  if (var_Z > 0.008856) var_Z = pow(var_Z, 0.333333);
+  else                  var_Z = (7.787 * var_Z) + (16.0 / 116.0);
+
+  println(var_X, var_Y, var_Z);
+
+  float CIE_L = (116.0 * var_Y) - 16.0;
+  float CIE_a = 500.0 * (var_X - var_Y);
+  float CIE_b = 200.0 * (var_Y - var_Z);
 
   float [] result = new float[] {CIE_L, CIE_a, CIE_b};
   return result;
