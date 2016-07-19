@@ -324,6 +324,11 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
       } else if (modes[5]) {
         attr = brightness(c1);
       } else if (modes[6]) {
+        //the get method returns only RGB values
+        
+        //instead of evaluating the LAB of each pixel, check to see if it 
+        //is mathematically equivalent to take the average RGB value and 
+        //calculate the LAB of the entire tile
         attr = (c1 >> 16 & 0xFF) + (c1 >> 8 & 0xFF) + (c1 & 0xFF);
       }
       bTotal += attr;
