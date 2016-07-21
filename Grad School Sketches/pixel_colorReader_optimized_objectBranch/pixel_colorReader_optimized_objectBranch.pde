@@ -224,7 +224,7 @@ void draw() {
     progressWheel((width-guiWidth)/2, height/2);
   }
 
-  //draw the command line without recording it
+  //draw the command line
   fill(50);
   rect(0, height-30, width, height-30);
   fill(170);
@@ -239,20 +239,20 @@ void draw() {
 }
 
 
-//progress display function
+//progress wheel display function
 void progressWheel(int centerX, int centerY) {
   int lineCount = 10;
   pushMatrix();
   translate(centerX, centerY);
   rotate(radians((frameCount * (360/lineCount)) % 360));
   for (int j = 0; j < 360; j += 360/lineCount) {
-    stroke(((float)j/360)*255);
+    stroke(((float)j / 360) * 255);
     strokeWeight(4);
     strokeCap(ROUND);
-    float startX = cos(radians(j))*10;
-    float startY = sin(radians(j))*10;
-    float endX = cos(radians(j))*25;
-    float endY = sin(radians(j))*25;
+    float startX = cos(radians(j)) * 10;
+    float startY = sin(radians(j)) * 10;
+    float endX = cos(radians(j)) * 25;
+    float endY = sin(radians(j)) * 25;
     line(startX, startY, endX, endY);
   }
   popMatrix();

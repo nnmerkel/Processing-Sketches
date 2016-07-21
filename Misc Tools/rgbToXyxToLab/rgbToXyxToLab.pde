@@ -1,9 +1,9 @@
-//http://stackoverflow.com/questions/15408522/rgb-to-xyz-and-lab-colours-conversion
+//formula from http://stackoverflow.com/questions/15408522/rgb-to-xyz-and-lab-colours-conversion
 
 // user colour
-int red   = 56;
-int green = 79;
-int blue  = 132;
+int red   = 0;
+int green = 0;
+int blue  = 255;
 
 void setup() {
   // user colour converted to XYZ space
