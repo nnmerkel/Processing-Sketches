@@ -1,47 +1,89 @@
 //formula from http://stackoverflow.com/questions/15408522/rgb-to-xyz-and-lab-colours-conversion
 
+PImage img;
+
 // user colour
-int red   = 0;
-int green = 0;
-int blue  = 255;
+float red;
+float green;
+float blue;
 
 void setup() {
-  // user colour converted to XYZ space
-  float [] xyz = RGBtoXYZ(red, green, blue);
+  img = loadImage("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/labtest2.jpg");
+}
 
-  //target CIE-L*ab = 34.188, 8.072, -32.478
-  float [] lab = XYZtoLAB(xyz[0], xyz[1], xyz[2]);
-
-  printArray(xyz);
-  printArray(lab);
+void draw() {
+  float [] storeLABs = new float[3];
+  float [] storeRGBs = new float[3];
+  
+  for (int i = 0; i < img.width; i++) {
+    for (int j = 0; j < img.height; j++) {
+      color c = img.get(i, j);
+      
+      //split the color into its components
+      red = red(c);
+      green = green(c);
+      blue = blue(c);
+      
+      //add each RGB component into a single number
+      storeRGBs[0] += red;
+      storeRGBs[1] += green;
+      storeRGBs[2] += blue;
+      
+      //convert the color to LAB
+      float [] xyz2 = RGBtoXYZ(red, green, blue);
+      float [] result2 = XYZtoLAB(xyz2[0], xyz2[1], xyz2[2]);
+      
+      //add each LAB component into a single number
+      storeLABs[0] += result2[0];
+      storeLABs[1] += result2[1];
+      storeLABs[2] += result2[2];
+      
+      if (i == 0) {
+        println("red: " + red + " " + "green: " + green + " " + "blue: " + blue);
+        println("L: " + result2[0] + " " + "a: " + result2[1] + " " + " b: " + result2[2] + "\n");
+      }
+    }
+  }
+  
+  float resolution = img.width * img.height;
+  
+  storeRGBs[0] /= resolution;
+  storeRGBs[1] /= resolution;
+  storeRGBs[2] /= resolution;
+  
+  storeLABs[0] /= resolution;
+  storeLABs[1] /= resolution;
+  storeLABs[2] /= resolution;
+  
+  printArray(storeRGBs);
+  printArray(storeLABs);
   exit();
 }
 
 
-float [] RGBtoXYZ(int r, int g, int b)
+float [] RGBtoXYZ(float r, float g, float b)
 {
-  float var_R = r / 255.0;       //R from 0 to 255
-  float var_G = g / 255.0;       //G from 0 to 255
-  float var_B = b / 255.0;       //B from 0 to 255
+  r /= 255.0;
+  g /= 255.0;
+  b /= 255.0;
 
-  if (var_R > 0.04045) var_R = pow(( var_R + 0.055) / 1.055, 2.4);
-  else                 var_R = var_R / 12.92;
-  if (var_G > 0.04045) var_G = pow(( var_G + 0.055) / 1.055, 2.4);
-  else                 var_G = var_G / 12.92;
-  if (var_B > 0.04045) var_B = pow(( var_B + 0.055) / 1.055, 2.4);
-  else                 var_B = var_B / 12.92;
+  if (r > 0.04045) r = pow((r + 0.055) / 1.055, 2.4);
+  else             r /= 12.92;
+  if (g > 0.04045) g = pow((g + 0.055) / 1.055, 2.4);
+  else             g /= 12.92;
+  if (b > 0.04045) b = pow((b + 0.055) / 1.055, 2.4);
+  else             b /= 12.92;
 
-  var_R *= 100.0;
-  var_G *= 100.0;
-  var_B *= 100.0;
+  r *= 100.0;
+  g *= 100.0;
+  b *= 100.0;
 
   //Observer. = 2°, Illuminant = D65
-  float x = var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805;
-  float y = var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722;
-  float z = var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505;
+  float x = r * 0.4124 + g * 0.3576 + b * 0.1805;
+  float y = r * 0.2126 + g * 0.7152 + b * 0.0722;
+  float z = r * 0.0193 + g * 0.1192 + b * 0.9505;
 
-  float [] result = new float[] {x, y, z};
-  return result;
+  return new float[] {x, y, z};
 }
 
 
@@ -51,25 +93,20 @@ float [] XYZtoLAB(float x, float y, float z)
   float ref_Y = 100.000;
   float ref_Z = 108.883;
 
-  float var_X = x / ref_X;
-  float var_Y = y / ref_Y;
-  float var_Z = z / ref_Z;
+  x /= ref_X;
+  y /= ref_Y;
+  z /= ref_Z;
 
-  println(var_X, var_Y, var_Z);
+  if (x > 0.008856) x = pow(x, 0.333333);
+  else              x = (7.787 * x) + (16.0 / 116.0);
+  if (y > 0.008856) y = pow(y, 0.333333);
+  else              y = (7.787 * y) + (16.0 / 116.0);
+  if (z > 0.008856) z = pow(z, 0.333333);
+  else              z = (7.787 * z) + (16.0 / 116.0);
 
-  if (var_X > 0.008856) var_X = pow(var_X, 0.333333);
-  else                  var_X = (7.787 * var_X) + (16.0 / 116.0);
-  if (var_Y > 0.008856) var_Y = pow(var_Y, 0.333333);
-  else                  var_Y = (7.787 * var_Y) + (16.0 / 116.0);
-  if (var_Z > 0.008856) var_Z = pow(var_Z, 0.333333);
-  else                  var_Z = (7.787 * var_Z) + (16.0 / 116.0);
+  float CIE_L = (116.0 * y) - 16.0;
+  float CIE_a = 500.0 * (x - y);
+  float CIE_b = 200.0 * (y - z);
 
-  println(var_X, var_Y, var_Z);
-
-  float CIE_L = (116.0 * var_Y) - 16.0;
-  float CIE_a = 500.0 * (var_X - var_Y);
-  float CIE_b = 200.0 * (var_Y - var_Z);
-
-  float [] result = new float[] {CIE_L, CIE_a, CIE_b};
-  return result;
+  return new float[] {CIE_L, CIE_a, CIE_b};
 }
