@@ -14,54 +14,53 @@ void setup() {
 void draw() {
   float [] storeLABs = new float[3];
   float [] storeRGBs = new float[3];
-  
+
   for (int i = 0; i < img.width; i++) {
+    float [] lab = new float[3];
     for (int j = 0; j < img.height; j++) {
       color c = img.get(i, j);
-      
+
       //split the color into its components
       red = red(c);
       green = green(c);
       blue = blue(c);
-      
+
       //add each RGB component into a single number
       storeRGBs[0] += red;
       storeRGBs[1] += green;
       storeRGBs[2] += blue;
-      
+
       //convert the color to LAB
-      float [] xyz2 = RGBtoXYZ(red, green, blue);
-      float [] result2 = XYZtoLAB(xyz2[0], xyz2[1], xyz2[2]);
-      
+      lab = RGBtoLAB(red, green, blue);
+
       //add each LAB component into a single number
-      storeLABs[0] += result2[0];
-      storeLABs[1] += result2[1];
-      storeLABs[2] += result2[2];
-      
-      if (i == 0) {
-        println("red: " + red + " " + "green: " + green + " " + "blue: " + blue);
-        println("L: " + result2[0] + " " + "a: " + result2[1] + " " + " b: " + result2[2] + "\n");
-      }
+      storeLABs[0] += lab[0];
+      storeLABs[1] += lab[1];
+      storeLABs[2] += lab[2];
+    }
+    if (i % 10 == 0) {
+      println("red: " + red + " " + "green: " + green + " " + "blue: " + blue);
+      println("L: " + lab[0] + " " + "a: " + lab[1] + " " + " b: " + lab[2] + "\n");
     }
   }
-  
+
   float resolution = img.width * img.height;
-  
+
   storeRGBs[0] /= resolution;
   storeRGBs[1] /= resolution;
   storeRGBs[2] /= resolution;
-  
+
   storeLABs[0] /= resolution;
   storeLABs[1] /= resolution;
   storeLABs[2] /= resolution;
-  
+
   printArray(storeRGBs);
   printArray(storeLABs);
   exit();
 }
 
 
-float [] RGBtoXYZ(float r, float g, float b)
+float [] RGBtoLAB(float r, float g, float b)
 {
   r /= 255.0;
   g /= 255.0;
@@ -78,18 +77,13 @@ float [] RGBtoXYZ(float r, float g, float b)
   g *= 100.0;
   b *= 100.0;
 
-  //Observer. = 2°, Illuminant = D65
+  //Observer = 2°, Illuminant = D65
   float x = r * 0.4124 + g * 0.3576 + b * 0.1805;
   float y = r * 0.2126 + g * 0.7152 + b * 0.0722;
   float z = r * 0.0193 + g * 0.1192 + b * 0.9505;
 
-  return new float[] {x, y, z};
-}
-
-
-float [] XYZtoLAB(float x, float y, float z)
-{
-  float ref_X =  95.047;      //Observer = 2°, Illuminant = D65
+  //Observer = 2°, Illuminant = D65
+  float ref_X = 95.047;
   float ref_Y = 100.000;
   float ref_Z = 108.883;
 
