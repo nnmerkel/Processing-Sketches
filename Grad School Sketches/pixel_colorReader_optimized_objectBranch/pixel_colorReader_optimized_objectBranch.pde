@@ -624,6 +624,9 @@ void reconstruct() {
 
   savedImage.endDraw();
   savedImage.save(timestamp() + ".png");
+  
+  //some function here or after reconstruct that dumps the cache from the generated image. See issue #15
+  //removeCache(savedImage);
 }
 
 
