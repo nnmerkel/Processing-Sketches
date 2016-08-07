@@ -5,13 +5,17 @@
 ###Fall 2015 - Spring 2016 (Grad school sketches)
 * array_oneColor
 * array_random
+* glyph_processing
 * haufTest
+* multiPassArray
 * pixel_colorReader_function
 * pixel_colorReader_liveUpdate
 * pixel_colorReader_optimized_objectBranch
 * silkeHauf_bg
+* silkeHauf_bg_TEMP
 * table_exp
 * vger_data
+* video_collager
 
 ###In Progress
 * gen_design_sketch
@@ -23,6 +27,9 @@
 * canny_edge_detector
 * color_bitwise_example
 * log_scale_exp
+* rgbToXyzToLab
+* save_folder
+* transparency_test
 
 ###Undergrad Practice Sketches
 * array_start (array_orthogonal)
