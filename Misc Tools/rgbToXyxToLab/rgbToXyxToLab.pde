@@ -25,22 +25,23 @@ void draw() {
       green = green(c);
       blue = blue(c);
 
+      //convert the color to LAB
+      lab = RGBtoLAB(red, green, blue);
+
+      if (i % 100 == 0) {
+        println("red: " + red + " " + "green: " + green + " " + "blue: " + blue);
+        println("L: " + lab[0] + " " + "a: " + lab[1] + " " + " b: " + lab[2] + "\n");
+      }
+
       //add each RGB component into a single number
       storeRGBs[0] += red;
       storeRGBs[1] += green;
       storeRGBs[2] += blue;
 
-      //convert the color to LAB
-      lab = RGBtoLAB(red, green, blue);
-
       //add each LAB component into a single number
       storeLABs[0] += lab[0];
       storeLABs[1] += lab[1];
       storeLABs[2] += lab[2];
-    }
-    if (i % 10 == 0) {
-      println("red: " + red + " " + "green: " + green + " " + "blue: " + blue);
-      println("L: " + lab[0] + " " + "a: " + lab[1] + " " + " b: " + lab[2] + "\n");
     }
   }
 
