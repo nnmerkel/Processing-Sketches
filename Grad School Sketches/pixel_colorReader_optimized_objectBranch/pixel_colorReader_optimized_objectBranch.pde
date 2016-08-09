@@ -61,7 +61,7 @@ final String [] COMMAND_ARRAY = new String[] {
   "Dissecting...", 
   "Please select a sampling mode to continue", 
   "Matching tiles to get the best fit...", 
-  "The file you have selected is not an image. Please select a .jpg, .png, or .gif",
+  "The file you have selected is not an image. Please select a .jpg, .png, or .gif", 
   "This folder contains no supported image types. Please select a different folder"
 };
 
@@ -89,20 +89,17 @@ void setup() {
   setupGUI();
 
   //experimental code here
-  File file = new File("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/cmyktest.jpg");
+  File file = new File("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/sideways.jpg");
   try {
     Metadata metadata = ImageMetadataReader.readMetadata(file);
-
-    //Directory directory2 = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-    //String orientation = directory2.getDescription(directory2.TAG_ORIENTATION);
 
     ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
     String colorSpace = directory.getDescription(ExifSubIFDDirectory.TAG_COLOR_SPACE);
 
     IccDirectory directory2 = metadata.getFirstDirectoryOfType(IccDirectory.class);
-    String colorSpace2 = directory2.getDescription(IccDirectory.TAG_COLOR_SPACE);
+    //String colorSpace2 = directory2.getDescription(IccDirectory.TAG_COLOR_SPACE);
 
-    println(colorSpace, colorSpace2);
+    //println(colorSpace/*, colorSpace2*/);
     printx(metadata);
   } 
   catch (ImageProcessingException e) {
@@ -111,7 +108,7 @@ void setup() {
   catch (IOException e) {
     println(e);
   }
-  println(isCMYK("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/cmyktest.jpg"));
+  //println(isCMYK("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/cmyktest.jpg"));
 }
 
 
@@ -120,7 +117,6 @@ void setup() {
 void printx(Metadata metadata) {
   System.out.println("-------------------------------------");
   for (Directory directory : metadata.getDirectories()) {
-
     for (Tag tag : directory.getTags()) {
       println(tag);
     }
@@ -212,9 +208,9 @@ void draw() {
   //draw the tiling grid
   stroke(255, 0, 0, 80);
   noFill();
-  
+
   rect(50, 50, xIncrement, yIncrement);
-  
+
   noStroke();
 
   //display progress wheel
@@ -325,7 +321,7 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
         attr = brightness(c1);
       } else if (modes[6]) {
         //the get method returns only RGB values
-        
+
         //instead of evaluating the LAB of each pixel, check to see if it 
         //is mathematically equivalent to take the average RGB value and 
         //calculate the LAB of the entire tile
@@ -372,6 +368,29 @@ void masterSelected(File selection) {
     //unlock the sample selection
     setLock(cp5.getController("selectSamples"), false);
     masterImageObject = selection.getAbsolutePath();
+
+    int orientation = 1;
+    int iwidth = 0, iheight = 0;
+    try {
+      Metadata metadata = ImageMetadataReader.readMetadata(selection);
+      Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+      JpegDirectory jpegDirectory = metadata.getFirstDirectoryOfType(JpegDirectory.class);
+      orientation = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+      iwidth = jpegDirectory.getImageWidth();
+      iheight = jpegDirectory.getImageHeight();
+    } 
+    catch (MetadataException me) {
+      println("Metadata exception: Could not get orientation");
+    }
+    catch (ImageProcessingException ipe) {
+      println("ImageProcessingException exception: Could not get orientation");
+    }
+    catch (IOException ioe) {
+      println("IOException exception: Could not get orientation");
+    }
+    
+    println("orientation: " + orientation + "\n" + "iwidth: " + iwidth + "\n" + "iheight: " + iheight);
+
     master = loadImage(masterImageObject);
     //check if the master image contains transparency
     if (isTransparent(master)) {
@@ -440,7 +459,7 @@ void runDissection() {
       }
       imageCount++;
     }
-    
+
     //if no file in the directory was an image, tell the user that nothing happened
     if (imageCount == 0) {
       currentCommand = COMMAND_ARRAY[NO_VALID_FILES];
@@ -448,7 +467,7 @@ void runDissection() {
   }
   println(tx.size());
   currentCommand = COMMAND_ARRAY[NOW_MATCHING];
-  
+
   //m and tx are the TileObject arrays
   findBestMatch(m, tx);
   dissect = false;
@@ -580,7 +599,7 @@ void reconstruct() {
   //load the 1px images to sub in for near-black and near-white
   PImage black = loadImage("black.png");
   PImage white = loadImage("white.png");
-  
+
   int xDim = m[0].sourceImage.width / xIncrement;
 
   //shit works, but PGraphics gets grumpy
@@ -606,25 +625,25 @@ void reconstruct() {
     int tempY = newTile.y;
 
     PImage tileInstance = newTile.sourceImage.get(tempX, tempY, xIncrement, yIncrement);
-    
+
     //if the tiles is almost black, make it true black to enhance quality
     if (newTile.avgAttribute <= 1.0) {
       tileInstance.set(xWalker, yWalker, black);
       //println("near-black");
     }
-    
+
     //if it's almost white, make it white
     if (newTile.avgAttribute >= 254.0) {
       tileInstance.set(xWalker, yWalker, white);
       //println("near-white");
     }
-    
+
     savedImage.image(tileInstance, xWalker, yWalker);
   }
 
   savedImage.endDraw();
   savedImage.save(timestamp() + ".png");
-  
+
   //some function here or after reconstruct that dumps the cache from the generated image. See issue #15
   //removeCache(savedImage);
 }
