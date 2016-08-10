@@ -608,6 +608,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
     }
     valueCounter++;
   }
+  debug.tolerance = tolerance;
   debug.timesBroken = brokenCount;
 }
 
