@@ -9,23 +9,27 @@ import processing.pdf.*;
 import controlP5.*;
 import java.util.Calendar;
 import java.util.Arrays;
-import java.awt.image.*;
 import com.drew.imaging.ImageMetadataReader;
+
 //import com.drew.imaging.ImageProcessingException;
 //import com.drew.imaging.jpeg.JpegMetadataReader;
 //import com.drew.imaging.jpeg.JpegProcessingException;
 //import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
 //import com.drew.metadata.exif.ExifReader;
 //import com.drew.metadata.iptc.IptcReader;
-import java.io.File;
+//import java.io.File;
+
+//used for isCmyk()
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.awt.color.ColorSpace;
+import java.awt.image.*;
 
 ControlP5 cp5;
 PFont font, monospace;
 ArrayList<TileObject> tx = new ArrayList<TileObject>();
 TileObject [] m;
+Debug debug = new Debug();
 PImage master;
 PImage[] images;
 String[] imageNames;
@@ -147,7 +151,6 @@ boolean isCMYK(String filename) {
 }
 
 
-
 void draw() {
   //maintain the workflow, select files first
   //THE WORK MUST FLOW
@@ -232,6 +235,10 @@ void draw() {
   popMatrix();
 
   updateGUI();
+  
+  //these are the only debug values that need to be in draw. everything else only defined once
+  debug.tileWidth = xIncrement;
+  debug.tileHeight = yIncrement;
 }
 
 
@@ -369,6 +376,8 @@ void masterSelected(File selection) {
     setLock(cp5.getController("selectSamples"), false);
     masterImageObject = selection.getAbsolutePath();
 
+//this code only works for images taken with a camera, not images that are created on a computer
+/*
     int orientation = 1;
     int iwidth = 0, iheight = 0;
     try {
@@ -390,6 +399,7 @@ void masterSelected(File selection) {
     }
     
     println("orientation: " + orientation + "\n" + "iwidth: " + iwidth + "\n" + "iheight: " + iheight);
+*/
 
     master = loadImage(masterImageObject);
     //check if the master image contains transparency
@@ -398,6 +408,9 @@ void masterSelected(File selection) {
       master = drawWhite(master);
     }
     currentCommand = COMMAND_ARRAY[SELECT_SAMPLES];
+    
+    debug.imageWidth = master.width;
+    debug.imageHeight = master.height;
   }
 }
 
@@ -465,7 +478,6 @@ void runDissection() {
       currentCommand = COMMAND_ARRAY[NO_VALID_FILES];
     }
   }
-  println(tx.size());
   currentCommand = COMMAND_ARRAY[NOW_MATCHING];
 
   //m and tx are the TileObject arrays
@@ -477,8 +489,11 @@ void runDissection() {
   reconstruct();
 
   long endTime = System.nanoTime();
-  long duration = (endTime - startTime)/1000000;
-  println("\n" + "duration: " + duration + "\n");
+  
+  debug.sampledImageCount = imageCount;
+  debug.tileCount = tx.size();
+  debug.duration = (endTime - startTime)/1000000;
+  debug.printData();
 }
 
 
@@ -564,6 +579,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   int bestIndex = 0;
   int valueCounter = 0;
   float tolerance = 0.005;
+  int brokenCount = 0;
 
   //if using color as the mode, we are dealing with larger ints so we can bring the tolerance up
   if (modes[6]) tolerance = 1f;
@@ -586,11 +602,13 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
 
       //"close enough" -- evan merkel 2k16
       if (bestDiff <= tolerance) {
+        brokenCount++;
         break;
       }
     }
     valueCounter++;
   }
+  debug.timesBroken = brokenCount;
 }
 
 
