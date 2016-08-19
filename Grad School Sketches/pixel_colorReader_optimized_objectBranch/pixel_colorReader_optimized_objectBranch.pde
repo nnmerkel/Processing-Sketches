@@ -499,8 +499,8 @@ void runDissection() {
   if (debugMode) {
     debug.sampledImageCount = imageCount;
     debug.tileCount = tx.size();
-    debug.duration = (endTime - startTime)/1000000;
-    debug.printData();
+    debug.duration = (endTime - startTime) / 1000000;
+    debug.logData();
   }
 }
 
