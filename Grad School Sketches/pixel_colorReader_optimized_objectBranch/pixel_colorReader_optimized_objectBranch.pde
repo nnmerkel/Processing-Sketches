@@ -38,6 +38,7 @@ boolean inProgress = false;
 boolean selectSamples = false;
 boolean selectMaster = false;
 boolean dissect = false;
+boolean debugMode = true;
 boolean[] modes = new boolean[7]; //r, g, b, h, s, b, c
 float bTotal = 0;
 float mTotal = 0;
@@ -235,10 +236,12 @@ void draw() {
   popMatrix();
 
   updateGUI();
-  
-  //these are the only debug values that need to be in draw. everything else only defined once
-  debug.tileWidth = xIncrement;
-  debug.tileHeight = yIncrement;
+
+  if (debugMode) {
+    //these are the only debug values that need to be in draw. everything else only defined once
+    debug.tileWidth = xIncrement;
+    debug.tileHeight = yIncrement;
+  }
 }
 
 
@@ -376,30 +379,30 @@ void masterSelected(File selection) {
     setLock(cp5.getController("selectSamples"), false);
     masterImageObject = selection.getAbsolutePath();
 
-//this code only works for images taken with a camera, not images that are created on a computer
-/*
+    //this code only works for images taken with a camera, not images that are created on a computer
+    /*
     int orientation = 1;
-    int iwidth = 0, iheight = 0;
-    try {
-      Metadata metadata = ImageMetadataReader.readMetadata(selection);
-      Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
-      JpegDirectory jpegDirectory = metadata.getFirstDirectoryOfType(JpegDirectory.class);
-      orientation = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
-      iwidth = jpegDirectory.getImageWidth();
-      iheight = jpegDirectory.getImageHeight();
-    } 
-    catch (MetadataException me) {
-      println("Metadata exception: Could not get orientation");
-    }
-    catch (ImageProcessingException ipe) {
-      println("ImageProcessingException exception: Could not get orientation");
-    }
-    catch (IOException ioe) {
-      println("IOException exception: Could not get orientation");
-    }
-    
-    println("orientation: " + orientation + "\n" + "iwidth: " + iwidth + "\n" + "iheight: " + iheight);
-*/
+     int iwidth = 0, iheight = 0;
+     try {
+     Metadata metadata = ImageMetadataReader.readMetadata(selection);
+     Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+     JpegDirectory jpegDirectory = metadata.getFirstDirectoryOfType(JpegDirectory.class);
+     orientation = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+     iwidth = jpegDirectory.getImageWidth();
+     iheight = jpegDirectory.getImageHeight();
+     } 
+     catch (MetadataException me) {
+     println("Metadata exception: Could not get orientation");
+     }
+     catch (ImageProcessingException ipe) {
+     println("ImageProcessingException exception: Could not get orientation");
+     }
+     catch (IOException ioe) {
+     println("IOException exception: Could not get orientation");
+     }
+     
+     println("orientation: " + orientation + "\n" + "iwidth: " + iwidth + "\n" + "iheight: " + iheight);
+     */
 
     master = loadImage(masterImageObject);
     //check if the master image contains transparency
@@ -407,10 +410,13 @@ void masterSelected(File selection) {
       println("the master image contained transparency");
       master = drawWhite(master);
     }
+
     currentCommand = COMMAND_ARRAY[SELECT_SAMPLES];
-    
-    debug.imageWidth = master.width;
-    debug.imageHeight = master.height;
+
+    if (debugMode) {
+      debug.imageWidth = master.width;
+      debug.imageHeight = master.height;
+    }
   }
 }
 
@@ -489,11 +495,13 @@ void runDissection() {
   reconstruct();
 
   long endTime = System.nanoTime();
-  
-  debug.sampledImageCount = imageCount;
-  debug.tileCount = tx.size();
-  debug.duration = (endTime - startTime)/1000000;
-  debug.printData();
+
+  if (debugMode) {
+    debug.sampledImageCount = imageCount;
+    debug.tileCount = tx.size();
+    debug.duration = (endTime - startTime)/1000000;
+    debug.printData();
+  }
 }
 
 
@@ -608,8 +616,11 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
     }
     valueCounter++;
   }
-  debug.tolerance = tolerance;
-  debug.timesBroken = brokenCount;
+
+  if (debugMode) {
+    debug.tolerance = tolerance;
+    debug.timesBroken = brokenCount;
+  }
 }
 
 
@@ -623,13 +634,15 @@ void reconstruct() {
 
   //shit works, but PGraphics gets grumpy
   //see https://github.com/nnmerkel/Processing-Sketches/issues/14
-  //int newWidth = m[0].sourceImage.width - (m[0].sourceImage.width % xIncrement);
-  //int newHeight = m[0].sourceImage.height - (m[0].sourceImage.height % yIncrement);
-  //println("xDim", xDim, newWidth, newHeight);
+  //possible solution? https://github.com/processing/processing/issues/4225
 
-  //PGraphics savedImage = createGraphics(newWidth, newHeight);
+  int newWidth = m[0].sourceImage.width - (m[0].sourceImage.width % xIncrement);
+  int newHeight = m[0].sourceImage.height - (m[0].sourceImage.height % yIncrement);
+  println("xDim", xDim, newWidth, newHeight);
 
-  PGraphics savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
+  PGraphics savedImage = createGraphics(newWidth, newHeight);
+
+  //PGraphics savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();
   savedImage.noFill();
