@@ -97,19 +97,19 @@ void setupGUI() {
     .setSize(guiWidth-pad*2, itemHeight)
     .setGroup(g2);
 
-  cp5.addButton("approximateWhite")
+  cp5.addToggle("approximateWhite")
     .setPosition(pad, itemHeight*8+pad*9+buffer)
     .setSize(itemHeight, itemHeight)
     .setGroup(g2);
 
-  style("approximateWhite", itemHeight*2+13, 0);
+  style("approximateWhite", itemHeight+4, -itemHeight+2);
 
-  cp5.addButton("approximateBlack")
+  cp5.addToggle("approximateBlack")
     .setPosition(pad, itemHeight*9+pad*10+buffer)
     .setSize(itemHeight, itemHeight)
     .setGroup(g2);
 
-  style("approximateBlack", itemHeight*2+13, 0);
+  style("approximateBlack", itemHeight+4, -itemHeight+2);
 
   setLock(cp5.getController("selectSamples"), true);
   setLock(cp5.getController("xIncrement"), true);
