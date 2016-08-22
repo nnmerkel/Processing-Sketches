@@ -21,7 +21,7 @@ class Debug {
 
   void logData() {
     // checks to see if their is already a file named dataLog, and if there isn't make one
-    File f = new File(sketchPath("data/dataLogger.csv"));
+    File f = new File(sketchPath("data/dataLog.csv"));
     if (f.exists() && !f.isDirectory()) { 
       dataFile = loadTable("dataLog.csv", "header, csv");
     } else {
