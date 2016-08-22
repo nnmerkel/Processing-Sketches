@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
+import sun.awt.image.ImageFormatException;
 
 ControlP5 cp5;
 PFont font, monospace;
@@ -37,6 +38,8 @@ String[] imageNames;
 boolean inProgress = false;
 boolean selectSamples = false;
 boolean selectMaster = false;
+boolean approximateWhite = false;
+boolean approximateBlack = false;
 boolean dissect = false;
 boolean debugMode = true;
 boolean[] modes = new boolean[7]; //r, g, b, h, s, b, c
@@ -105,7 +108,7 @@ void setup() {
     //String colorSpace2 = directory2.getDescription(IccDirectory.TAG_COLOR_SPACE);
 
     //println(colorSpace/*, colorSpace2*/);
-    printx(metadata);
+    //printx(metadata);
   } 
   catch (ImageProcessingException e) {
     println(e);
@@ -114,6 +117,7 @@ void setup() {
     println(e);
   }
   //println(isCMYK("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/cmyktest.jpg"));
+  println(isCMYK("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/colortest1.jpg"));
 }
 
 
@@ -136,10 +140,11 @@ void printx(Metadata metadata) {
 
 
 boolean isCMYK(String filename) {
+  File f = new File(filename);
   boolean result = false;
   BufferedImage img = null;
   try {
-    img = ImageIO.read(new File(filename));
+    img = ImageIO.read(f);
   }
   catch (IOException e) {
     System.out.println(e.getMessage() + ": " + filename);
@@ -174,6 +179,7 @@ void draw() {
 
   //once a master image is chosen, display it every frame
   if (masterImageObject != null) {
+    //TODO: move the loading into the master selection function, so the image doesnt have to be loaded every frame
     PImage masterDrawToScreen = loadImage(masterImageObject);
     int workspaceWidth = width-guiWidth;
     float widthDiff = (float)workspaceWidth/masterDrawToScreen.width;
@@ -207,9 +213,11 @@ void draw() {
   imageMode(CORNER);
 
   //resolution must be defined for each frame
+  // TODO: do we even need this? i havent implemented scaleFactor yet, so its never used…
   resolution = xIncrement*yIncrement;
 
   //draw the tiling grid
+  // TODO: find a better way to represent this, right now it is only for aspect ratio, it should be used for scale as well
   stroke(255, 0, 0, 80);
   noFill();
 
@@ -248,13 +256,13 @@ void draw() {
 //progress wheel display function
 void progressWheel(int centerX, int centerY) {
   int lineCount = 10;
+  strokeWeight(4);
+  strokeCap(ROUND);
   pushMatrix();
   translate(centerX, centerY);
   rotate(radians((frameCount * (360/lineCount)) % 360));
   for (int j = 0; j < 360; j += 360/lineCount) {
     stroke(((float)j / 360) * 255);
-    strokeWeight(4);
-    strokeCap(ROUND);
     float startX = cos(radians(j)) * 10;
     float startY = sin(radians(j)) * 10;
     float endX = cos(radians(j)) * 25;
@@ -359,6 +367,8 @@ void folderSelected(File selection) {
     setLock(cp5.getController("saturation"), false);
     setLock(cp5.getController("brightness"), false);
     setLock(cp5.getController("color"), false);
+    setLock(cp5.getController("approximateWhite"), false);
+    setLock(cp5.getController("approximateBlack"), false);
     setLock(cp5.getController("dissect"), false);
     samplesPath = selection.getAbsolutePath();
     currentCommand = COMMAND_ARRAY[SET_OPTIONS];
@@ -403,7 +413,6 @@ void masterSelected(File selection) {
      
      println("orientation: " + orientation + "\n" + "iwidth: " + iwidth + "\n" + "iheight: " + iheight);
      */
-
     master = loadImage(masterImageObject);
     //check if the master image contains transparency
     if (isTransparent(master)) {
@@ -659,13 +668,13 @@ void reconstruct() {
     PImage tileInstance = newTile.sourceImage.get(tempX, tempY, xIncrement, yIncrement);
 
     //if the tiles is almost black, make it true black to enhance quality
-    if (newTile.avgAttribute <= 1.0) {
+    if (newTile.avgAttribute <= 1.0 && approximateBlack) {
       tileInstance.set(xWalker, yWalker, black);
       //println("near-black");
     }
 
     //if it's almost white, make it white
-    if (newTile.avgAttribute >= 254.0) {
+    if (newTile.avgAttribute >= 254.0 && approximateWhite) {
       tileInstance.set(xWalker, yWalker, white);
       //println("near-white");
     }

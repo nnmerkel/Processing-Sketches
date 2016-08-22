@@ -1,6 +1,7 @@
 int guiWidth = 220;
 int pad = 10;
 int itemHeight = 20;
+//buffer is so the title of the group is visible
 int buffer = itemHeight+pad+10;
 color col = color(127, 200, 22);
 color bgActive = color(0, 94, 33);
@@ -89,13 +90,26 @@ void setupGUI() {
     .addItem("saturation", 5)
     .addItem("brightness", 6)
     .addItem("color", 7)
-    .setGroup(g2)
-    ;
+    .setGroup(g2);
 
   cp5.addButton("dissect")
     .setPosition(pad, 600)
     .setSize(guiWidth-pad*2, itemHeight)
     .setGroup(g2);
+
+  cp5.addButton("approximateWhite")
+    .setPosition(pad, itemHeight*8+pad*9+buffer)
+    .setSize(itemHeight, itemHeight)
+    .setGroup(g2);
+
+  style("approximateWhite", itemHeight*2+13, 0);
+
+  cp5.addButton("approximateBlack")
+    .setPosition(pad, itemHeight*9+pad*10+buffer)
+    .setSize(itemHeight, itemHeight)
+    .setGroup(g2);
+
+  style("approximateBlack", itemHeight*2+13, 0);
 
   setLock(cp5.getController("selectSamples"), true);
   setLock(cp5.getController("xIncrement"), true);
@@ -108,6 +122,8 @@ void setupGUI() {
   setLock(cp5.getController("saturation"), true);
   setLock(cp5.getController("brightness"), true);
   setLock(cp5.getController("color"), true);
+  setLock(cp5.getController("approximateWhite"), true);
+  setLock(cp5.getController("approximateBlack"), true);
   setLock(cp5.getController("dissect"), true);
 }
 
@@ -128,7 +144,7 @@ void setLock(Controller theController, boolean theValue) {
 
 //redraw gui, but mostly just for the DPI readouts
 void updateGUI() {
-  float print = (float)round((xIncrement/300f) * 100f) / 100f;
+  float print = (float)round((xIncrement/300f) * 1000f) / 1000f;
   dpi[0].setText("Screen: " + xIncrement + "px");
   dpi[1].setText("Print: " + print + " in.");
 }
@@ -137,8 +153,16 @@ void updateGUI() {
 //unchecks/checks radio buttons for mode selection
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(r1)) {
-    int controller = (int)theEvent.getGroup().getValue()-1;
+    int controller = (int)theEvent.getGroup().getValue() - 1;
     Arrays.fill(modes, false);
     modes[controller] = true;
   }
+}
+
+
+//move the labels around
+void style(String theControllerName, int x, int y) {
+  Controller c = cp5.getController(theControllerName);
+  c.getCaptionLabel().getStyle().setMarginTop(y);
+  c.getCaptionLabel().getStyle().setMarginLeft(x);
 }
