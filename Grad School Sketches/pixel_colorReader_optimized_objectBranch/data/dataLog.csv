@@ -1,1 +1,4 @@
 Master image width,Master image height,Master image resolution,Sampled image count,Tile size,Tile count,Tolerance,Times broken,Duration
+800,800,640000,23,4x21,968346,1.0,7600,6037
+800,800,640000,23,4x21,968346,0.005,7600,6705
+2560,1220,3123200,26,19x4,218400,0.005,35025,14627
