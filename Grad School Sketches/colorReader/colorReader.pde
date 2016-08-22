@@ -639,9 +639,8 @@ void reconstruct() {
 
   int xDim = m[0].sourceImage.width / xIncrement;
 
-  //shit works, but PGraphics gets grumpy
-  //see https://github.com/nnmerkel/Processing-Sketches/issues/14
-  //possible solution? https://github.com/processing/processing/issues/4225
+  //shit works, but PGraphics gets grumpy when combined with pixelDensity(2)
+  //hes got the same problem, keep checking back https://github.com/processing/processing/issues/4225
 
   int newWidth = m[0].sourceImage.width - (m[0].sourceImage.width % xIncrement);
   int newHeight = m[0].sourceImage.height - (m[0].sourceImage.height % yIncrement);
@@ -668,11 +667,13 @@ void reconstruct() {
     //if the tiles is almost black, make it true black to enhance quality
     if (newTile.avgAttribute <= 1.0 && approximateBlack) {
       tileInstance.set(xWalker, yWalker, black);
+      println("black");
     }
 
     //if it's almost white, make it white
     if (newTile.avgAttribute >= 254.0 && approximateWhite) {
       tileInstance.set(xWalker, yWalker, white);
+      println("white");
     }
 
     savedImage.image(tileInstance, xWalker, yWalker);
