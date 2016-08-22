@@ -89,6 +89,7 @@ String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
 
 void setup() {
   size(1280, 720);
+  debug.logData();
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 24);
   monospace = createFont("Consolas.ttf", 14);
@@ -178,8 +179,6 @@ void draw() {
 
   //once a master image is chosen, display it every frame
   if (master != null) {
-    //TODO: move the loading into the master selection function, so the image doesnt have to be loaded every frame
-    //PImage masterDrawToScreen = loadImage(masterImageObject);
     int workspaceWidth = width-guiWidth;
     float widthDiff = (float)workspaceWidth/master.width;
     float heightDiff = (float)height/master.height;
@@ -213,7 +212,7 @@ void draw() {
 
   //resolution must be defined for each frame
   // TODO: do we even need this? i havent implemented scaleFactor yet, so its never used…
-  resolution = xIncrement*yIncrement;
+  //resolution = xIncrement*yIncrement;
 
   //draw the tiling grid
   // TODO: find a better way to represent this, right now it is only for aspect ratio, it should be used for scale as well
@@ -669,13 +668,11 @@ void reconstruct() {
     //if the tiles is almost black, make it true black to enhance quality
     if (newTile.avgAttribute <= 1.0 && approximateBlack) {
       tileInstance.set(xWalker, yWalker, black);
-      //println("near-black");
     }
 
     //if it's almost white, make it white
     if (newTile.avgAttribute >= 254.0 && approximateWhite) {
       tileInstance.set(xWalker, yWalker, white);
-      //println("near-white");
     }
 
     savedImage.image(tileInstance, xWalker, yWalker);
