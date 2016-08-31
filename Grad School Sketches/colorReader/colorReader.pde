@@ -319,7 +319,7 @@ File getLatestFilefromDir(String path) {
   if (files == null || files.length == 0) {
     return null;
   }
-  
+
   //iterate across them all, checking for:
   //1. if it is indeed the most recent file
   //2. if it's an image (not a hidden file, directory, or .pde)
@@ -327,8 +327,8 @@ File getLatestFilefromDir(String path) {
   File lastModifiedFile = files[0];
   for (int i = 1; i < files.length; i++) {
     if (lastModifiedFile.lastModified() < files[i].lastModified()                                   //1
-        && lastModifiedFile.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")    //2
-        && lastModifiedFile.getName().charAt(0) != '.') {                                           //3
+      && lastModifiedFile.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")    //2
+      && lastModifiedFile.getName().charAt(0) != '.') {                                           //3
       lastModifiedFile = files[i];
     }
   }
@@ -551,25 +551,22 @@ void dissect() {
     if (recursive) {
       int recursionIndex = 1;
       int recursionLimit = 4;
-      println("made it inside the if statement");
       while (recursionIndex <= recursionLimit) {
-        println("made it inside the while statement");
-        //get the last image and set it as the master object
-        master = loadImage();
-
-        //get new dynamic values as increments, but keep them between 2 and 100
-        //only create new increments after the first pass
+        
+        //preserve these values until after the first pass
+        //TODO: these values need to synchronize with runDissection
         if (recursionIndex != 1) {
+          
+          //get the last image and set it as the master object
+          master = loadImage(getLatestFilefromDir(sketchPath()).getName());
           xIncrement = constrain(xIncrement + (int)random(-10, 10), 2, 100);
           yIncrement = constrain(yIncrement + (int)random(-10, 10), 2, 100);
         }
 
         println("set some new increments " + xIncrement, yIncrement);
 
-        //runDissection();
         thread("runDissection");
 
-        println("round " + recursionIndex);
         recursionIndex++;
       }
     }
