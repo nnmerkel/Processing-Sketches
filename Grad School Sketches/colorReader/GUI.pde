@@ -77,6 +77,11 @@ void setupGUI() {
     .setColorValue(170)
     .setFont(createFont("UniversLTStd-UltraCn.otf", 16));
 
+  if (displayDensity() == 2) {
+    dpi[0].setFont(createFont("UniversLTStd-UltraCn.otf", 9));
+    dpi[1].setFont(createFont("UniversLTStd-UltraCn.otf", 9));
+  }
+
   r1 = cp5.addRadioButton("radioButton")
     .setPosition(pad, itemHeight*5+pad*6+buffer)
     .setSize(itemHeight, itemHeight)
@@ -90,11 +95,6 @@ void setupGUI() {
     .addItem("saturation", 5)
     .addItem("brightness", 6)
     .addItem("color", 7)
-    .setGroup(g2);
-
-  cp5.addButton("dissect")
-    .setPosition(pad, 600)
-    .setSize(guiWidth-pad*2, itemHeight)
     .setGroup(g2);
 
   cp5.addToggle("approximateWhite")
@@ -111,6 +111,16 @@ void setupGUI() {
 
   style("approximateBlack", itemHeight+4, -itemHeight+2);
 
+  cp5.addToggle("recursive")
+    .setPosition(pad, itemHeight*10+pad*11+buffer)
+    .setSize(itemHeight, itemHeight)
+    .setGroup(g2);
+
+  cp5.addButton("dissect")
+    .setPosition(pad, 600)
+    .setSize(guiWidth-pad*2, itemHeight)
+    .setGroup(g2);
+
   setLock(cp5.getController("selectSamples"), true);
   setLock(cp5.getController("xIncrement"), true);
   setLock(cp5.getController("yIncrement"), true);
@@ -124,6 +134,7 @@ void setupGUI() {
   setLock(cp5.getController("color"), true);
   setLock(cp5.getController("approximateWhite"), true);
   setLock(cp5.getController("approximateBlack"), true);
+  setLock(cp5.getController("recursive"), true);
   setLock(cp5.getController("dissect"), true);
 }
 

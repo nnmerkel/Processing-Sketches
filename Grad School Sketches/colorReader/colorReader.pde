@@ -1,7 +1,7 @@
 /** Photomosaic generator
- *  
- *  
- *  
+ * 
+ * TODO: add recursive mode, where you can choose the image rendered as a the master image for a set number of iterations, with different tile size
+ * TODO: experiment with decrementing the tiling loops, maybe the results will pull from the other side of the image
  */
 
 //----------------libraries
@@ -31,8 +31,6 @@ ArrayList<TileObject> tx = new ArrayList<TileObject>();
 TileObject [] m;
 Debug debug = new Debug();
 PImage master;
-PImage[] images;
-String[] imageNames;
 
 boolean inProgress = false;
 boolean selectSamples = false;
@@ -41,6 +39,7 @@ boolean approximateWhite = false;
 boolean approximateBlack = false;
 boolean dissect = false;
 boolean debugMode = true;
+boolean recursive = false;
 boolean[] modes = new boolean[7]; //r, g, b, h, s, b, c
 float bTotal = 0;
 float mTotal = 0;
@@ -57,7 +56,7 @@ int tileCount;
 int resolution;
 
 //--------------------command array strings and constants
-final String [] COMMAND_ARRAY = new String[] {
+final String [] COMMAND = new String[] {
   "Please select the image from which you want to make a photomosaic", 
   "Please select a folder of sample images", 
   "Set options for the photomosaic", 
@@ -84,12 +83,12 @@ final static int PICK_MODE = 8;
 final static int NOW_MATCHING = 9;
 final static int NOT_AN_IMAGE = 10;
 final static int NO_VALID_FILES = 11;
-String currentCommand = COMMAND_ARRAY[SELECT_MASTER];
+String currentCommand = COMMAND[SELECT_MASTER];
 
 
 void setup() {
   size(1280, 720);
-  debug.logData();
+  //pixelDensity(displayDensity());
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 24);
   monospace = createFont("Consolas.ttf", 14);
@@ -312,6 +311,31 @@ PImage drawWhite(PImage img) {
 }
 
 
+//returns the last saved image from the sketchpath, used for the recursive algorithm
+File getLatestFilefromDir(String path) {
+  //load all files into an array
+  File dir = new File(path);
+  File[] files = dir.listFiles();
+  if (files == null || files.length == 0) {
+    return null;
+  }
+  
+  //iterate across them all, checking for:
+  //1. if it is indeed the most recent file
+  //2. if it's an image (not a hidden file, directory, or .pde)
+  //3. if it's not a hidden file (TODO: possible duplicate)
+  File lastModifiedFile = files[0];
+  for (int i = 1; i < files.length; i++) {
+    if (lastModifiedFile.lastModified() < files[i].lastModified()                                   //1
+        && lastModifiedFile.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")    //2
+        && lastModifiedFile.getName().charAt(0) != '.') {                                           //3
+      lastModifiedFile = files[i];
+    }
+  }
+  return lastModifiedFile;
+}
+
+
 //the actual counting function
 void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY) {
   resolution = tileSizeX * tileSizeY;
@@ -353,7 +377,7 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
 //callback function for the samples
 void folderSelected(File selection) {
   if (selection == null) {
-    currentCommand = COMMAND_ARRAY[WINDOW_CANCELLED];
+    currentCommand = COMMAND[WINDOW_CANCELLED];
   } else {
     //unlock the rest of the buttons
     setLock(cp5.getController("xIncrement"), false);
@@ -367,9 +391,10 @@ void folderSelected(File selection) {
     setLock(cp5.getController("color"), false);
     setLock(cp5.getController("approximateWhite"), false);
     setLock(cp5.getController("approximateBlack"), false);
+    setLock(cp5.getController("recursive"), false);
     setLock(cp5.getController("dissect"), false);
     samplesPath = selection.getAbsolutePath();
-    currentCommand = COMMAND_ARRAY[SET_OPTIONS];
+    currentCommand = COMMAND[SET_OPTIONS];
   }
 }
 
@@ -377,9 +402,9 @@ void folderSelected(File selection) {
 //callback function for the master image selection
 void masterSelected(File selection) {
   if (selection == null) {
-    currentCommand = COMMAND_ARRAY[WINDOW_CANCELLED];
+    currentCommand = COMMAND[WINDOW_CANCELLED];
   } else if (!selection.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")) {
-    currentCommand = COMMAND_ARRAY[NOT_AN_IMAGE];
+    currentCommand = COMMAND[NOT_AN_IMAGE];
     setLock(cp5.getController("selectSamples"), true);
     selection = null;
   } else {
@@ -408,9 +433,11 @@ void masterSelected(File selection) {
      catch (IOException ioe) {
      println("IOException exception: Could not get orientation");
      }
+     //catch (InvocationTargetException ite) {}
      
      println("orientation: " + orientation + "\n" + "iwidth: " + iwidth + "\n" + "iheight: " + iheight);
      */
+
     master = loadImage(masterImageObject);
     //check if the master image contains transparency
     if (isTransparent(master)) {
@@ -418,7 +445,7 @@ void masterSelected(File selection) {
       master = drawWhite(master);
     }
 
-    currentCommand = COMMAND_ARRAY[SELECT_SAMPLES];
+    currentCommand = COMMAND[SELECT_SAMPLES];
 
     if (debugMode) {
       debug.imageWidth = master.width;
@@ -429,13 +456,13 @@ void masterSelected(File selection) {
 
 
 //cut apart each image in the folder
-void runDissection() {
+synchronized void runDissection() {
   //variable to time this function
   long startTime = System.nanoTime();
 
   inProgress = true;
 
-  currentCommand = COMMAND_ARRAY[DISSECTING];
+  currentCommand = COMMAND[DISSECTING];
 
   //dissect the master image here, before we loop through the samples
   dissectMaster(master);
@@ -457,8 +484,8 @@ void runDissection() {
     printArray(contents);
 
     int directoryLength = contents.length;
-    images = new PImage[directoryLength];
-    imageNames = new String[directoryLength];
+    PImage[] images = new PImage[directoryLength];
+    String[] imageNames = new String[directoryLength];
     for (int i = 0; i < directoryLength; i++) {
 
       // 1. skip hidden files, if contained in the samples folder
@@ -488,16 +515,16 @@ void runDissection() {
 
     //if no file in the directory was an image, tell the user that nothing happened
     if (imageCount == 0) {
-      currentCommand = COMMAND_ARRAY[NO_VALID_FILES];
+      currentCommand = COMMAND[NO_VALID_FILES];
     }
   }
-  currentCommand = COMMAND_ARRAY[NOW_MATCHING];
+  currentCommand = COMMAND[NOW_MATCHING];
 
   //m and tx are the TileObject arrays
   findBestMatch(m, tx);
   dissect = false;
   inProgress = false;
-  currentCommand = COMMAND_ARRAY[COMPLETE];
+  currentCommand = COMMAND[COMPLETE];
 
   reconstruct();
 
@@ -513,14 +540,41 @@ void runDissection() {
 
 
 //this function takes the brunt of the computations out of the drawing thread
-//UPDATE: there is still no logical reason why this works. I never explicitly call
-//this function anywhere, and yet when you click the button it runs, so idk
 void dissect() {
   //if they were a moron and didnt pick a mode, make them pick one
   if (!isAllFalse(modes)) {
-    thread("runDissection");
+    //thread("runDissection");
+
+    //recursion statements here
+    //the idea is that with recursion, the dissection will run several times using 
+    //the last-dissected image as the master for the new generation
+    if (recursive) {
+      int recursionIndex = 1;
+      int recursionLimit = 4;
+      println("made it inside the if statement");
+      while (recursionIndex <= recursionLimit) {
+        println("made it inside the while statement");
+        //get the last image and set it as the master object
+        master = loadImage();
+
+        //get new dynamic values as increments, but keep them between 2 and 100
+        //only create new increments after the first pass
+        if (recursionIndex != 1) {
+          xIncrement = constrain(xIncrement + (int)random(-10, 10), 2, 100);
+          yIncrement = constrain(yIncrement + (int)random(-10, 10), 2, 100);
+        }
+
+        println("set some new increments " + xIncrement, yIncrement);
+
+        //runDissection();
+        thread("runDissection");
+
+        println("round " + recursionIndex);
+        recursionIndex++;
+      }
+    }
   } else {
-    currentCommand = COMMAND_ARRAY[PICK_MODE];
+    currentCommand = COMMAND[PICK_MODE];
   }
 }
 
@@ -690,7 +744,7 @@ void reconstruct() {
 void keyReleased() {
   if (key == 's' || key == 'S') {
     saveFrame("frame_####.png");
-    currentCommand = COMMAND_ARRAY[FRAME_SAVED];
+    currentCommand = COMMAND[FRAME_SAVED];
   }
 }
 
