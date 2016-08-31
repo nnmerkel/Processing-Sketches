@@ -8,7 +8,7 @@ float green;
 float blue;
 
 void setup() {
-  img = loadImage("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/pixel_colorReader_optimized_objectBranch/colortest/labtest2.jpg");
+  img = loadImage("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/colorReader/colortest/labtest2.jpg");
 }
 
 void draw() {
@@ -21,9 +21,9 @@ void draw() {
       color c = img.get(i, j);
 
       //split the color into its components
-      red = red(c);
-      green = green(c);
-      blue = blue(c);
+      red = c >> 16 & 0xFF;
+      green = c >> 8 & 0xFF;
+      blue = c & 0xFF;
 
       //convert the color to LAB
       lab = RGBtoLAB(red, green, blue);
@@ -79,14 +79,24 @@ float [] RGBtoLAB(float r, float g, float b)
   b *= 100.0;
 
   //Observer = 2°, Illuminant = D65
-  float x = r * 0.4124 + g * 0.3576 + b * 0.1805;
-  float y = r * 0.2126 + g * 0.7152 + b * 0.0722;
-  float z = r * 0.0193 + g * 0.1192 + b * 0.9505;
+  //float x = r * 0.4124 + g * 0.3576 + b * 0.1805;
+  //float y = r * 0.2126 + g * 0.7152 + b * 0.0722;
+  //float z = r * 0.0193 + g * 0.1192 + b * 0.9505;
+  
+  //Observer = 2°, Illuminant = D50
+  float x = r * 0.4360747 + g * 0.3850649 + b * 0.1430804;
+  float y = r * 0.2225045 + g * 0.7168786 + b * 0.0606169;
+  float z = r * 0.0139322 + g * 0.0971045 + b * 0.7141733;
 
   //Observer = 2°, Illuminant = D65
-  float ref_X = 95.047;
+  //float ref_X = 95.047;
+  //float ref_Y = 100.000;
+  //float ref_Z = 108.883;
+
+  //Observer = 2°, Illuminant = D50
+  float ref_X = 96.422;
   float ref_Y = 100.000;
-  float ref_Z = 108.883;
+  float ref_Z = 82.521;
 
   x /= ref_X;
   y /= ref_Y;
@@ -104,4 +114,9 @@ float [] RGBtoLAB(float r, float g, float b)
   float CIE_b = 200.0 * (y - z);
 
   return new float[] {CIE_L, CIE_a, CIE_b};
+}
+
+
+float deltaE(float l1, float a1, float b1, float l2, float a2, float b2) {
+  return sqrt(( (l1 - l2) * (l1 - l2) ) + ( (a1 - a2) * (a1 - a2) ) + ( (b1 - b2) * (b1 - b2) ));
 }
