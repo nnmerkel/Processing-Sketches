@@ -338,7 +338,6 @@ File getLatestFilefromDir(String path) {
 
 //the actual counting function
 void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY) {
-  resolution = tileSizeX * tileSizeY;
   bTotal = 0;
   mTotal = 0;
   int tileX = tileSizeX + startX;
@@ -475,13 +474,12 @@ synchronized void runDissection() {
   //set scaling options AFTER the master image has been dissected, and reset resolution
   xIncrement *= scaleFactor;
   yIncrement *= scaleFactor;
-  resolution = xIncrement * yIncrement;
 
   //find directory of sample images NOTE: it doesn't work well if the folder is in "data"
   File dir = new File(samplesPath);
   if (dir.isDirectory()) {
     String[] contents = dir.list();
-    printArray(contents);
+    //printArray(contents);
 
     int directoryLength = contents.length;
     PImage[] images = new PImage[directoryLength];
@@ -506,7 +504,7 @@ synchronized void runDissection() {
           images[imageCount] = drawWhite(images[imageCount]);
         }
 
-        println(imageCount, contents[i]);
+        //println(imageCount, contents[i]);
         currentCommand = imageCount + " " + contents[i];
         dissectImage(images[imageCount]);
       }
@@ -543,6 +541,7 @@ synchronized void runDissection() {
 void dissect() {
   //if they were a moron and didnt pick a mode, make them pick one
   if (!isAllFalse(modes)) {
+    //TODO: uncomment this once the syncing is figured out
     //thread("runDissection");
 
     //recursion statements here
@@ -550,12 +549,15 @@ void dissect() {
     //the last-dissected image as the master for the new generation
     if (recursive) {
       int recursionIndex = 1;
+      
+      //TODO: make this a changeable variable
       int recursionLimit = 4;
+      
       while (recursionIndex <= recursionLimit) {
         
         //preserve these values until after the first pass
         //TODO: these values need to synchronize with runDissection
-        if (recursionIndex != 1) {
+        if (recursionIndex > 1) {
           
           //get the last image and set it as the master object
           master = loadImage(getLatestFilefromDir(sketchPath()).getName());
