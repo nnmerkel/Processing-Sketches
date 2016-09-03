@@ -9,7 +9,7 @@ void setup() {
   size(800, 800);
   //String[] fontList = PFont.list();
   //printArray(fontList);
-  font = createFont(fontName, 800, true);
+  font = createFont(fontName, 30);
 
   //33-126
   /*
@@ -23,11 +23,10 @@ void setup() {
    printGlyph(c);
    }
    */
-  //exit();
 
   char c = (char)65;
   int size = 800;
-
+  textSize(size);
   if (textWidth(c) <= width - padding) {
     size *= (width / textWidth(c));
     size -= padding;
