@@ -323,15 +323,16 @@ File getLatestFilefromDir(String path) {
   //iterate across them all, checking for:
   //1. if it is indeed the most recent file
   //2. if it's an image (not a hidden file, directory, or .pde)
-  //3. if it's not a hidden file (TODO: possible duplicate)
   File lastModifiedFile = files[0];
   for (int i = 1; i < files.length; i++) {
-    if (lastModifiedFile.lastModified() < files[i].lastModified()                                   //1
-      && lastModifiedFile.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")    //2
-      && lastModifiedFile.getName().charAt(0) != '.') {                                           //3
+    if (lastModifiedFile.lastModified() < files[i].lastModified()                                 //1
+      && lastModifiedFile.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")
+      && lastModifiedFile.getName().charAt(0) != '.')   //2
+      {
       lastModifiedFile = files[i];
     }
   }
+  
   return lastModifiedFile;
 }
 
@@ -553,21 +554,28 @@ void dissect() {
       //TODO: make this a changeable variable
       int recursionLimit = 4;
       
+      //TODO: add !null condition for the saving function in reconstruct
       while (recursionIndex <= recursionLimit) {
+        /*
+        for (int i = 0; i < 10000; i++) {
+        if (master != null) break;
+        }
+        */
         
         //preserve these values until after the first pass
         //TODO: these values need to synchronize with runDissection
         if (recursionIndex > 1) {
           
           //get the last image and set it as the master object
-          master = loadImage(getLatestFilefromDir(sketchPath()).getName());
+          //master = loadImage(getLatestFilefromDir(sketchPath()).getName());
+          println(master);
           xIncrement = constrain(xIncrement + (int)random(-10, 10), 2, 100);
           yIncrement = constrain(yIncrement + (int)random(-10, 10), 2, 100);
         }
 
         println("set some new increments " + xIncrement, yIncrement);
 
-        thread("runDissection");
+        runDissection();
 
         recursionIndex++;
       }
