@@ -306,7 +306,6 @@ PImage drawWhite(PImage img) {
   p.image(img, 0, 0);
   p.endDraw();
   img = p;
-  println("made one white");
   return img;
 }
 
@@ -322,17 +321,18 @@ File getLatestFilefromDir(String path) {
 
   //iterate across them all, checking for:
   //1. if it is indeed the most recent file
-  //2. if it's an image (not a hidden file, directory, or .pde)
+  //2. if it's an image (not a directory, .pde, or anything else)
+  //3. if it's not a hidden file e.g. .DS_Store on macs
   File lastModifiedFile = files[0];
   for (int i = 1; i < files.length; i++) {
     if (lastModifiedFile.lastModified() < files[i].lastModified()                                 //1
-      && lastModifiedFile.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")
-      && lastModifiedFile.getName().charAt(0) != '.')   //2
-      {
+      && lastModifiedFile.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")    //2
+      && lastModifiedFile.getName().charAt(0) != '.')                                             //3
+    {
       lastModifiedFile = files[i];
     }
   }
-  
+
   return lastModifiedFile;
 }
 
@@ -475,14 +475,20 @@ synchronized void runDissection() {
   //set scaling options AFTER the master image has been dissected, and reset resolution
   xIncrement *= scaleFactor;
   yIncrement *= scaleFactor;
+  
+  //resolution needs to be set here so that it has a value
+  resolution = xIncrement * yIncrement;
 
   //find directory of sample images NOTE: it doesn't work well if the folder is in "data"
   File dir = new File(samplesPath);
   if (dir.isDirectory()) {
     String[] contents = dir.list();
-    //printArray(contents);
 
     int directoryLength = contents.length;
+    
+    //limit number of images that can be loaded
+    if (directoryLength > 100) directoryLength = 100;
+    
     PImage[] images = new PImage[directoryLength];
     String[] imageNames = new String[directoryLength];
     for (int i = 0; i < directoryLength; i++) {
@@ -522,10 +528,11 @@ synchronized void runDissection() {
   //m and tx are the TileObject arrays
   findBestMatch(m, tx);
   dissect = false;
-  inProgress = false;
-  currentCommand = COMMAND[COMPLETE];
 
   reconstruct();
+  
+  inProgress = false;
+  currentCommand = COMMAND[COMPLETE];
 
   long endTime = System.nanoTime();
 
@@ -542,40 +549,48 @@ synchronized void runDissection() {
 void dissect() {
   //if they were a moron and didnt pick a mode, make them pick one
   if (!isAllFalse(modes)) {
-    //TODO: uncomment this once the syncing is figured out
-    //thread("runDissection");
+    thread("runDissection");
 
     //recursion statements here
     //the idea is that with recursion, the dissection will run several times using 
     //the last-dissected image as the master for the new generation
     if (recursive) {
       int recursionIndex = 1;
-      
+
       //TODO: make this a changeable variable
       int recursionLimit = 4;
-      
+
       //TODO: add !null condition for the saving function in reconstruct
       while (recursionIndex <= recursionLimit) {
+        //the intent here is to give PGraphics enough time to save out the image 
+        //before the threads picks it up and reads it as null
+        //*infomercial voice* THERE HAS TO BE A BETTER WAY
         /*
         for (int i = 0; i < 10000; i++) {
-        if (master != null) break;
-        }
-        */
-        
+         if (master != null) break;
+         }
+         */
+
         //preserve these values until after the first pass
         //TODO: these values need to synchronize with runDissection
         if (recursionIndex > 1) {
-          
+
           //get the last image and set it as the master object
           //master = loadImage(getLatestFilefromDir(sketchPath()).getName());
-          println(master);
           xIncrement = constrain(xIncrement + (int)random(-10, 10), 2, 100);
           yIncrement = constrain(yIncrement + (int)random(-10, 10), 2, 100);
+          println("set some new increments " + xIncrement, yIncrement);
         }
 
-        println("set some new increments " + xIncrement, yIncrement);
+        thread("runDissection");
 
-        runDissection();
+        try {
+          Thread.sleep(5000);
+          println("sleeping...");
+        } 
+        catch(InterruptedException e) {
+          e.printStackTrace();
+        }
 
         recursionIndex++;
       }
@@ -610,6 +625,7 @@ void dissectImage(PImage image) {
     //count each tile
     tile(image, tempX, tempY, xIncrement, yIncrement);
     bTotal /= resolution;
+    println(bTotal, resolution);
     float tempAvg = bTotal;
     tx.add(new TileObject(tempX, tempY, tempSource, tempAvg, tempIndex));
 
@@ -705,7 +721,6 @@ void reconstruct() {
 
   int newWidth = m[0].sourceImage.width - (m[0].sourceImage.width % xIncrement);
   int newHeight = m[0].sourceImage.height - (m[0].sourceImage.height % yIncrement);
-  println("xDim", xDim, newWidth, newHeight);
 
   PGraphics savedImage = createGraphics(newWidth, newHeight);
 
