@@ -9,6 +9,7 @@ import processing.pdf.*;
 import controlP5.*;
 import java.util.Calendar;
 import java.util.Arrays;
+import java.io.FilenameFilter;
 import com.drew.imaging.ImageMetadataReader;
 
 //import com.drew.imaging.ImageProcessingException;
@@ -312,27 +313,31 @@ PImage drawWhite(PImage img) {
 
 //returns the last saved image from the sketchpath, used for the recursive algorithm
 File getLatestFilefromDir(String path) {
-  //load all files into an array
+  //get the directory
   File dir = new File(path);
-  File[] files = dir.listFiles();
+  
+  //only load images into the sorting array
+  File[] files = dir.listFiles(new FilenameFilter() {
+    //must stay public in order to work
+    public boolean accept(File dir, String name) {
+      return name.toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$");
+    }
+  });
+
   if (files == null || files.length == 0) {
     return null;
   }
 
-  //iterate across them all, checking for:
-  //1. if it is indeed the most recent file
-  //2. if it's an image (not a directory, .pde, or anything else)
-  //3. if it's not a hidden file e.g. .DS_Store on macs
+  //evaluate which is latest file
   File lastModifiedFile = files[0];
   for (int i = 1; i < files.length; i++) {
-    if (lastModifiedFile.lastModified() < files[i].lastModified()                                 //1
-      && lastModifiedFile.getAbsolutePath().toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$")    //2
-      && lastModifiedFile.getName().charAt(0) != '.')                                             //3
-    {
+    if (lastModifiedFile.lastModified() < files[i].lastModified()) {
+      //the ol switcharoo
       lastModifiedFile = files[i];
     }
   }
-
+  
+  //println(lastModifiedFile.getName());
   return lastModifiedFile;
 }
 
@@ -361,10 +366,7 @@ void tile(PImage theImage, int startX, int startY, int tileSizeX, int tileSizeY)
         attr = brightness(c1);
       } else if (modes[6]) {
         //the get method returns only RGB values
-
-        //instead of evaluating the LAB of each pixel, check to see if it 
-        //is mathematically equivalent to take the average RGB value and 
-        //calculate the LAB of the entire tile
+        //TODO: this returns the addition of all 3 channels, up to 765.0
         attr = (c1 >> 16 & 0xFF) + (c1 >> 8 & 0xFF) + (c1 & 0xFF);
       }
       bTotal += attr;
@@ -475,7 +477,7 @@ synchronized void runDissection() {
   //set scaling options AFTER the master image has been dissected, and reset resolution
   xIncrement *= scaleFactor;
   yIncrement *= scaleFactor;
-  
+
   //resolution needs to be set here so that it has a value
   resolution = xIncrement * yIncrement;
 
@@ -485,10 +487,10 @@ synchronized void runDissection() {
     String[] contents = dir.list();
 
     int directoryLength = contents.length;
-    
+
     //limit number of images that can be loaded
-    if (directoryLength > 100) directoryLength = 100;
-    
+    //if (directoryLength > 100) directoryLength = 100;
+
     PImage[] images = new PImage[directoryLength];
     String[] imageNames = new String[directoryLength];
     for (int i = 0; i < directoryLength; i++) {
@@ -530,7 +532,7 @@ synchronized void runDissection() {
   dissect = false;
 
   reconstruct();
-  
+
   inProgress = false;
   currentCommand = COMMAND[COMPLETE];
 
@@ -549,7 +551,8 @@ synchronized void runDissection() {
 void dissect() {
   //if they were a moron and didnt pick a mode, make them pick one
   if (!isAllFalse(modes)) {
-    thread("runDissection");
+    runDissection();
+    //thread("runDissection");
 
     //recursion statements here
     //the idea is that with recursion, the dissection will run several times using 
@@ -576,7 +579,7 @@ void dissect() {
         if (recursionIndex > 1) {
 
           //get the last image and set it as the master object
-          //master = loadImage(getLatestFilefromDir(sketchPath()).getName());
+          master = loadImage(getLatestFilefromDir(sketchPath()).getName());
           xIncrement = constrain(xIncrement + (int)random(-10, 10), 2, 100);
           yIncrement = constrain(yIncrement + (int)random(-10, 10), 2, 100);
           println("set some new increments " + xIncrement, yIncrement);
@@ -619,13 +622,13 @@ void dissectImage(PImage image) {
     PImage tempSource = image;
     int tempIndex = tileIndex;
 
-    //the average brightness starts at 0
-    bTotal = 0;
-
     //count each tile
     tile(image, tempX, tempY, xIncrement, yIncrement);
     bTotal /= resolution;
-    println(bTotal, resolution);
+
+    //TODO: if you leave the program running and dissect multiple times, the results are different each time. switching modes breaks the program
+    //println(bTotal);
+
     float tempAvg = bTotal;
     tx.add(new TileObject(tempX, tempY, tempSource, tempAvg, tempIndex));
 
@@ -650,9 +653,6 @@ void dissectMaster(PImage image) {
     int tempY = int(i / xDim) * yIncrement;
     PImage tempSource = image;
     int tempIndex = tileIndex;
-
-    //the average brightness starts at 0
-    mTotal = 0;
 
     //count each tile
     tile(image, tempX, tempY, xIncrement, yIncrement);
@@ -757,9 +757,6 @@ void reconstruct() {
 
   savedImage.endDraw();
   savedImage.save(timestamp() + ".png");
-
-  //some function here or after reconstruct that dumps the cache from the generated image. See issue #15
-  //removeCache(savedImage);
 }
 
 
