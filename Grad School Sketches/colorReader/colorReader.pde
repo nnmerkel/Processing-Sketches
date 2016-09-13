@@ -2,6 +2,7 @@
  * 
  * TODO: add recursive mode, where you can choose the image rendered as a the master image for a set number of iterations, with different tile size
  * TODO: experiment with decrementing the tiling loops, maybe the results will pull from the other side of the image
+ * TODO: add internet search functionality, that way users don't have to have a huge folder of images
  */
 
 //----------------libraries
@@ -315,16 +316,18 @@ PImage drawWhite(PImage img) {
 File getLatestFilefromDir(String path) {
   //get the directory
   File dir = new File(path);
-  
+
   //only load images into the sorting array
   File[] files = dir.listFiles(new FilenameFilter() {
     //must stay public in order to work
     public boolean accept(File dir, String name) {
       return name.toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$");
     }
-  });
+  }
+  );
 
   if (files == null || files.length == 0) {
+    // TODO: find all null returns and add console messages for the user
     return null;
   }
 
@@ -336,7 +339,7 @@ File getLatestFilefromDir(String path) {
       lastModifiedFile = files[i];
     }
   }
-  
+
   //println(lastModifiedFile.getName());
   return lastModifiedFile;
 }
@@ -554,7 +557,6 @@ void dissect() {
     runDissection();
     //thread("runDissection");
 
-    //recursion statements here
     //the idea is that with recursion, the dissection will run several times using 
     //the last-dissected image as the master for the new generation
     if (recursive) {
@@ -564,36 +566,28 @@ void dissect() {
       int recursionLimit = 4;
 
       //TODO: add !null condition for the saving function in reconstruct
-      while (recursionIndex <= recursionLimit) {
+      while (recursionIndex < recursionLimit) {
         //the intent here is to give PGraphics enough time to save out the image 
         //before the threads picks it up and reads it as null
-        //*infomercial voice* THERE HAS TO BE A BETTER WAY
-        /*
-        for (int i = 0; i < 10000; i++) {
-         if (master != null) break;
-         }
-         */
 
         //preserve these values until after the first pass
-        //TODO: these values need to synchronize with runDissection
-        if (recursionIndex > 1) {
-
-          //get the last image and set it as the master object
-          master = loadImage(getLatestFilefromDir(sketchPath()).getName());
-          xIncrement = constrain(xIncrement + (int)random(-10, 10), 2, 100);
-          yIncrement = constrain(yIncrement + (int)random(-10, 10), 2, 100);
-          println("set some new increments " + xIncrement, yIncrement);
-        }
+        //TODO: ensure 100% that the new master is saved before the next thread runs
+        //get the last image and set it as the master object
+        master = loadImage(getLatestFilefromDir(sketchPath()).getName());
+        xIncrement = constrain(xIncrement + (int)random(-10, 10), 2, 100);
+        yIncrement = constrain(yIncrement + (int)random(-10, 10), 2, 100);
 
         thread("runDissection");
-
+        
+        /*
         try {
-          Thread.sleep(5000);
-          println("sleeping...");
-        } 
-        catch(InterruptedException e) {
-          e.printStackTrace();
-        }
+         Thread.sleep(5000);
+         println("sleeping...");
+         } 
+         catch(InterruptedException e) {
+         e.printStackTrace();
+         }
+         */
 
         recursionIndex++;
       }

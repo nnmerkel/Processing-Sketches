@@ -116,6 +116,8 @@ void setupGUI() {
     .setSize(itemHeight, itemHeight)
     .setGroup(g2);
 
+  style("recursive", itemHeight+4, -itemHeight+2);
+
   cp5.addButton("dissect")
     .setPosition(pad, 600)
     .setSize(guiWidth-pad*2, itemHeight)
