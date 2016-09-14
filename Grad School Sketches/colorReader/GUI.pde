@@ -3,9 +3,13 @@ int pad = 10;
 int itemHeight = 20;
 //buffer is so the title of the group is visible
 int buffer = itemHeight+pad+10;
-color col = color(127, 200, 22);
-color bgActive = color(0, 94, 33);
-color fgActive = color(0, 187, 66);
+
+//col is hover and active state for buttons
+color col = #72D3F5;
+
+color fgActive = #00B4D6;
+
+color bgActive = #00678B;
 
 RadioButton r1;
 
@@ -25,15 +29,16 @@ void setupGUI() {
     .addGroup("g2")
     .setPosition(0, 0)
     .setWidth(guiWidth)
-    .setBackgroundColor(color(220))
-    .setBackgroundHeight(height)
+    .setBackgroundColor(color(55))
+    //TODO: for some reason, this pane needs to be heaight+1 or there is a 1px line underneath it
+    .setBackgroundHeight(height+1)
     .setLabel("Menu");
 
   t = cp5.addTextlabel("menu")
     .setText("Main Menu")
     .setPosition(pad, pad)
     .setGroup(g2)
-    .setColorValue(70)
+    .setColorValue(160)
     .setFont(font);
 
   cp5.addButton("selectMaster")
@@ -52,17 +57,21 @@ void setupGUI() {
 
   cp5.addSlider("xIncrement")
     .setPosition(pad, itemHeight*2+pad*3+buffer)
-    .setSize(guiWidth-pad*2, itemHeight)
+    .setSize(guiWidth-pad*2, itemHeight-7)
     .setRange(2, 100)
     .setGroup(g2)
     .setValue(50);
 
+  style("xIncrement", -60, 0);
+
   cp5.addSlider("yIncrement")
     .setPosition(pad, itemHeight*3+pad*4+buffer)
-    .setSize(guiWidth-pad*2, itemHeight)
+    .setSize(guiWidth-pad*2, itemHeight-7)
     .setRange(2, 100)
     .setGroup(g2)
     .setValue(50);
+
+  style("yIncrement", -60, 0);
 
   dpi[0] = cp5.addTextlabel("screen")
     .setPosition(pad, itemHeight*4+pad*5+buffer)
@@ -77,17 +86,19 @@ void setupGUI() {
     .setColorValue(170)
     .setFont(createFont("UniversLTStd-UltraCn.otf", 16));
 
+  /*
   if (displayDensity() == 2) {
-    dpi[0].setFont(createFont("UniversLTStd-UltraCn.otf", 9));
-    dpi[1].setFont(createFont("UniversLTStd-UltraCn.otf", 9));
-  }
+   dpi[0].setFont(createFont("UniversLTStd-UltraCn.otf", 9));
+   dpi[1].setFont(createFont("UniversLTStd-UltraCn.otf", 9));
+   }
+   */
 
   r1 = cp5.addRadioButton("radioButton")
     .setPosition(pad, itemHeight*5+pad*6+buffer)
     .setSize(itemHeight, itemHeight)
     .setItemsPerRow(3)
     .setSpacingColumn(50)
-    .setSpacingRow(4)
+    .setSpacingRow(pad)
     .addItem("red", 1)
     .addItem("green", 2)
     .addItem("blue", 3)
@@ -117,6 +128,16 @@ void setupGUI() {
     .setGroup(g2);
 
   style("recursive", itemHeight+4, -itemHeight+2);
+  
+  cp5.addSlider("recursionLimit")
+    .setPosition(pad, itemHeight*11+pad*12+buffer)
+    .setSize(guiWidth-pad*2, itemHeight-7)
+    .setRange(2, 10)
+    .setGroup(g2)
+    .setValue(4)
+    .setNumberOfTickMarks(9);
+
+  style("recursionLimit", -60, 0);
 
   cp5.addButton("dissect")
     .setPosition(pad, 600)
@@ -137,6 +158,7 @@ void setupGUI() {
   setLock(cp5.getController("approximateWhite"), true);
   setLock(cp5.getController("approximateBlack"), true);
   setLock(cp5.getController("recursive"), true);
+  setLock(cp5.getController("recursionLimit"), true);
   setLock(cp5.getController("dissect"), true);
 }
 
@@ -145,7 +167,7 @@ void setLock(Controller theController, boolean theValue) {
   if (theValue) {
     theController.setLock(theValue);
     theController.setColorBackground(color(170));
-    theController.setColorForeground(color(50));
+    theController.setColorForeground(color(40));
   } else {
     theController.setLock(theValue);
     theController.setColorBackground(bgActive);
