@@ -499,14 +499,11 @@ synchronized void runDissection() {
     
     String[] contents = new String[directoryLength];
     PImage[] images = new PImage[directoryLength];
-    
-    for (int i = 0; i < files.length; i++) {
-      contents[i] = files[i].getName();
-    }
 
     //limit number of images that can be loaded
     //if (directoryLength > 100) directoryLength = 100;
     for (int i = 0; i < directoryLength; i++) {
+      contents[i] = files[i].getName();
 
       // 1. skip hidden files, if contained in the samples folder
       // 2. skip the master file, if contained in the samples folder
@@ -560,37 +557,25 @@ synchronized void runDissection() {
 void dissect() {
   //if they were a moron and didnt pick a mode, make them pick one
   if (!isAllFalse(modes)) {
-    //runDissection();
-    thread("runDissection");
+    //TODO: recursion works very well when the functions are not threaded, but obviously threading looks cooler
+    runDissection();
+    //thread("runDissection");
 
     //the idea is that with recursion, the dissection will run several times using 
     //the last-dissected image as the master for the new generation
     if (recursive) {
       int recursionIndex = 1;
 
-      //TODO: add !null condition for the saving function in reconstruct
       while (recursionIndex < recursionLimit) {
-        //the intent here is to give PGraphics enough time to save out the image 
-        //before the threads picks it up and reads it as null
 
         //preserve these values until after the first pass
-        //TODO: ensure 100% that the new master is saved before the next thread runs
         //get the last image and set it as the master object
         master = loadImage(getLatestFilefromDir(sketchPath()).getName());
-        xIncrement = constrain(xIncrement + (int)random(-10, 10), 2, 100);
-        yIncrement = constrain(yIncrement + (int)random(-10, 10), 2, 100);
-
-        thread("runDissection");
-
-        /*
-        try {
-         Thread.sleep(5000);
-         println("sleeping...");
-         } 
-         catch(InterruptedException e) {
-         e.printStackTrace();
-         }
-         */
+        xIncrement = constrain(xIncrement + (int)random(-20, 20), 2, 100);
+        yIncrement = constrain(yIncrement + (int)random(-20, 20), 2, 100);
+                
+        runDissection();
+        //thread("runDissection");
 
         recursionIndex++;
       }
