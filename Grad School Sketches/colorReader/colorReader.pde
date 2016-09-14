@@ -60,6 +60,7 @@ int tileCount;
 int resolution;
 
 //--------------------command array strings and constants
+int commandLineHeight = 30;
 final String [] COMMAND = new String[] {
   "Please select the image from which you want to make a photomosaic", 
   "Please select a folder of sample images", 
@@ -195,20 +196,20 @@ void draw() {
       float smallerDiff = widthDiff - heightDiff;
       if (smallerDiff > 0) {
         //needs to be fit to height
-        image(master, workspaceWidth/2, height/2, master.width * heightDiff, master.height * heightDiff);
+        image(master, workspaceWidth/2, (height-commandLineHeight)/2, master.width * heightDiff, master.height * heightDiff);
       } else {
         //needs to be fit to width
-        image(master, workspaceWidth/2, height/2, master.width * widthDiff, master.height * widthDiff);
+        image(master, workspaceWidth/2, (height-commandLineHeight)/2, master.width * widthDiff, master.height * widthDiff);
       }
     } else if (widthDiff < 1) {
       //wider than window
-      image(master, workspaceWidth/2, height/2, master.width * widthDiff, master.height * widthDiff);
+      image(master, workspaceWidth/2, (height-commandLineHeight)/2, master.width * widthDiff, master.height * widthDiff);
     } else if (heightDiff < 1) {
       //taller than window
-      image(master, workspaceWidth/2, height/2, master.width * heightDiff, master.height * heightDiff);
+      image(master, workspaceWidth/2, (height-commandLineHeight)/2, master.width * heightDiff, master.height * heightDiff);
     } else {
       //if it fits already
-      image(master, workspaceWidth/2, height/2);
+      image(master, workspaceWidth/2, (height-commandLineHeight)/2);
     }
   }
 
@@ -236,11 +237,11 @@ void draw() {
 
   //draw the command line
   fill(55);
-  rect(0, height-30, width, height-30);
+  rect(0, height-commandLineHeight, width, height-commandLineHeight);
   fill(190);
   textFont(monospace);
   textSize(12);
-  text(">  " + currentCommand, 10, height-10);
+  text(">  " + currentCommand, 10, height-(commandLineHeight/3));
   noFill();
 
   popMatrix();
@@ -505,7 +506,7 @@ synchronized void runDissection() {
     PImage[] images = new PImage[directoryLength];
 
     //limit number of images that can be loaded
-    if (setMemLimit) directoryLength = memLimit;
+    if (setMemLimit && memLimit > directoryLength) directoryLength = memLimit;
     
     for (int i = 0; i < directoryLength; i++) {
       contents[i] = files[i].getName();
