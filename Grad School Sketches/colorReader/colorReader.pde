@@ -1,6 +1,5 @@
 /** Photomosaic generator
  * 
- * TODO: add recursive mode, where you can choose the image rendered as a the master image for a set number of iterations, with different tile size
  * TODO: experiment with decrementing the tiling loops, maybe the results will pull from the other side of the image
  * TODO: add internet search functionality, that way users don't have to have a huge folder of images
  */
@@ -48,6 +47,7 @@ float mTotal = 0;
 int scaleFactor = 1;
 int[] newValues;
 int imageCount;
+int recursionLimit = 4;
 String masterImageObject;
 String samplesPath;
 
@@ -89,7 +89,8 @@ String currentCommand = COMMAND[SELECT_MASTER];
 
 
 void setup() {
-  size(1280, 720);
+  //size(1280, 720);
+  fullScreen();
   //pixelDensity(displayDensity());
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 24);
@@ -118,7 +119,7 @@ void setup() {
     println(e);
   }
   //println(isCMYK("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/colorReader/colortest/cmyktest.jpg"));
-  println(isCMYK("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/colorReader/colortest/colortest1.jpg"));
+  //println(isCMYK("/Users/EAM/GitHub/Processing-Sketches/Grad School Sketches/colorReader/colortest/colortest1.jpg"));
 }
 
 
@@ -186,6 +187,7 @@ void draw() {
     imageMode(CENTER);
 
     //dynamically size the master image
+    //TODO: instead of multiple image() calls, set vars inside the if statements and call image() once at the very end
     if (widthDiff < 1 && heightDiff < 1) {
       //wider and taller than window
       float smallerDiff = widthDiff - heightDiff;
@@ -211,9 +213,8 @@ void draw() {
   //reset the image drawing mode
   imageMode(CORNER);
 
-  //resolution must be defined for each frame
-  // TODO: do we even need this? i havent implemented scaleFactor yet, so its never used…
-  //resolution = xIncrement*yIncrement;
+  //resolution needs to be set here so that it has a value
+  resolution = xIncrement * yIncrement;
 
   //draw the tiling grid
   // TODO: find a better way to represent this, right now it is only for aspect ratio, it should be used for scale as well
@@ -232,9 +233,9 @@ void draw() {
   }
 
   //draw the command line
-  fill(50);
+  fill(55);
   rect(0, height-30, width, height-30);
-  fill(170);
+  fill(190);
   textFont(monospace);
   textSize(12);
   text(">  " + currentCommand, 10, height-10);
@@ -397,6 +398,7 @@ void folderSelected(File selection) {
     setLock(cp5.getController("approximateWhite"), false);
     setLock(cp5.getController("approximateBlack"), false);
     setLock(cp5.getController("recursive"), false);
+    setLock(cp5.getController("recursionLimit"), false);
     setLock(cp5.getController("dissect"), false);
     samplesPath = selection.getAbsolutePath();
     currentCommand = COMMAND[SET_OPTIONS];
@@ -481,42 +483,46 @@ synchronized void runDissection() {
   xIncrement *= scaleFactor;
   yIncrement *= scaleFactor;
 
-  //resolution needs to be set here so that it has a value
-  resolution = xIncrement * yIncrement;
-
-  //find directory of sample images NOTE: it doesn't work well if the folder is in "data"
+  //find directory of sample images TODO: it doesn't work well if the folder is in "data"
   File dir = new File(samplesPath);
   if (dir.isDirectory()) {
-    String[] contents = dir.list();
-
-    int directoryLength = contents.length;
+    //only load images into the sorting array
+    File[] files = dir.listFiles(new FilenameFilter() {
+      //must stay public in order to work
+      public boolean accept(File dir, String name) {
+        return name.toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$");
+      }
+    }
+    );
+    
+    int directoryLength = files.length;
+    
+    String[] contents = new String[directoryLength];
+    PImage[] images = new PImage[directoryLength];
+    
+    for (int i = 0; i < files.length; i++) {
+      contents[i] = files[i].getName();
+    }
 
     //limit number of images that can be loaded
     //if (directoryLength > 100) directoryLength = 100;
-
-    PImage[] images = new PImage[directoryLength];
-    String[] imageNames = new String[directoryLength];
     for (int i = 0; i < directoryLength; i++) {
 
       // 1. skip hidden files, if contained in the samples folder
-      // 2. also skip non-image format files
-      // 3. skip the master file, if contained in the samples folder
+      // 2. skip the master file, if contained in the samples folder
       if (contents[i].charAt(0) == '.' ||                                       //1
-        !contents[i].toLowerCase().matches("^.*\\.(jpg|gif|png|jpeg)$") ||      //2
-        masterImageObject.endsWith(contents[i])) {                              //3
+        masterImageObject.endsWith(contents[i])) {                              //2
         continue;
       } else {
         File childFile = new File(dir, contents[i]);
+        //TODO: we may need a destroy method to flush the cache for the images array after each image is looked at
         images[imageCount] = loadImage(childFile.getPath());
-        imageNames[imageCount] = childFile.getName();
 
         //handle gifs/pngs and check for transparency
         if (contents[i].toLowerCase().matches("^.*\\.(gif|png)$") && isTransparent(images[imageCount])) {
-          //statements to make transparency white
           images[imageCount] = drawWhite(images[imageCount]);
         }
 
-        //println(imageCount, contents[i]);
         currentCommand = imageCount + " " + contents[i];
         dissectImage(images[imageCount]);
       }
@@ -554,16 +560,13 @@ synchronized void runDissection() {
 void dissect() {
   //if they were a moron and didnt pick a mode, make them pick one
   if (!isAllFalse(modes)) {
-    runDissection();
-    //thread("runDissection");
+    //runDissection();
+    thread("runDissection");
 
     //the idea is that with recursion, the dissection will run several times using 
     //the last-dissected image as the master for the new generation
     if (recursive) {
       int recursionIndex = 1;
-
-      //TODO: make this a changeable variable
-      int recursionLimit = 4;
 
       //TODO: add !null condition for the saving function in reconstruct
       while (recursionIndex < recursionLimit) {
@@ -578,7 +581,7 @@ void dissect() {
         yIncrement = constrain(yIncrement + (int)random(-10, 10), 2, 100);
 
         thread("runDissection");
-        
+
         /*
         try {
          Thread.sleep(5000);
