@@ -1,4 +1,4 @@
-int guiWidth = 220;
+int guiWidth = 300;
 int pad = 10;
 int itemHeight = 20;
 //buffer is so the title of the group is visible
@@ -73,15 +73,31 @@ void setupGUI() {
 
   style("yIncrement", -60, 0);
 
-  dpi[0] = cp5.addTextlabel("screen")
+  cp5.addToggle("setMemLimit")
     .setPosition(pad, itemHeight*4+pad*5+buffer)
+    .setSize(itemHeight, itemHeight)
+    .setGroup(g2);
+
+  style("setMemLimit", itemHeight+4, -itemHeight+2);
+
+  cp5.addSlider("memLimit")
+    .setPosition(pad, itemHeight*5+pad*6+buffer)
+    .setSize(guiWidth-pad*2, itemHeight-7)
+    .setRange(50, 100)
+    .setGroup(g2)
+    .setValue(80);
+
+  style("memLimit", -50, 0);
+
+  dpi[0] = cp5.addTextlabel("screen")
+    .setPosition(pad, itemHeight*6+pad*7+buffer)
     .setGroup(g2)
     .setColorValue(170)
     .setSize(10, 10)
     .setFont(createFont("UniversLTStd-UltraCn.otf", 16));
 
   dpi[1] = cp5.addTextlabel("print")
-    .setPosition((guiWidth/2)+pad, itemHeight*4+pad*5+buffer)
+    .setPosition((guiWidth/2)+pad, itemHeight*6+pad*7+buffer)
     .setGroup(g2)
     .setColorValue(170)
     .setFont(createFont("UniversLTStd-UltraCn.otf", 16));
@@ -94,7 +110,7 @@ void setupGUI() {
    */
 
   r1 = cp5.addRadioButton("radioButton")
-    .setPosition(pad, itemHeight*5+pad*6+buffer)
+    .setPosition(pad, itemHeight*7+pad*8+buffer)
     .setSize(itemHeight, itemHeight)
     .setItemsPerRow(3)
     .setSpacingColumn(50)
@@ -109,35 +125,35 @@ void setupGUI() {
     .setGroup(g2);
 
   cp5.addToggle("approximateWhite")
-    .setPosition(pad, itemHeight*8+pad*9+buffer)
+    .setPosition(pad, itemHeight*10+pad*11+buffer)
     .setSize(itemHeight, itemHeight)
     .setGroup(g2);
 
   style("approximateWhite", itemHeight+4, -itemHeight+2);
 
   cp5.addToggle("approximateBlack")
-    .setPosition(pad, itemHeight*9+pad*10+buffer)
+    .setPosition(pad, itemHeight*11+pad*12+buffer)
     .setSize(itemHeight, itemHeight)
     .setGroup(g2);
 
   style("approximateBlack", itemHeight+4, -itemHeight+2);
 
   cp5.addToggle("recursive")
-    .setPosition(pad, itemHeight*10+pad*11+buffer)
+    .setPosition(pad, itemHeight*12+pad*13+buffer)
     .setSize(itemHeight, itemHeight)
     .setGroup(g2);
 
   style("recursive", itemHeight+4, -itemHeight+2);
-  
+
   cp5.addSlider("recursionLimit")
-    .setPosition(pad, itemHeight*11+pad*12+buffer)
+    .setPosition(pad, itemHeight*13+pad*14+buffer)
     .setSize(guiWidth-pad*2, itemHeight-7)
     .setRange(2, 10)
     .setGroup(g2)
     .setValue(4)
     .setNumberOfTickMarks(9);
 
-  style("recursionLimit", -60, 0);
+  style("recursionLimit", -70, 0);
 
   cp5.addButton("dissect")
     .setPosition(pad, 600)
@@ -147,7 +163,8 @@ void setupGUI() {
   setLock(cp5.getController("selectSamples"), true);
   setLock(cp5.getController("xIncrement"), true);
   setLock(cp5.getController("yIncrement"), true);
-  setLock(cp5.getController("dissect"), true);
+  setLock(cp5.getController("setMemLimit"), true);
+  setLock(cp5.getController("memLimit"), true);
   setLock(cp5.getController("red"), true);
   setLock(cp5.getController("green"), true);
   setLock(cp5.getController("blue"), true);

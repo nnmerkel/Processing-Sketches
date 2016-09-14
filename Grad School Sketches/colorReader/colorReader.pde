@@ -41,6 +41,7 @@ boolean approximateBlack = false;
 boolean dissect = false;
 boolean debugMode = true;
 boolean recursive = false;
+boolean setMemLimit = false;
 boolean[] modes = new boolean[7]; //r, g, b, h, s, b, c
 float bTotal = 0;
 float mTotal = 0;
@@ -48,6 +49,7 @@ int scaleFactor = 1;
 int[] newValues;
 int imageCount;
 int recursionLimit = 4;
+int memLimit = 80;
 String masterImageObject;
 String samplesPath;
 
@@ -388,6 +390,8 @@ void folderSelected(File selection) {
     //unlock the rest of the buttons
     setLock(cp5.getController("xIncrement"), false);
     setLock(cp5.getController("yIncrement"), false);
+    setLock(cp5.getController("setMemLimit"), false);
+    setLock(cp5.getController("memLimit"), false);
     setLock(cp5.getController("red"), false);
     setLock(cp5.getController("green"), false);
     setLock(cp5.getController("blue"), false);
@@ -501,7 +505,8 @@ synchronized void runDissection() {
     PImage[] images = new PImage[directoryLength];
 
     //limit number of images that can be loaded
-    //if (directoryLength > 100) directoryLength = 100;
+    if (setMemLimit) directoryLength = memLimit;
+    
     for (int i = 0; i < directoryLength; i++) {
       contents[i] = files[i].getName();
 
