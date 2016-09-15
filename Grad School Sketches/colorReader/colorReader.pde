@@ -482,11 +482,12 @@ synchronized void runDissection() {
   //reset the array so it can run more than once
   //also reset the ArrayList so tiles don't get reused and memory gets freed up
   imageCount = 0;
-  tx.clear();
+  tx.clear(); //tx = new ArrayList<TileObject>();
 
   //set scaling options AFTER the master image has been dissected, and reset resolution
   xIncrement *= scaleFactor;
   yIncrement *= scaleFactor;
+  resolution = xIncrement * yIncrement;
 
   //find directory of sample images TODO: it doesn't work well if the folder is in "data"
   File dir = new File(samplesPath);
@@ -510,7 +511,9 @@ synchronized void runDissection() {
     
     for (int i = 0; i < directoryLength; i++) {
       contents[i] = files[i].getName();
-
+    }
+    
+    for (int i = 0; i < directoryLength; i++) {
       // 1. skip hidden files, if contained in the samples folder
       // 2. skip the master file, if contained in the samples folder
       if (contents[i].charAt(0) == '.' ||                                       //1
@@ -556,6 +559,7 @@ synchronized void runDissection() {
     debug.duration = (endTime - startTime) / 1000000;
     debug.logData();
   }
+  //master = loadImage(getLatestFilefromDir(sketchPath()).getName());
 }
 
 
@@ -579,6 +583,7 @@ void dissect() {
         master = loadImage(getLatestFilefromDir(sketchPath()).getName());
         xIncrement = constrain(xIncrement + (int)random(-20, 20), 2, 100);
         yIncrement = constrain(yIncrement + (int)random(-20, 20), 2, 100);
+        resolution = xIncrement * yIncrement;
                 
         runDissection();
         //thread("runDissection");
@@ -645,6 +650,7 @@ void dissectMaster(PImage image) {
     //count each tile
     tile(image, tempX, tempY, xIncrement, yIncrement);
     mTotal /= resolution;
+    println(mTotal, tempX, tempY, xIncrement, yIncrement, resolution, tempSource);
     float tempAvg = mTotal;
     m[i] = new TileObject(tempX, tempY, tempSource, tempAvg, tempIndex);
 
@@ -664,11 +670,17 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
   //if using color as the mode, we are dealing with larger ints so we can bring the tolerance up
   if (modes[6]) tolerance = 1f;
 
-  TileObject tempTile, otherTile;
+  TileObject otherTile;
   newValues = new int[masterArray.length];
+  
   for (int i = 0; i < masterArray.length; i++) {
-    tempTile = brightness.get(i);
-    float bestDiff = abs(masterArray[i].avgAttribute - tempTile.avgAttribute);
+    //tempTile = brightness.get(0);
+    //float bestDiff = abs(masterArray[i].avgAttribute - tempTile.avgAttribute);
+    
+    //the difference can be initially set to the maximum possible difference between two values (black and white)
+    //because we only ever subtract from this number
+    float bestDiff = 255f;
+    
     for (int j = 0; j < brightness.size(); j++) {
       otherTile = brightness.get(j);
       float diff = abs(masterArray[i].avgAttribute - otherTile.avgAttribute);
@@ -676,6 +688,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
         //here’s a potential match; don’t stop now as there could be a better match later
         bestIndex = j;
         bestDiff = diff;
+        println("bestIndex: " + bestIndex + " bestDiff: " + bestDiff);
       }
       //make a new array here to store each bestIndex, then extract those values in a different function and display them
       newValues[valueCounter] = bestIndex;
@@ -688,6 +701,8 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
     }
     valueCounter++;
   }
+  
+  printArray(newValues);
 
   if (debugMode) {
     debug.tolerance = tolerance;
@@ -715,8 +730,9 @@ void reconstruct() {
   //PGraphics savedImage = createGraphics(m[0].sourceImage.width, m[0].sourceImage.height);
   savedImage.beginDraw();
   savedImage.noStroke();
-  savedImage.noFill();
+  //savedImage.noFill();
 
+  //note that because the array is zero-indexed, and because we only iterate UP TO m.length, we still count off everything correctly
   for (int i = 0; i < m.length; i++) {    
     TileObject newTile = tx.get(newValues[i]);
 
@@ -745,6 +761,7 @@ void reconstruct() {
 
   savedImage.endDraw();
   savedImage.save(timestamp() + ".png");
+  savedImage.dispose();
 }
 
 
