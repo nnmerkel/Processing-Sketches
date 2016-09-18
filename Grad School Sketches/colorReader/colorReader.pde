@@ -92,8 +92,8 @@ String currentCommand = COMMAND[SELECT_MASTER];
 
 
 void setup() {
-  //size(1280, 720);
-  fullScreen();
+  size(1280, 720);
+  //fullScreen();
   //pixelDensity(displayDensity());
   cp5 = new ControlP5(this);
   font = createFont("UniversLTStd-UltraCn.otf", 24);
@@ -482,7 +482,8 @@ synchronized void runDissection() {
   //reset the array so it can run more than once
   //also reset the ArrayList so tiles don't get reused and memory gets freed up
   imageCount = 0;
-  tx.clear(); //tx = new ArrayList<TileObject>();
+  //tx.clear();
+  tx = new ArrayList<TileObject>();
 
   //set scaling options AFTER the master image has been dissected, and reset resolution
   xIncrement *= scaleFactor;
@@ -568,8 +569,8 @@ void dissect() {
   //if they were a moron and didnt pick a mode, make them pick one
   if (!isAllFalse(modes)) {
     //TODO: recursion works very well when the functions are not threaded, but obviously threading looks cooler
-    runDissection();
-    //thread("runDissection");
+    //runDissection();
+    thread("runDissection");
 
     //the idea is that with recursion, the dissection will run several times using 
     //the last-dissected image as the master for the new generation
@@ -584,9 +585,10 @@ void dissect() {
         xIncrement = constrain(xIncrement + (int)random(-20, 20), 2, 100);
         yIncrement = constrain(yIncrement + (int)random(-20, 20), 2, 100);
         resolution = xIncrement * yIncrement;
+        println(xIncrement, yIncrement);
                 
-        runDissection();
-        //thread("runDissection");
+        //runDissection();
+        thread("runDissection");
 
         recursionIndex++;
       }
@@ -650,7 +652,7 @@ void dissectMaster(PImage image) {
     //count each tile
     tile(image, tempX, tempY, xIncrement, yIncrement);
     mTotal /= resolution;
-    println(mTotal, tempX, tempY, xIncrement, yIncrement, resolution, tempSource);
+    //println(mTotal, tempX, tempY, xIncrement, yIncrement, resolution, tempSource);
     float tempAvg = mTotal;
     m[i] = new TileObject(tempX, tempY, tempSource, tempAvg, tempIndex);
 
@@ -688,7 +690,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
         //here’s a potential match; don’t stop now as there could be a better match later
         bestIndex = j;
         bestDiff = diff;
-        println("bestIndex: " + bestIndex + " bestDiff: " + bestDiff);
+        //println("bestIndex: " + bestIndex + " bestDiff: " + bestDiff);
       }
       //make a new array here to store each bestIndex, then extract those values in a different function and display them
       newValues[valueCounter] = bestIndex;
@@ -702,7 +704,7 @@ void findBestMatch(TileObject masterArray[], ArrayList<TileObject> brightness) {
     valueCounter++;
   }
   
-  printArray(newValues);
+  //printArray(newValues);
 
   if (debugMode) {
     debug.tolerance = tolerance;
