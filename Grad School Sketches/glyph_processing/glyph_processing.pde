@@ -1,9 +1,9 @@
 import java.util.Calendar;
 
 PFont font;
-String fontName = "AvenirNextCondensed-UltraLight";
+String fontName = "AvenirNext-Bold";
 
-int padding = 80;
+int padding = 40;
 
 void setup() {
   size(800, 800);
@@ -23,24 +23,31 @@ void setup() {
    printGlyph(c);
    }
    */
-
+  
+  //A
   char c = (char)65;
-  int size = 800;
+  
+  //size is larger than canvas so we can guarantee that the textWidth is greater than the width, thus triggering the next conditional
+  //I may need to revisit this for super condensed fonts
+  int size = int(width * 1.5);
   textSize(size);
-  if (textWidth(c) <= width - padding) {
+  
+  if (textWidth(c) > (width - padding)) {
     size *= (width / textWidth(c));
     size -= padding;
   }
+  
   textSize(size);
-  textAlign(CENTER, CENTER);
-  float h = height - textAscent() / 2;
-  text(c, width/2, height/2);
+  
+  text(c, padding/2, (height - textDescent()) - padding/2);
 
   noFill();
   stroke(255, 0, 0, 50);
-  rectMode(CENTER);
-  rect(width/2, height/2, textWidth((char)65), textAscent());
+  
+  //not sure why this rectangle is being drawn upward?
+  rect(padding/2, (height - textDescent()) - padding/2, textWidth(c), -100);
 }
+
 
 void printGlyph(int c) {
   float h = textAscent();
@@ -53,6 +60,7 @@ void printGlyph(int c) {
   g.endDraw();
   g.save(fontName + c + ".png");
 }
+
 
 String timestamp() {
   return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", Calendar.getInstance());

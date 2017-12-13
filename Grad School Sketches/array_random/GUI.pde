@@ -29,8 +29,8 @@ void setupGUI() {
   sliders[ri++] = cp5.addSlider("shadowHue").setRange(0, 360).setPosition(0, itemHeight*2+pad*3).setSize(itemWidth, itemHeight).setGroup(shadows);
   sliders[si++] = cp5.addSlider("shadowSaturationValue", 0, 100, 0, itemHeight*3+pad*4, itemWidth, itemHeight).setGroup(shadows);
   sliders[si++] = cp5.addSlider("shadowBrightnessValue", 0, 100, 0, itemHeight*4+pad*5, itemWidth, itemHeight).setGroup(shadows);
-  sliders[si++] = cp5.addSlider("shadowLineSw").setPosition(0, itemHeight*5+pad*6).setSize(itemWidth, itemHeight).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(shadows);
-  sliders[si++] = cp5.addSlider("shadowPointSw").setPosition(0, itemHeight*6+pad*7).setSize(itemWidth, itemHeight).setRange(.5, 3.5).setNumberOfTickMarks(7).setGroup(shadows);
+  sliders[si++] = cp5.addSlider("shadowLineSw").setPosition(0, itemHeight*5+pad*6).setSize(itemWidth, itemHeight).setRange(.5, 5.5).setNumberOfTickMarks(11).setGroup(shadows);
+  sliders[si++] = cp5.addSlider("shadowPointSw").setPosition(0, itemHeight*6+pad*7).setSize(itemWidth, itemHeight).setRange(.5, 5.5).setNumberOfTickMarks(11).setGroup(shadows);
   
   toggles[ti++] = cp5.addToggle("useMidtones").setPosition(0, pad).setSize(itemHeight, itemHeight).setGroup(midtones);
   toggles[ti++] = cp5.addToggle("midtonesFalseColor").setPosition(itemWidth/2, pad).setSize(itemHeight, itemHeight).setGroup(midtones);

@@ -15,7 +15,7 @@ int cw = 20; //curve width
 
 void setup() {
   //remember, change the global variables accordingly if you change the size()
-  size(1400, 3150, PDF, "banner2.pdf"); //<--------did you remember to change the global variables???
+  size(1400, 3150);//, "banner2.pdf"); //<--------did you remember to change the global variables???
 
   smooth(8);
   background(255);
@@ -87,8 +87,8 @@ void draw() {
       popMatrix();
     }
   }
-  println("finished");
-  exit();
+  //println("finished");
+  //exit();
 }
 
 void smoothCurve() {
@@ -109,4 +109,3 @@ void keyPressed() {
     println("frame saved");
   }
 }
-

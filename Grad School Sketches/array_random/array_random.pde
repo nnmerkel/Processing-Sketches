@@ -39,26 +39,26 @@ color background = color(255);
 //drawing methods
 //shadows
 boolean shadowFalseColor = false;
-boolean useShadows = false;
+boolean useShadows = true;
 float shadowSaturation = 80;
 float shadowBrightness = 80;
 float shadowHue = 40;
 float lowShadows = 0;
 float highShadows = 50;
-float shadowLineSw = .5;
-float shadowPointSw = 2;
+float shadowLineSw = 1.0;
+float shadowPointSw = 3.0;
 
 //midtones
 //same variables as for shadows, but this time target the midtones
-boolean useMidtones = true;
+boolean useMidtones = false;
 boolean midtonesFalseColor = false;
 float midtonesSaturation = 80;
 float midtonesBrightness = 80;
 float midtonesHue = 40;
 float lowMidtones = 140;
 float highMidtones = 170;
-float midtonesLineSw = 1;
-float midtonesPointSw = 2;
+float midtonesLineSw = 1.0;
+float midtonesPointSw = 2.0;
 
 //highlights
 //same variables as shadows and midtones, but this time target the highlights
@@ -74,10 +74,11 @@ float highlightsPointSw = 1.5;
 
 
 void setup() {
-  size(1280, 800);
+  //width of image plus guiwidth
+  size(2280, 1200);
   pixelDensity(2);
 
-  s = loadImage("n.jpg");
+  s = loadImage("lyra.png");
 
   colorMode(RGB, 255, 255, 255, 255);
   background(background);
@@ -129,7 +130,7 @@ void overlay() {
 
       if (useShadows) {
         //target the darkest pixels, but not the black background
-        if (redcc <= redc && b >= lowShadows && b < highShadows && distance > shadowLowLimit && distance < smallLimit) {
+        if (redcc >= redc && b <= lowShadows && b < highShadows && distance > shadowLowLimit && distance < smallLimit) {
           strokeWeight(shadowLineSw);
           if (shadowFalseColor) {
             colorMode(HSB, 360, 100, 100, 255);
@@ -139,7 +140,7 @@ void overlay() {
             line(x[i], y[i], x[j], y[j]);
             strokeWeight(shadowPointSw);
             point(x[i], y[i]);
-            stroke(cc);
+            //stroke(cc);
             point(x[j], y[j]);
           }
         }
